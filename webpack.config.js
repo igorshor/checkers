@@ -40,12 +40,13 @@ module.exports = {
     },
 
     resolve: {
+        extensions: ['.ts', '.js'],
         modules: [
             "node_modules",
             path.resolve(__dirname, "app")
         ],
     },
-
+    devtool: 'source-map',
     performance: {
         hints: "warning", // enum
         maxAssetSize: 200000, // int (in bytes),
