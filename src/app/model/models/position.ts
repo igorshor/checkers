@@ -1,4 +1,4 @@
-export class Position {
+export class PositionDefinition {
 
     get x():number{
         return this._x + this._delta;

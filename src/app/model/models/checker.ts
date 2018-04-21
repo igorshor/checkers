@@ -1,11 +1,7 @@
+import { CheckerState } from "./checker-state";
 
-export enum State {
-    Game,
-    Dead,
-    King
-}
 export class Checker {
-    public state: State;
+    public state: CheckerState;
     constructor(public id:any){
     }
 }

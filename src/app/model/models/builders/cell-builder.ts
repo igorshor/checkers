@@ -1,10 +1,10 @@
-import { Position } from '../position';
+import { PositionDefinition } from '../position';
 import { Cell } from '../cell';
 import { PositionStrategy } from '../position-strategy';
 import { Checker } from '../checker';
 
 export class CellBuilder {
-    public static build(positionStrategy: PositionStrategy, position: Position): Cell {
+    public static build(positionStrategy: PositionStrategy, position: PositionDefinition): Cell {
         const type = positionStrategy.getCellTypeByPosition(position);
         const playerId = positionStrategy.getPlayerByPosition(type, position);
         const include = positionStrategy.includeInGame(type);

@@ -1,7 +1,7 @@
 import { PositionStrategy } from "./position-strategy";
 import { Player } from "./player";
 import { PositionType } from "./position-type";
-import { Position } from './position';
+import { PositionDefinition } from './position';
 
 interface IValidPlayerPosition {
     valid: boolean;
@@ -38,7 +38,7 @@ export class CheckersPositionStrategy extends PositionStrategy {
         return positionType === PositionType.Black;
     }
 
-    public getPlayerByPosition(positionType: PositionType, position: Position) {
+    public getPlayerByPosition(positionType: PositionType, position: PositionDefinition) {
         if (positionType === PositionType.White) {
             return null;
         }

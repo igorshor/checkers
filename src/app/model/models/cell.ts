@@ -1,8 +1,8 @@
 import { Checker } from "./checker";
 import { PositionType } from "./position-type";
-import { Position } from './position';
+import { PositionDefinition } from './position';
 export class Cell {
-    constructor(public position: Position, public type: PositionType, public checker?: Checker) {
+    constructor(public position: PositionDefinition, public type: PositionType, public checker?: Checker) {
 
     }
 }
