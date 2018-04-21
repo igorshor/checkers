@@ -1,12 +1,12 @@
 export class Player {
-    constructor(public id: any) {
+    constructor(public name: string, public id: any) {
 
     }
 }
 
-export class AiPlayer extends Player{
-    constructor(id: any) {
-        super(id);
-        
+export class AiPlayer extends Player {
+    constructor(name: string, id: any) {
+        super(name, id);
+
     }
 }
