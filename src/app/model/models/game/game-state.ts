@@ -1,10 +1,10 @@
 import {Observable, Subject} from '@reactivex/rxjs'
 import { Player } from './player';
-import { Cell } from './cell';
+import { Cell } from '../board/cell';
 
-export class GameState {
+export class GameStateManeger {
     private _playerChanged = new Subject<Player>();
-    private _gameState = new Subject<GameState>();
+    private _gameState = new Subject<GameStateManeger>();
     private _cellChanged = new Subject<Cell>();
     private _boardChanged = new Subject<Cell[][]>();
     
@@ -16,11 +16,11 @@ export class GameState {
         return this._playerChanged.asObservable();
     }
 
-    public updateGameState(value:GameState){
+    public updateGameState(value:GameStateManeger){
         this._gameState.next(value);
     }
 
-    get gameState():Observable<GameState>{
+    get gameState():Observable<GameStateManeger>{
         return this._gameState.asObservable();
     }
 

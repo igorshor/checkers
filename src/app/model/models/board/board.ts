@@ -1,14 +1,14 @@
 import { Cell } from "./cell";
-import { PositionStrategy } from "./position-strategy";
 import { PositionDefinition } from "./position";
 import { Checker } from "./checker";
 import { PositionType } from "./position-type";
-import { CellBuilder } from "./builders/cell-builder";
+import { CellBuilder } from "../builders/cell-builder";
+import { IPositionStrategy } from "../interfaces/i-position-strategy";
 
 export class Board {
     public cells: Cell[][];
 
-    constructor(public size: number, private positionStrategy: PositionStrategy) {
+    constructor(public size: number, private positionStrategy: IPositionStrategy) {
         this.init();
     }
 
