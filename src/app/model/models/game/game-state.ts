@@ -2,13 +2,23 @@ import {Observable, Subject} from '@reactivex/rxjs'
 import { Player } from './player';
 import { Cell } from '../board/cell';
 import { GameStage } from './game-stage';
+import { SelectDescriptor } from '../move/select-descriptor';
 
 export class GameStateManager {
     private _playerChanged = new Subject<Player>();
     private _gameState = new Subject<GameStage>();
     private _cellChanged = new Subject<Cell>();
     private _boardChanged = new Subject<Cell[][]>();
+    private _selectionChanged = new Subject<SelectDescriptor>();
     
+    public updateSelection(value:SelectDescriptor){
+        this._selectionChanged.next(value);
+    }
+
+    get selection():Observable<SelectDescriptor>{
+        return this._selectionChanged.asObservable();
+    }  
+
     public updateCurrentPlayer(value:Player){
         this._playerChanged.next(value);
     }

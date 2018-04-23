@@ -5,16 +5,11 @@ import { Board } from "../board/board";
 import { MoveDescriptor } from "./move-descriptor";
 import { MoveDirectionsDefinition, DirectionsDefinition } from "./move-direction";
 import { CheckerState } from "../board/checker-state";
+import { SelectDescriptor } from "./select-descriptor";
 
 interface IFromTo<T> {
     from: T;
     to: T;
-}
-
-interface IRectangle {
-    x: IFromTo<number>;
-    y: IFromTo<number>;
-
 }
 
 export class MoveAnalyzer implements IMoveAnalyzer {
@@ -34,79 +29,34 @@ export class MoveAnalyzer implements IMoveAnalyzer {
         }
     }
 
-    breakeDownMove(move: MoveDescriptor): MoveDescriptor[] {
-        if (!move.type) {
-            move.type = this.getMoveType(move.from, move.to);
-        }
-
-        if (move.type === MoveType.Move) {
-            return [];
-        }
-
-        const moves: MoveDescriptor[] = [];
-        const player = this._board.getCellByPosition(move.from).checker.id;
-        let nextPos: IPosition = { x: 0, y: 0 };
-
-        while (nextPos.x === move.to.x && nextPos.y === move.to.y) {
-            nextPos = this.getNextPositionByDirection(move)
-        }
-    }
-
-    getPossibleRoutes(move: MoveDescriptor): IFromTo<IPosition>[][] {
-        const playGround = this.getMaxRectangle(move);
-        const fromChecker = this._board.getCellByPosition(move.from).checker
-        if (this.isSingleEatRecDistanceRec(playGround)) {
-            return [[{ from: move.from, to: move.to }]];
-        }
-
+    getPosibleMoves(select: SelectDescriptor):MoveDescriptor[]{
+        const fromChecker = this._board.getCellByPosition(select.from).checker
+        const moves:MoveDescriptor[] = [];
         if(fromChecker.state === CheckerState.King){
             //Todo
         } else {
-            if(this.isOneDirectionEatRoutDistanceRec(playGround)){
-                //todo
-            }
+            //Todo
         }
-    }
 
-    private isSingleEatRecDistanceRec(playGround: IRectangle) {
-        return Math.abs(playGround.x.from - playGround.x.to) === MoveAnalyzer.singleEatRecDistance &&
-            Math.abs(playGround.y.from - playGround.y.to) === MoveAnalyzer.singleEatRecDistance
-    }
-
-    private isOneDirectionEatRoutDistanceRec(playGround: IRectangle) {
-        return Math.abs(playGround.x.from - playGround.x.to) === MoveAnalyzer.singleEatRecDistance &&
-            Math.abs(playGround.y.from - playGround.y.to) === MoveAnalyzer.singleEatRecDistance
-    }
-
-    private getMaxRectangle(move: MoveDescriptor): IRectangle {
-        return {
-            x: {
-                from: move.from.x < move.to.x ? move.from.x : move.to.x,
-                to: move.from.x > move.to.x ? move.from.x : move.to.x,
-            },
-            y: {
-                from: move.from.y < move.to.y ? move.from.y : move.to.y,
-                to: move.from.y > move.to.y ? move.from.y : move.to.y,
-            }
-        }
+        return moves;
     }
 
     getNextPositionByDirection(move: MoveDescriptor): IPosition {
         const pos = { x: move.from.x, y: move.from.y };
 
-        if (move.direction & DirectionsDefinition.Up) {
+        if (move.moveDirection & DirectionsDefinition.Up) {
             pos.y++;
         }
 
-        if (move.direction & DirectionsDefinition.Down) {
+        if (move.moveDirection & DirectionsDefinition.Down) {
             pos.y--;
         }
 
-        if (move.direction & DirectionsDefinition.Right) {
+        if (move.moveDirection & DirectionsDefinition.Right) {
             pos.x++;
         }
 
-        if (move.direction & DirectionsDefinition.Left) {
+        if (move.moveDirection & DirectionsDefinition.Left) {
             pos.x--;
         }
 
