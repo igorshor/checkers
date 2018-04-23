@@ -8,7 +8,7 @@ export class CellBuilder {
         const type = positionStrategy.getCellTypeByPosition(position);
         const playerId = positionStrategy.getPlayerByPosition(type, position);
         const include = positionStrategy.includeInGame(type);
-        const checker = include ? new Checker(playerId) : null;
+        const checker = include ? new Checker(playerId) : new Checker(null);
         const cell = new Cell(position, type, checker);
 
         return cell;
