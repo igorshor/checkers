@@ -8,6 +8,7 @@ export class GameStateManager {
     private _playerChanged = new Subject<Player>();
     private _gameState = new Subject<GameStage>();
     private _cellChanged = new Subject<Cell>();
+    private _cellsChanged = new Subject<Cell[]>();
     private _boardChanged = new Subject<Cell[][]>();
     private _selectionChanged = new Subject<SelectDescriptor>();
     
@@ -42,6 +43,15 @@ export class GameStateManager {
     get cell():Observable<Cell>{
         return this._cellChanged.asObservable();
     }
+
+    public updateCells(value:Cell[]){
+        this._cellsChanged.next(value);
+    }
+
+    get cells():Observable<Cell[]>{
+        return this._cellsChanged.asObservable();
+    }
+
 
     public updateBoard(value:Cell[][]){
         this._boardChanged.next(value);
