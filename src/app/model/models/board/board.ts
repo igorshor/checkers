@@ -9,8 +9,8 @@ import { CheckerState } from "./checker-state";
 import { IContextProvider } from "../interfaces/i-context-provier";
 import { MoveDescriptor } from "../move/move-descriptor";
 
-export class Board {
-    public cells: Cell[][];
+export class Board<T> {
+    public cells: Cell<T>[][];
 
     constructor(public size: number, private positionStrategy: IPositionStrategy, private _contextProvider: IContextProvider) {
         this.init();
@@ -29,8 +29,8 @@ export class Board {
         }
     }
 
-    move(moveDescriptor: MoveDescriptor): Cell[] {
-        const changedCells: Cell[] = []
+    move(moveDescriptor: MoveDescriptor): Cell<T>[] {
+        const changedCells: Cell<T>[] = []
         switch (moveDescriptor.type) {
             case MoveType.Move:
                 changedCells.push(this.remove(moveDescriptor.from));
@@ -64,7 +64,7 @@ export class Board {
         return cell;
     }
 
-    public getCellByPosition(pos: PositionDefinition): Cell {
+    public getCellByPosition(pos: PositionDefinition): Cell<T> {
         return this.cells[pos.y][pos.x];
     }
 }
