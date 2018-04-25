@@ -68,7 +68,7 @@ export class Board<T> {
         return this.cells[pos.y][pos.x];
     }
 
-    public getCellByPredicate(predicate: (element: Cell<T>) => boolean): Cell<T>[] {
+    public getCellsByPredicate(predicate: (element: Cell<T>) => boolean): Cell<T>[] {
         return this.cells
             .map((row: Cell<T>[]) => row.filter(predicate))
             .reduce((accumulator: Cell<T>[], currentValue: Cell<T>[]) => {
