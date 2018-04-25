@@ -51,15 +51,15 @@ export class Board<T> {
 
     private add(pos: PositionDefinition) {
         const cell = this.getCellByPosition(pos);
-        cell.checker.state = CheckerState.Game;
-        cell.checker.id = this._contextProvider.current;
+        cell.element.state = CheckerState.Game;
+        cell.element.id = this._contextProvider.current;
 
         return cell;
     }
 
     private remove(pos: PositionDefinition) {
         const cell = this.getCellByPosition(pos);
-        cell.checker.state = CheckerState.Dead;
+        cell.element.state = CheckerState.Dead;
 
         return cell;
     }
@@ -68,10 +68,10 @@ export class Board<T> {
         return this.cells[pos.y][pos.x];
     }
 
-    public getCheckersById(id: any): Cell[] {
+    public getCellByPredicate(predicate: (element: Cell<T>) => boolean): Cell<T>[] {
         return this.cells
-            .map((row: Cell[]) => row.filter((cell: Cell) => cell.checker.id === id))
-            .reduce((accumulator: Cell[], currentValue: Cell[]) => {
+            .map((row: Cell<T>[]) => row.filter(predicate))
+            .reduce((accumulator: Cell<T>[], currentValue: Cell<T>[]) => {
                 accumulator.push(...currentValue);
                 return accumulator;
             })

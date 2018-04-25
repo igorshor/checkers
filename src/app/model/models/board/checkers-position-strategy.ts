@@ -2,6 +2,7 @@ import { Player } from "../game/player";
 import { PositionType } from "./position-type";
 import { PositionDefinition } from './position';
 import { IPositionStrategy } from "../interfaces/i-position-strategy";
+import { IPlayersManager } from "../interfaces/i-players-maneger";
 
 interface IValidPlayerPosition {
     valid: boolean;
@@ -10,8 +11,10 @@ interface IValidPlayerPosition {
 
 export class CheckersPositionStrategy implements IPositionStrategy {
     private _validRows: { [key: number]: IValidPlayerPosition };
-
-    constructor(private _size: number, private _players: Player[]) {
+    private _players: Player[];
+    
+    constructor(private _size: number, _playersManager: IPlayersManager) {
+        this._players = _playersManager.players;
         this.calcValidRowsToInitPosition();
 
     }

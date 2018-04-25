@@ -9,13 +9,14 @@ import { IMoveAnalyzer } from "../interfaces/i-move-analyzer";
 import { SelectDescriptor } from "./select-descriptor";
 import { CellState } from "../board/cell-state";
 import { IPlayersManager } from "../interfaces/i-players-maneger";
+import { Checker } from "../board/checker";
 
 export class MoveManager implements IMoveStrategy {
     private _selection: SelectDescriptor;
 
-    constructor(private _board: Board,
+    constructor(private _board: Board<Checker>,
         private _state: GameStateManager,
-        private _moveValidator: IMoveValidator,
+        private _moveValidator: IMoveValidator<Checker>,
         private _moveAnalizer: IMoveAnalyzer,
         private _playersManager: IPlayersManager) {
         this._state.selection.subscribe(this.handleSelect)
@@ -29,10 +30,10 @@ export class MoveManager implements IMoveStrategy {
             const currentSelectionCell = this._board.getCellByPosition(selection.from);
 
 
-            if (prevSelectionCell.checker.id === currentSelectionCell.checker.id) {
+            if (prevSelectionCell.element.id === currentSelectionCell.element.id) {
                 this.onReSelect(selection);
             } else {
-                if (this._playersManager.exist(prevSelectionCell.checker.id) || this._playersManager.exist(currentSelectionCell.checker.id)) {
+                if (this._playersManager.exist(prevSelectionCell.element.id) || this._playersManager.exist(currentSelectionCell.element.id)) {
                     throw new Error('something went wrong');
                 }
 
@@ -44,7 +45,7 @@ export class MoveManager implements IMoveStrategy {
     protected onSelect(selection: SelectDescriptor) {
         const cell = this._board.getCellByPosition(selection.from);
 
-        if (!cell.checker || cell.checker.id !== this._playersManager.current.id) {
+        if (!cell.element || cell.element.id !== this._playersManager.current.id) {
             throw new Error('something went wrong');
         }
 

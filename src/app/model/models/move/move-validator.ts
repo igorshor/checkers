@@ -2,21 +2,21 @@ import { IMoveValidatorInterceptor, IMoveValidator } from "../interfaces/i-move-
 import { MoveDescriptor } from "./move-descriptor";
 import { Board } from "../board/board";
 
-export class MoveValidator implements IMoveValidator {
-    private _validatorInterseptors: IMoveValidatorInterceptor[];
+export class MoveValidator<T> implements IMoveValidator<T> {
+    private _validatorInterseptors: IMoveValidatorInterceptor<T>[];
 
     constructor() {
         this._validatorInterseptors = [];
     }
 
-    public append(validator: IMoveValidatorInterceptor): void {
+    public append(validator: IMoveValidatorInterceptor<T>): void {
         this._validatorInterseptors.push(validator);
     }
 
-    public validate(moveDescriptor: MoveDescriptor, board: Board): boolean {
+    public validate(moveDescriptor: MoveDescriptor, board: Board<T>): boolean {
         if (this._validatorInterseptors.length) {
             try {
-                this._validatorInterseptors.forEach((validator: IMoveValidatorInterceptor) => {
+                this._validatorInterseptors.forEach((validator: IMoveValidatorInterceptor<T>) => {
                     if (!validator.validate(moveDescriptor, board)) {
                         throw new Error(validator.error || 'Invalid move');
                     }

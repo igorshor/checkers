@@ -6,6 +6,7 @@ import { MoveDescriptor } from "./move-descriptor";
 import { MoveDirectionsDefinition, DirectionsDefinition } from "./move-direction";
 import { CheckerState } from "../board/checker-state";
 import { SelectDescriptor } from "./select-descriptor";
+import { Checker } from "../board/checker";
 
 interface IFromTo<T> {
     from: T;
@@ -15,7 +16,7 @@ interface IFromTo<T> {
 export class MoveAnalyzer implements IMoveAnalyzer {
     private static readonly singleEatRecDistance = 2;
 
-    constructor(private _board: Board) {
+    constructor(private _board: Board<Checker>) {
 
     }
 
@@ -30,7 +31,7 @@ export class MoveAnalyzer implements IMoveAnalyzer {
     }
 
     getPosibleMoves(select: SelectDescriptor):MoveDescriptor[]{
-        const fromChecker = this._board.getCellByPosition(select.from).checker
+        const fromChecker = this._board.getCellByPosition(select.from).element
         const moves:MoveDescriptor[] = [];
         if(fromChecker.state === CheckerState.King){
             //Todo

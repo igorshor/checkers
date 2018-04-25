@@ -4,11 +4,21 @@ import { IPlayersManager } from "../interfaces/i-players-maneger";
 
 export class PlayersManager implements IPlayersManager {
     private _currentPlayer: Player;
+    private _players: Player[];
 
-    constructor(private _gameState: GameStateManager, private _players: Player[]) {
+    constructor(private _gameState: GameStateManager) {
         this._gameState.player.subscribe(Player => {
             this._currentPlayer = Player;
         })
+    }
+
+    addPlayer(player: Player) {
+        this._players = this._players || [];
+        this._players.push(player);
+    }
+
+    get players(): Player[] {
+        return this._players;
     }
 
     get current(): Player {

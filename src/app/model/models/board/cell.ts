@@ -5,7 +5,7 @@ import { CellState } from "./cell-state";
 
 export class Cell<T> {
     public state: CellState;
-    constructor(public position: PositionDefinition, public type: PositionType, public checker: T) {
+    constructor(public position: PositionDefinition, public type: PositionType, public element: T) {
         this.state = CellState.Normal;
     }
 }

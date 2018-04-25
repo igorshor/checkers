@@ -1,10 +1,10 @@
-import { Board } from "./board";
-import { MoveDescriptor } from "./move/move-descriptor";
+import { MoveDescriptor } from "../move/move-descriptor";
+import { Board } from "../board/board";
 
-export interface IMoveValidator {
-    validate(moveDescriptor:MoveDescriptor, board: Board): boolean
+export interface IMoveValidator<T> {
+    validate(moveDescriptor:MoveDescriptor, board: Board<T>): boolean
 }
 
-export interface IMoveValidatorInterceptor extends IMoveValidator {
+export interface IMoveValidatorInterceptor<T> extends IMoveValidator<T> {
     error?:string;
 }

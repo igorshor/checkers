@@ -6,9 +6,10 @@ import { Board } from "../../board/board";
 import { IMoveValidator } from "../../interfaces/i-move-validator-interceptorr";
 import { IMoveAnalyzer } from "../../interfaces/i-move-analyzer";
 import { IPlayersManager } from "../../interfaces/i-players-maneger";
+import { Checker } from "../../board/checker";
 
 export class AiMoveManager extends MoveManager {
-    constructor(_board: Board, _state: GameStateManager, _moveValidator: IMoveValidator, _moveAnalizer: IMoveAnalyzer, _playersManager: IPlayersManager) {
+    constructor(_board: Board<Checker>, _state: GameStateManager, _moveValidator: IMoveValidator<Checker>, _moveAnalizer: IMoveAnalyzer, _playersManager: IPlayersManager) {
         super(_board, _state, _moveValidator, _moveAnalizer, _playersManager);
 
     }
