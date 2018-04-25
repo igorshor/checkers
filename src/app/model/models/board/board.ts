@@ -45,7 +45,7 @@ export class Board {
         return changedCells;
     }
 
-    private eatMove(from: PositionDefinition, to: PositionDefinition){
+    private eatMove(from: PositionDefinition, to: PositionDefinition) {
 
     }
 
@@ -66,5 +66,14 @@ export class Board {
 
     public getCellByPosition(pos: PositionDefinition): Cell {
         return this.cells[pos.y][pos.x];
+    }
+
+    public getCheckersById(id: any): Cell[] {
+        return this.cells
+            .map((row: Cell[]) => row.filter((cell: Cell) => cell.checker.id === id))
+            .reduce((accumulator: Cell[], currentValue: Cell[]) => {
+                accumulator.push(...currentValue);
+                return accumulator;
+            })
     }
 }
