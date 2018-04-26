@@ -30,13 +30,13 @@ export class MoveAnalyzer implements IMoveAnalyzer {
         }
     }
 
-    getPosibleMoves(select: SelectDescriptor):MoveDescriptor[]{
-        const fromChecker = this._board.getCellByPosition(select.from).element
-        const moves:MoveDescriptor[] = [];
-        if(fromChecker.state === CheckerState.Super){
-            //Todo
+    getPosibleMoves(select: SelectDescriptor): MoveDescriptor[] {
+        const fromChecker = this._board.getCellByPosition(select.from).element;
+        const moves: MoveDescriptor[] = [];
+        if (fromChecker.state === CheckerState.Super) {
+            // Todo
         } else {
-            //Todo
+            // Todo
         }
 
         return moves;

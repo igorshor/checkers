@@ -5,7 +5,7 @@ import { IPositionStrategy } from '../interfaces/i-position-strategy';
 import { IIdentible } from '../interfaces/i-Identible';
 
 export abstract class CellBuilder<T extends IIdentible> {
-    abstract createElement(id: any):T;
+    abstract createElement(id: any): T;
     public build(positionStrategy: IPositionStrategy, position: PositionDefinition): Cell<T> {
         const type = positionStrategy.getCellTypeByPosition(position);
         const playerId = positionStrategy.getPlayerByPosition(type, position);

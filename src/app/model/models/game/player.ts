@@ -8,7 +8,7 @@ export class Player implements IIdentible {
 
     }
 
-    move(from:PositionDefinition, to:PositionDefinition){
+    move(from: PositionDefinition, to: PositionDefinition) {
         this._moveManager.move(from, to);
     }
 }

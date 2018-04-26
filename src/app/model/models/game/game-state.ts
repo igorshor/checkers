@@ -1,4 +1,4 @@
-import {Observable, Subject} from '@reactivex/rxjs'
+import { Observable, Subject } from '@reactivex/rxjs';
 import { Player } from './player';
 import { Cell } from '../board/cell';
 import { GameStage } from './game-stage';
@@ -12,53 +12,53 @@ export class GameStateManager {
     private _cellsChanged = new Subject<Cell<Checker>[]>();
     private _boardChanged = new Subject<Cell<Checker>[][]>();
     private _selectionChanged = new Subject<SelectDescriptor>();
-    
-    public updateSelection(value:SelectDescriptor){
+
+    public updateSelection(value: SelectDescriptor) {
         this._selectionChanged.next(value);
     }
 
-    get selection():Observable<SelectDescriptor>{
+    get selection(): Observable<SelectDescriptor> {
         return this._selectionChanged.asObservable();
-    }  
+    }
 
-    public updateCurrentPlayer(value:Player){
+    public updateCurrentPlayer(value: Player) {
         this._playerChanged.next(value);
     }
 
-    get player():Observable<Player>{
+    get player(): Observable<Player> {
         return this._playerChanged.asObservable();
     }
 
-    public updateGameState(value:GameStage){
+    public updateGameState(value: GameStage) {
         this._gameState.next(value);
     }
 
-    get gameState():Observable<GameStage>{
+    get gameState(): Observable<GameStage> {
         return this._gameState.asObservable();
     }
 
-    public updateCell(value:Cell<Checker>){
+    public updateCell(value: Cell<Checker>) {
         this._cellChanged.next(value);
     }
 
-    get cell():Observable<Cell<Checker>>{
+    get cell(): Observable<Cell<Checker>> {
         return this._cellChanged.asObservable();
     }
 
-    public updateCells(value:Cell<Checker>[]){
+    public updateCells(value: Cell<Checker>[]) {
         this._cellsChanged.next(value);
     }
 
-    get cells():Observable<Cell<Checker>[]>{
+    get cells(): Observable<Cell<Checker>[]> {
         return this._cellsChanged.asObservable();
     }
 
 
-    public updateBoard(value:Cell<Checker>[][]){
+    public updateBoard(value: Cell<Checker>[][]) {
         this._boardChanged.next(value);
     }
 
-    get board():Observable<Cell<Checker>[][]>{
+    get board(): Observable<Cell<Checker>[][]> {
         return this._boardChanged.asObservable();
     }
 }

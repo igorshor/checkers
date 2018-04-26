@@ -12,7 +12,7 @@ interface IValidPlayerPosition {
 export class CheckersPositionStrategy implements IPositionStrategy {
     private _validRows: { [key: number]: IValidPlayerPosition };
     private _players: Player[];
-    
+
     constructor(private _size: number, _playersManager: IPlayersManager) {
         this._players = _playersManager.players;
         this.calcValidRowsToInitPosition();
@@ -31,7 +31,7 @@ export class CheckersPositionStrategy implements IPositionStrategy {
                 this._validRows[i] = { valid: true, player: this._players[0].id };
             }
             else {
-                this._validRows[i] = { valid: false, player: null };
+                this._validRows[i] = { valid: false, player: undefined };
             }
         }
     }
@@ -51,7 +51,7 @@ export class CheckersPositionStrategy implements IPositionStrategy {
 
     public getPlayerByPosition(positionType: PositionType, position: PositionDefinition) {
         if (positionType === PositionType.White) {
-            return null;
+            return undefined;
         }
 
         const pos = this._validRows[position.y];
@@ -59,6 +59,6 @@ export class CheckersPositionStrategy implements IPositionStrategy {
             return pos.player;
         }
 
-        return null;
+        return undefined;
     }
 }

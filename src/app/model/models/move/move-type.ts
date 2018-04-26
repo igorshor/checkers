@@ -1,4 +1,4 @@
-export enum MoveType{
+export enum MoveType {
     Move,
     Atack,
     KingMove,

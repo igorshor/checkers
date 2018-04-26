@@ -7,9 +7,7 @@ export class PlayersManager implements IPlayersManager {
     private _players: Player[];
 
     constructor(private _gameState: GameStateManager) {
-        this._gameState.player.subscribe(Player => {
-            this._currentPlayer = Player;
-        })
+        this._gameState.player.subscribe(player => this._currentPlayer = player);
     }
 
     addPlayer(player: Player) {
@@ -38,6 +36,6 @@ export class PlayersManager implements IPlayersManager {
     }
 
     private getOtherPlayer(): Player {
-        return this._players[0] === this._currentPlayer ? this._players[1] : this._players[0]
+        return this._players[0] === this._currentPlayer ? this._players[1] : this._players[0];
     }
 }

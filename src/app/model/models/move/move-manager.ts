@@ -19,7 +19,7 @@ export class MoveManager implements IMoveStrategy {
         private _moveValidator: IMoveValidator<Checker>,
         private _moveAnalizer: IMoveAnalyzer,
         private _playersManager: IPlayersManager) {
-        this._state.selection.subscribe(this.handleSelect)
+        this._state.selection.subscribe(this.handleSelect);
     }
 
     protected handleSelect(selection: SelectDescriptor): void {
@@ -67,12 +67,12 @@ export class MoveManager implements IMoveStrategy {
 
     protected onReSelect(selection: SelectDescriptor) {
         this.onUnSelect(selection);
-        this.onSelect(selection)
+        this.onSelect(selection);
     }
 
     private onUnSelect(selection: SelectDescriptor) {
         const cells = this._selection.posibleMoves.map(pos => this._board.getCellByPosition(pos));
-        this._selection = null;
+        this._selection = undefined;
         cells.forEach(cell => cell.state = CellState.Normal);
         this._state.updateCells(cells);
     }
@@ -81,17 +81,17 @@ export class MoveManager implements IMoveStrategy {
         const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, this._playersManager.current.direction);
         const moves = this._moveAnalizer.getPosibleMoves(selectDescriptor);
 
-        return moves.map(move => new PositionDefinition(move.to.x, move.to.y, 0))
+        return moves.map(move => new PositionDefinition(move.to.x, move.to.y, 0));
     }
 
     public move(from: PositionDefinition, to: PositionDefinition): boolean {
         const moveDescriptor = new MoveDescriptor(from, to, this._playersManager.current.id);
-        const validMove = this._moveValidator.validate(moveDescriptor, this._board)
+        const validMove = this._moveValidator.validate(moveDescriptor, this._board);
 
         if (validMove) {
             const moveType = this._moveAnalizer.getMoveType(from, to);
             moveDescriptor.type = moveType;
-            this._board.move(new MoveDescriptor(from, to, moveType))
+            this._board.move(new MoveDescriptor(from, to, moveType));
             this.onUnSelect(this._selection);
 
             return true;
