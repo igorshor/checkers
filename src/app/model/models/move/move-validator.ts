@@ -1,8 +1,9 @@
 import { IMoveValidatorInterceptor, IMoveValidator } from "../interfaces/i-move-validator-interceptorr";
 import { MoveDescriptor } from "./move-descriptor";
 import { Board } from "../board/board";
+import { IIdentible } from "../interfaces/i-Identible";
 
-export class MoveValidator<T> implements IMoveValidator<T> {
+export class MoveValidator<T extends IIdentible> implements IMoveValidator<T> {
     private _validatorInterseptors: IMoveValidatorInterceptor<T>[];
 
     constructor() {

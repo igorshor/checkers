@@ -1,8 +1,9 @@
 import { DirectionsDefinition } from "../move/move-direction";
 import { IMoveStrategy } from "../interfaces/i-move-strategy";
 import { PositionDefinition } from "../board/position";
+import { IIdentible } from "../interfaces/i-Identible";
 
-export class Player {
+export class Player implements IIdentible {
     constructor(public name: string, public id: any, public base: number, public direction: DirectionsDefinition, private _moveManager: IMoveStrategy) {
 
     }

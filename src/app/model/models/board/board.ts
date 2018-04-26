@@ -8,25 +8,43 @@ import { MoveType } from "../move/move-type";
 import { CheckerState } from "./checker-state";
 import { IContextProvider } from "../interfaces/i-context-provier";
 import { MoveDescriptor } from "../move/move-descriptor";
+import { IIdentible } from "../interfaces/i-Identible";
 
-export class Board<T> {
+export class Board<T extends IIdentible> {
     public cells: Cell<T>[][];
+    public elementsMap: { [id: number]: T[] }
 
-    constructor(public size: number, private positionStrategy: IPositionStrategy, private _contextProvider: IContextProvider) {
+    constructor(public size: number, private positionStrategy: IPositionStrategy, private _identibles: IIdentible[], private _cellBuilder: CellBuilder<T>) {
         this.init();
     }
 
     private init() {
+        this.elementsMap = {}
+        this._identibles.forEach((identible: IIdentible) => this.elementsMap[identible.id] = [])
+
         this.cells = [];
         for (let i = 0; i < this.size; i++) {
             this.cells[i] = [];
             for (let j = 0; j < this.size; j++) {
                 const position = new PositionDefinition(j, i, 1)
-                const cell = CellBuilder.build(this.positionStrategy, position);
+                const cell = this._cellBuilder.build(this.positionStrategy, position);
+
+                if (cell.element && this._identibles.findIndex(cell.element.id) >= 0 && this.elementsMap[cell.element.id]) {
+                    this.elementsMap[cell.element.id].push(cell.element);
+                }
 
                 this.cells[i].push(cell);
             }
         }
+    }
+
+    remove(moveDescriptor: MoveDescriptor) {
+        const elementMap = this.elementsMap[moveDescriptor.playerId];
+        if (!elementMap) {
+            throw new Error('id dous not exist');
+        }
+
+        elementMap.findIndex(element => element.id === '');
     }
 
     move(moveDescriptor: MoveDescriptor): Cell<T>[] {
@@ -36,32 +54,13 @@ export class Board<T> {
                 changedCells.push(this.remove(moveDescriptor.from));
                 changedCells.push(this.add(moveDescriptor.to));
                 break;
-            case MoveType.Eat:
+            case MoveType.Atack:
                 changedCells.push(this.remove(moveDescriptor.from));
                 changedCells.push(this.add(moveDescriptor.to));
                 break;
         }
 
         return changedCells;
-    }
-
-    private eatMove(from: PositionDefinition, to: PositionDefinition) {
-
-    }
-
-    private add(pos: PositionDefinition) {
-        const cell = this.getCellByPosition(pos);
-        cell.element.state = CheckerState.Game;
-        cell.element.id = this._contextProvider.current;
-
-        return cell;
-    }
-
-    private remove(pos: PositionDefinition) {
-        const cell = this.getCellByPosition(pos);
-        cell.element.state = CheckerState.Dead;
-
-        return cell;
     }
 
     public getCellByPosition(pos: PositionDefinition): Cell<T> {

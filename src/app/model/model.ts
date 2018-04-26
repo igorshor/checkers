@@ -16,6 +16,7 @@ import { Checker } from "./models/board/checker";
 import { AiMoveManager } from "./models/move/ai/ai-move-manager";
 import { IPlayersManager } from "./models/interfaces/i-players-maneger";
 import { PlayersManager } from "./models/game/players-manager";
+import { CheckrsCellBuilder } from "./models/builders/checkers-cell-builder";
 
 export class Model {
     private _board: Board<Checker>;
@@ -57,8 +58,6 @@ export class Model {
     }
 
     private setBoard(size: number) {
-        this._board = new Board<Checker>(size, new CheckersPositionStrategy(size, this._playersManager), new ContextProvider(this._gameState));
+        this._board = new Board<Checker>(size, new CheckersPositionStrategy(size, this._playersManager), this._playersManager.players, new CheckrsCellBuilder());
     }
-
-
 }

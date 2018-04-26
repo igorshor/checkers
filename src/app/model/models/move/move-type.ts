@@ -1,6 +1,6 @@
 export enum MoveType{
     Move,
-    Eat,
+    Atack,
     KingMove,
     Virtual
 }

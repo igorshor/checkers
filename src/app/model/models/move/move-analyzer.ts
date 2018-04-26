@@ -26,14 +26,14 @@ export class MoveAnalyzer implements IMoveAnalyzer {
         if (distance === 1) {
             return MoveType.Move;
         } else {
-            return MoveType.Eat;
+            return MoveType.Atack;
         }
     }
 
     getPosibleMoves(select: SelectDescriptor):MoveDescriptor[]{
         const fromChecker = this._board.getCellByPosition(select.from).element
         const moves:MoveDescriptor[] = [];
-        if(fromChecker.state === CheckerState.King){
+        if(fromChecker.state === CheckerState.Super){
             //Todo
         } else {
             //Todo

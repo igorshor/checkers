@@ -3,13 +3,14 @@ import { Player } from './player';
 import { Cell } from '../board/cell';
 import { GameStage } from './game-stage';
 import { SelectDescriptor } from '../move/select-descriptor';
+import { Checker } from '../board/checker';
 
 export class GameStateManager {
     private _playerChanged = new Subject<Player>();
     private _gameState = new Subject<GameStage>();
-    private _cellChanged = new Subject<Cell>();
-    private _cellsChanged = new Subject<Cell[]>();
-    private _boardChanged = new Subject<Cell[][]>();
+    private _cellChanged = new Subject<Cell<Checker>>();
+    private _cellsChanged = new Subject<Cell<Checker>[]>();
+    private _boardChanged = new Subject<Cell<Checker>[][]>();
     private _selectionChanged = new Subject<SelectDescriptor>();
     
     public updateSelection(value:SelectDescriptor){
@@ -36,28 +37,28 @@ export class GameStateManager {
         return this._gameState.asObservable();
     }
 
-    public updateCell(value:Cell){
+    public updateCell(value:Cell<Checker>){
         this._cellChanged.next(value);
     }
 
-    get cell():Observable<Cell>{
+    get cell():Observable<Cell<Checker>>{
         return this._cellChanged.asObservable();
     }
 
-    public updateCells(value:Cell[]){
+    public updateCells(value:Cell<Checker>[]){
         this._cellsChanged.next(value);
     }
 
-    get cells():Observable<Cell[]>{
+    get cells():Observable<Cell<Checker>[]>{
         return this._cellsChanged.asObservable();
     }
 
 
-    public updateBoard(value:Cell[][]){
+    public updateBoard(value:Cell<Checker>[][]){
         this._boardChanged.next(value);
     }
 
-    get board():Observable<Cell[][]>{
+    get board():Observable<Cell<Checker>[][]>{
         return this._boardChanged.asObservable();
     }
 }

@@ -2,14 +2,16 @@ import { PositionDefinition } from '../board/position';
 import { Cell } from '../board/cell';
 import { Checker } from '../board/checker';
 import { IPositionStrategy } from '../interfaces/i-position-strategy';
+import { IIdentible } from '../interfaces/i-Identible';
 
-export class CellBuilder {
-    public static build(positionStrategy: IPositionStrategy, position: PositionDefinition): Cell {
+export abstract class CellBuilder<T extends IIdentible> {
+    abstract createElement(id: any):T;
+    public build(positionStrategy: IPositionStrategy, position: PositionDefinition): Cell<T> {
         const type = positionStrategy.getCellTypeByPosition(position);
         const playerId = positionStrategy.getPlayerByPosition(type, position);
         const include = positionStrategy.includeInGame(type);
-        const checker = include ? new Checker(playerId) : new Checker(null);
-        const cell = new Cell(position, type, checker);
+        const element = this.createElement(playerId);
+        const cell = new Cell<T>(position, type, element);
 
         return cell;
     }
