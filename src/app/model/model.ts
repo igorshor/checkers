@@ -25,7 +25,7 @@ export class Model {
     private _computerMoveStrategy: IMoveStrategy;
     private _gameState: GameStateManager<Checker>;
     private _playersManager: PlayersManager<Checker>;
-    private _gameManager: GameManager;
+    private _gameManager: GameManager<Checker>;
     private _moveManager: MoveManager<Checker>;
 
     constructor(configurations: Configurations) {

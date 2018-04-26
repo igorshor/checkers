@@ -1,15 +1,15 @@
-import { GameStateManager } from "./game-state";
-import { IMoveStrategy } from "../interfaces/i-move-strategy";
-import { IPlayersManager } from "../interfaces/i-players-maneger";
-import { PositionDefinition } from "../board/position";
+import { Player } from "../player/player";
 import { GameStage } from "./game-stage";
-import { Player } from "./player";
+import { GameStateManager } from "./game-state";
 import { MoveManager } from "../move/move-manager";
+import { IIdentible } from "../interfaces/i-Identible";
+import { PlayersManager } from "../player/players-manager";
 
-export class GameManager {
+
+export class GameManager<T extends IIdentible> {
     private _currentPlayer: Player;
     private _gameStage: GameStage;
-    constructor(private _state: GameStateManager, private _playersManager: IPlayersManager, private _moveManager: MoveManager) {
+    constructor(private _state: GameStateManager<T>, private _playersManager: PlayersManager<T>, private _moveManager: MoveManager<T>) {
         this._state.gameStage.subscribe(stage => this._gameStage = stage);
     }
 
