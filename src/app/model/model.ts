@@ -1,56 +1,66 @@
-import { Board } from "./models/board/board";
-import { CheckersPositionStrategy } from "./models/board/checkers-position-strategy";
-import { Player, AiPlayer } from "./models/game/player";
+import { Board } from "./common/board/board";
+import { Checker } from "./checkers/board/checker";
+import { IMoveStrategy } from "./common/interfaces/i-move-strategy";
+import { GameStateManager } from "./common/game/game-state";
+import { PlayersManager } from "./common/player/players-manager";
+import { GameManager } from "./common/game/game-manager";
+import { MoveManager } from "./common/move/move-manager";
 import { Configurations } from "./api/models/game-configurations";
-import { IMoveStrategy } from "./models/interfaces/i-move-strategy";
-import { MoveValidator } from "./models/move/move-validator";
-import { BoundariesValidator } from "./models/move/move-validators/boundaries-validator";
-import { DirectionValidator } from "./models/move/move-validators/direction-validator";
-import { MoveManager } from "./models/move/move-manager";
-import { GameStateManager } from "./models/game/game-state";
-import { DistanceValidator } from "./models/move/move-validators/distance-validator";
-import { ContextProvider } from "./models/helpers/context-provier";
-import { MoveAnalyzer } from "./models/move/move-analyzer";
-import { DirectionsDefinition } from "./models/move/move-direction";
-import { Checker } from "./models/board/checker";
-import { AiMoveManager } from "./models/move/ai/ai-move-manager";
-import { IPlayersManager } from "./models/interfaces/i-players-maneger";
-import { PlayersManager } from "./models/game/players-manager";
-import { CheckrsCellBuilder } from "./models/builders/checkers-cell-builder";
+import { MoveValidator } from "./common/descriptor/move-validator";
+import { BoundariesValidator } from "./common/move/move-validators/boundaries-validator";
+import { DirectionValidator } from "./checkers/move/move-validators/direction-validator";
+import { DistanceValidator } from "./checkers/move/move-validators/distance-validator";
+import { MoveAnalyzer } from "./checkers/move/move-analyzer";
+import { PlayerMoveStrategy } from "./checkers/move/player/player-move-strategy";
+import { AiMoveStrategy } from "./checkers/move/ai/ai-move-strategy";
+import { DirectionsDefinition } from "./common/move/move-direction";
+import { Player, AiPlayer } from "./common/player/player";
+import { CheckersPositionStrategy } from "./checkers/board/checkers-position-strategy";
+import { CheckrsCellBuilder } from "./common/builders/checkers-cell-builder";
+
 
 export class Model {
     private _board: Board<Checker>;
-    private _playerMoveManeger: IMoveStrategy;
-    private _computerMoveManeger: IMoveStrategy;
-    private _gameState: GameStateManager;
-    private _playersManager: IPlayersManager;
+    private _playerMoveStrategy: IMoveStrategy;
+    private _computerMoveStrategy: IMoveStrategy;
+    private _gameState: GameStateManager<Checker>;
+    private _playersManager: PlayersManager<Checker>;
+    private _gameManager: GameManager;
+    private _moveManager: MoveManager<Checker>;
 
     constructor(configurations: Configurations) {
         this._gameState = new GameStateManager();
 
         this.setMoveComponents();
+        this.setGameComponents();
         this.setPlayers(configurations);
         this.setBoard(configurations.size);
     }
 
+    private setGameComponents() {
+        this._gameManager = new GameManager(this._gameState, this._playersManager, this._moveManager);
+    }
+
     private setMoveComponents() {
         this._playersManager = new PlayersManager(this._gameState);
-        const moveValidator = new MoveValidator<Checker>()
+        const moveValidator = new MoveValidator<Checker>();
 
         moveValidator.append(new BoundariesValidator());
         moveValidator.append(new DirectionValidator());
         moveValidator.append(new DistanceValidator());
 
-        this._playerMoveManeger = new MoveManager(this._board, this._gameState, moveValidator, new MoveAnalyzer(this._board), this._playersManager);
-        this._computerMoveManeger = new AiMoveManager(this._board, this._gameState, moveValidator, new MoveAnalyzer(this._board), this._playersManager);
+        const moveAnalizer = new MoveAnalyzer(this._board);
+        this._playerMoveStrategy = new PlayerMoveStrategy(this._board, this._gameState, moveValidator, moveAnalizer, this._playersManager);
+        this._computerMoveStrategy = new AiMoveStrategy(this._board, this._gameState, moveValidator, moveAnalizer, this._playersManager);
+        this._moveManager = new MoveManager(this._gameState, this._playersManager);
     }
 
     private setPlayers(configurations: Configurations) {
         const players = [];
-        players.push(new Player(configurations.players[0], 1, 1, DirectionsDefinition.Up, this._playerMoveManeger));
+        players.push(new Player(configurations.players[0], 1, 1, DirectionsDefinition.Up, this._playerMoveStrategy));
         players.push(configurations.computer ?
-            new AiPlayer('computer', 2, configurations.size, DirectionsDefinition.Down, this._computerMoveManeger) :
-            new Player(configurations.players[1], 2, configurations.size, DirectionsDefinition.Down, this._playerMoveManeger));
+            new AiPlayer('computer', 2, configurations.size, DirectionsDefinition.Down, this._computerMoveStrategy) :
+            new Player(configurations.players[1], 2, configurations.size, DirectionsDefinition.Down, this._playerMoveStrategy));
 
         this._playersManager.addPlayer(players[0]);
         this._playersManager.addPlayer(players[1]);

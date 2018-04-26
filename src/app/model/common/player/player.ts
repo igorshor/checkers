@@ -1,0 +1,20 @@
+import { DirectionsDefinition } from "../move/move-direction";
+import { IMoveStrategy } from "../interfaces/i-move-strategy";
+import { PositionDefinition } from "../board/position";
+import { IIdentible } from "../interfaces/i-Identible";
+
+export class Player implements IIdentible {
+    constructor(public name: string, public id: any, public base: number, public direction: DirectionsDefinition, private _moveManager: IMoveStrategy) {
+
+    }
+
+    async play() {
+        return this._moveManager.play();
+    }
+}
+
+export class AiPlayer extends Player {
+    constructor(name: string, id: any, base: number, direction: DirectionsDefinition, _moveManager: IMoveStrategy) {
+        super(name, id, base, direction, _moveManager);
+    }
+}
