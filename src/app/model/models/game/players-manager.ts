@@ -31,8 +31,10 @@ export class PlayersManager implements IPlayersManager {
         return this._players.findIndex(player => player.id === id) >= 0;
     }
 
-    switch(): void {
-        this._gameState.updateCurrentPlayer(this.getOtherPlayer());
+    switch(): Player {
+        const otherPlayer = this.getOtherPlayer();
+        this._gameState.updateCurrentPlayer(otherPlayer);
+        return otherPlayer;
     }
 
     private getOtherPlayer(): Player {

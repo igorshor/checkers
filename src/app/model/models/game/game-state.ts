@@ -1,4 +1,4 @@
-import { Observable, Subject } from '@reactivex/rxjs';
+import { Observable, Subject, BehaviorSubject } from '@reactivex/rxjs';
 import { Player } from './player';
 import { Cell } from '../board/cell';
 import { GameStage } from './game-stage';
@@ -7,7 +7,7 @@ import { Checker } from '../board/checker';
 
 export class GameStateManager {
     private _playerChanged = new Subject<Player>();
-    private _gameState = new Subject<GameStage>();
+    private _gameState = new BehaviorSubject<GameStage>(GameStage.Init);
     private _cellChanged = new Subject<Cell<Checker>>();
     private _cellsChanged = new Subject<Cell<Checker>[]>();
     private _boardChanged = new Subject<Cell<Checker>[][]>();
@@ -33,7 +33,7 @@ export class GameStateManager {
         this._gameState.next(value);
     }
 
-    get gameState(): Observable<GameStage> {
+    get gameStage(): Observable<GameStage> {
         return this._gameState.asObservable();
     }
 

@@ -10,6 +10,9 @@ import { SelectDescriptor } from "./select-descriptor";
 import { CellState } from "../board/cell-state";
 import { IPlayersManager } from "../interfaces/i-players-maneger";
 import { Checker } from "../board/checker";
+import { MoveType } from "./move-type";
+import { Cell } from "../board/cell";
+import { CellContext } from "../board/cell-context";
 
 export class MoveManager implements IMoveStrategy {
     private _selection: SelectDescriptor;
@@ -51,7 +54,7 @@ export class MoveManager implements IMoveStrategy {
 
         const posibleDestinations = this.select(selection.from);
         const posibleMovesDestinations = posibleDestinations
-            .map(posibleDestination => new MoveDescriptor(selection.from, posibleDestination, this._playersManager.current.id))
+            .map(posibleDestination => new MoveDescriptor(selection.from, posibleDestination, this._playersManager.current.id, selection.elementId))
             .filter(move => this._moveValidator.validate(move, this._board))
             .map(move => move.to);
 
@@ -78,25 +81,58 @@ export class MoveManager implements IMoveStrategy {
     }
 
     public select(from: PositionDefinition): PositionDefinition[] {
-        const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, this._playersManager.current.direction);
+        const cell = this._board.getCellByPosition(from);
+        if (!cell.element || !cell.element.id) {
+            throw new Error('no id');
+        }
+        const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, this._playersManager.current.direction, cell.element.id);
         const moves = this._moveAnalizer.getPosibleMoves(selectDescriptor);
 
         return moves.map(move => new PositionDefinition(move.to.x, move.to.y, 0));
     }
 
     public move(from: PositionDefinition, to: PositionDefinition): boolean {
-        const moveDescriptor = new MoveDescriptor(from, to, this._playersManager.current.id);
+        const cell = this._board.getCellByPosition(from);
+        if (!cell.element || !cell.element.id) {
+            throw new Error('no id');
+        }
+
+        const moveDescriptor = new MoveDescriptor(from, to, this._playersManager.current.id, cell.element.id);
         const validMove = this._moveValidator.validate(moveDescriptor, this._board);
 
         if (validMove) {
             const moveType = this._moveAnalizer.getMoveType(from, to);
             moveDescriptor.type = moveType;
-            this._board.move(new MoveDescriptor(from, to, moveType));
+            this.doLogicalMove(moveDescriptor);
             this.onUnSelect(this._selection);
 
             return true;
         }
 
         return false;
+    }
+
+    private doLogicalMove(moveDescriptor: MoveDescriptor) {
+        const cellsToUpdate: Cell<Checker>[] = [];
+        const from = new CellContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
+        const to = new CellContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
+
+        switch (moveDescriptor.type) {
+            case MoveType.Move:
+                cellsToUpdate.push(this._board.remove(from));
+                cellsToUpdate.push(this._board.add(to));
+                break;
+            case MoveType.Atack:
+                const attackedPosition = this._moveAnalizer.getNextPositionByDirection(moveDescriptor);
+                const cell = this._board.getCellByPosition(attackedPosition);
+                const attackedCellContext = new CellContext(moveDescriptor.from, this._playersManager.opponent.id, cell.element.id);
+
+                cellsToUpdate.push(this._board.remove(from));
+                cellsToUpdate.push(this._board.remove(attackedCellContext, true));
+                cellsToUpdate.push(this._board.add(to));
+                break;
+        }
+
+        this._state.updateCells(cellsToUpdate);
     }
 }

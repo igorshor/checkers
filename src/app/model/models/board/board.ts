@@ -1,5 +1,5 @@
 import { Cell } from "./cell";
-import { PositionDefinition } from "./position";
+import { PositionDefinition, IPosition } from "./position";
 import { Checker } from "./checker";
 import { PositionType } from "./position-type";
 import { CellBuilder } from "../builders/cell-builder";
@@ -9,24 +9,25 @@ import { CheckerState } from "./checker-state";
 import { IContextProvider } from "../interfaces/i-context-provier";
 import { MoveDescriptor } from "../move/move-descriptor";
 import { IIdentible } from "../interfaces/i-Identible";
+import { CellContext } from "./cell-context";
 
 export class Board<T extends IIdentible> {
     public cells: Cell<T>[][];
-    public elementsMap: { [id: number]: T[] }
+    public elementsMap: { [id: number]: T[] };
 
     constructor(public size: number, private positionStrategy: IPositionStrategy, private _identibles: IIdentible[], private _cellBuilder: CellBuilder<T>) {
         this.init();
     }
 
     private init() {
-        this.elementsMap = {}
-        this._identibles.forEach((identible: IIdentible) => this.elementsMap[identible.id] = [])
+        this.elementsMap = {};
+        this._identibles.forEach((identible: IIdentible) => this.elementsMap[identible.id] = []);
 
         this.cells = [];
         for (let i = 0; i < this.size; i++) {
             this.cells[i] = [];
             for (let j = 0; j < this.size; j++) {
-                const position = new PositionDefinition(j, i, 1)
+                const position = new PositionDefinition(j, i, 1);
                 const cell = this._cellBuilder.build(this.positionStrategy, position);
 
                 if (cell.element && this._identibles.findIndex(cell.element.id) >= 0 && this.elementsMap[cell.element.id]) {
@@ -38,32 +39,57 @@ export class Board<T extends IIdentible> {
         }
     }
 
-    remove(moveDescriptor: MoveDescriptor) {
-        const elementMap = this.elementsMap[moveDescriptor.playerId];
-        if (!elementMap) {
-            throw new Error('id dous not exist');
+    remove(cellContext: CellContext, removeFromBoard = false): Cell<T> {
+        const elements = this.getEementsById(cellContext.playerId);
+        const index = this.getElementIndex(cellContext.playerId, cellContext.elementId);
+        const cell = this.getCellByPosition(cellContext.position);
+
+        if (removeFromBoard) {
+            elements.splice(index, 1);
         }
 
-        elementMap.findIndex(element => element.id === '');
+        cell.element = undefined;
+
+        return cell;
     }
 
-    move(moveDescriptor: MoveDescriptor): Cell<T>[] {
-        const changedCells: Cell<T>[] = []
-        switch (moveDescriptor.type) {
-            case MoveType.Move:
-                changedCells.push(this.remove(moveDescriptor.from));
-                changedCells.push(this.add(moveDescriptor.to));
-                break;
-            case MoveType.Atack:
-                changedCells.push(this.remove(moveDescriptor.from));
-                changedCells.push(this.add(moveDescriptor.to));
-                break;
+    add(cellContext: CellContext): Cell<T> {
+        const elements = this.getEementsById(cellContext.playerId);
+        const index = this.getElementIndex(cellContext.playerId, cellContext.elementId);
+        const element = elements[index];
+        const cell = this.getCellByPosition(cellContext.position);
+
+        if (cell.element) {
+            throw new Error('cell allready have an element');
         }
 
-        return changedCells;
+        cell.element = element;
+
+        return cell;
     }
 
-    public getCellByPosition(pos: PositionDefinition): Cell<T> {
+    private getElementIndex(id: number, elementId: number): number {
+        const elements = this.elementsMap[id];
+        const index = elements.findIndex(element => element.id === elementId);
+
+        if (index < 0) {
+            throw new Error('element id does not exist');
+        }
+
+        return index;
+    }
+
+    private getEementsById(id: number): T[] {
+        const elements = this.elementsMap[id];
+
+        if (!elements) {
+            throw new Error('id does not exist');
+        }
+
+        return elements;
+    }
+
+    public getCellByPosition(pos: IPosition): Cell<T> {
         return this.cells[pos.y][pos.x];
     }
 
@@ -73,6 +99,6 @@ export class Board<T extends IIdentible> {
             .reduce((accumulator: Cell<T>[], currentValue: Cell<T>[]) => {
                 accumulator.push(...currentValue);
                 return accumulator;
-            })
+            });
     }
 }
