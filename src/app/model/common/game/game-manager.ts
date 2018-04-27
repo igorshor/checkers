@@ -7,7 +7,7 @@ import { PlayersManager } from "../player/players-manager";
 
 
 export class GameManager<T extends IIdentible> {
-    private _currentPlayer: Player;
+    private _currentPlayer: Player<T>;
     private _gameStage: GameStage;
     constructor(private _state: GameStateManager<T>, private _playersManager: PlayersManager<T>, private _moveManager: MoveManager<T>) {
         this._state.gameStage.subscribe(stage => this._gameStage = stage);

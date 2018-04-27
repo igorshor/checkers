@@ -1,6 +1,6 @@
-import { MoveDescriptor } from "../move/move-descriptor";
 import { Board } from "../board/board";
 import { IIdentible } from "./i-Identible";
+import { MoveDescriptor } from "../descriptor/move-descriptor";
 
 export interface IMoveValidator<T extends IIdentible> {
     validate(moveDescriptor:MoveDescriptor, board: Board<T>): boolean

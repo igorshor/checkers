@@ -14,31 +14,30 @@ import { MoveType } from "../../../common/move/move-type";
 import { PositionDefinition } from "../../../common/board/position";
 import { CellState } from "../../../common/board/cell-state";
 
-
 export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
     private _selection: SelectDescriptor;
     private _selectionSubscription: Subscription;
-    private _playDeferredPromise: JQuery.Deferred<Cell<Checker>[]>;
-    constructor(private _board: Board<Checker>,
-        private _state: GameStateManager<Checker>,
-        private _moveValidator: IMoveValidator<Checker>,
-        private _moveAnalizer: IMoveAnalyzer,
-        private _playersManager: PlayersManager<Checker>) {
+    protected _playDeferredPromise: JQuery.Deferred<Cell<Checker>[]>;
+    constructor(protected _board: Board<Checker>,
+        protected _state: GameStateManager<Checker>,
+        protected _moveValidator: IMoveValidator<Checker>,
+        protected _moveAnalizer: IMoveAnalyzer<Checker>,
+        protected _playersManager: PlayersManager<Checker>) {
     }
 
-    async play(): Promise<Cell<Checker>[]> {
+    public async play(): Promise<Cell<Checker>[]> {
         this._playDeferredPromise = jQuery.Deferred<Cell<Checker>[]>();
         this._selectionSubscription = this._state.selection.subscribe(this.handleSelect);
 
         return this._playDeferredPromise.promise();
     }
 
-    resolveMove(): void {
+    private resolveMove(): void {
         this._selectionSubscription.unsubscribe();
         this._playDeferredPromise.resolve();
     }
 
-    protected handleSelect(selection: SelectDescriptor): void {
+    private handleSelect(selection: SelectDescriptor): void {
         if (!this._selection) {
             this.onSelect(selection);
         } else {
@@ -58,7 +57,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         }
     }
 
-    protected onSelect(selection: SelectDescriptor) {
+    protected onSelect(selection: SelectDescriptor, updatePrediction = true): Cell<Checker>[] {
         const cell = this._board.getCellByPosition(selection.from);
 
         if (!cell.element || cell.element.id !== this._playersManager.current.id) {
@@ -76,12 +75,19 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         if (posibleMovesDestinations.length) {
             this._selection.posibleMoves = posibleMovesDestinations;
             const cells = posibleMovesDestinations.map(pos => this._board.getCellByPosition(pos));
+
             cells.forEach(cell => cell.state = CellState.Prediction);
-            this._state.updateCells([cell, ...cells]);
+            if (updatePrediction) {
+                this._state.updateCells([cell, ...cells]);
+            }
+
+            return cells;
         }
+
+        return [];
     }
 
-    protected onReSelect(selection: SelectDescriptor) {
+    private onReSelect(selection: SelectDescriptor) {
         this.onUnSelect(selection);
         this.onSelect(selection);
     }
@@ -93,7 +99,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         this._state.updateCells(cells);
     }
 
-    public select(from: PositionDefinition): PositionDefinition[] {
+    protected select(from: PositionDefinition): PositionDefinition[] {
         const cell = this._board.getCellByPosition(from);
         if (!cell.element || !cell.element.id) {
             throw new Error('no id');
@@ -101,7 +107,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, this._playersManager.current.direction, cell.element.id);
         const moves = this._moveAnalizer.getPosibleMoves(selectDescriptor);
 
-        return moves.map(move => new PositionDefinition(move.to.x, move.to.y, 0));
+        return moves.map(move => new PositionDefinition(move.to.x, move.to.y));
     }
 
     public move(from: PositionDefinition, to: PositionDefinition): Cell<Checker>[] {

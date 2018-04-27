@@ -6,7 +6,7 @@ import { Player } from '../player/player';
 import { SelectDescriptor } from '../descriptor/select-descriptor';
 
 export class GameStateManager<T extends IIdentible> {
-    private _playerChanged = new Subject<Player>();
+    private _playerChanged = new Subject<Player<T>>();
     private _gameState = new BehaviorSubject<GameStage>(GameStage.Init);
     private _cellChanged = new Subject<Cell<T>>();
     private _cellsChanged = new Subject<Cell<T>[]>();
@@ -21,11 +21,11 @@ export class GameStateManager<T extends IIdentible> {
         return this._selectionChanged.asObservable();
     }
 
-    public updateCurrentPlayer(value: Player) {
+    public updateCurrentPlayer(value: Player<T>) {
         this._playerChanged.next(value);
     }
 
-    get player(): Observable<Player> {
+    get player(): Observable<Player<T>> {
         return this._playerChanged.asObservable();
     }
 

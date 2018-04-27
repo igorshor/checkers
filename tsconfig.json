@@ -10,14 +10,15 @@
             "./node_modules/@types"
         ],
         "lib": [
-            "es2015"
+            "es2015",
+            "dom"
         ]
     },
     "include": [
-        "src/**/*"
+        "src/**/*.ts"
     ],
     "exclude": [
-        "node_modules",
+        "./node_modules",
         "**/*.spec.ts"
     ]
 }

@@ -8,12 +8,12 @@ import { PositionType } from "../../common/board/position-type";
 
 interface IValidPlayerPosition {
     valid: boolean;
-    player: Player;
+    player: Player<Checker>;
 }
 
 export class CheckersPositionStrategy implements IPositionStrategy {
     private _validRows: { [key: number]: IValidPlayerPosition };
-    private _players: Player[];
+    private _players: Player<Checker>[];
 
     constructor(private _size: number, _playersManager: PlayersManager<Checker>) {
         this._players = _playersManager.players;

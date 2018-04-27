@@ -3,7 +3,7 @@ const { CheckerPlugin } = require('awesome-typescript-loader');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
-    mode: "production", // "production" | "development" | "none"
+    mode: "development", // "production" | "development" | "none"
     entry: "./src/index.ts", // string | object | array
     output: {
         path: path.resolve(__dirname, "dist"),
@@ -56,7 +56,7 @@ module.exports = {
         }
     },
     devServer: {
-        contentBase: path.join(__dirname, "dist"),
+        contentBase: path.join(__dirname, "src"),
         port: 9000,
         progress: true
     },

@@ -14,7 +14,7 @@ interface IFromTo<T> {
     to: T;
 }
 
-export class MoveAnalyzer implements IMoveAnalyzer {
+export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
     private static readonly singleEatRecDistance = 2;
 
     constructor(private _board: Board<Checker>) {
@@ -31,8 +31,9 @@ export class MoveAnalyzer implements IMoveAnalyzer {
         }
     }
 
-    getPosibleMoves(select: SelectDescriptor): MoveDescriptor[] {
-        const fromChecker = this._board.getCellByPosition(select.from).element;
+    getPosibleMoves(select: SelectDescriptor, board?: Board<Checker>): MoveDescriptor[] {
+        const boardToAnalize = board || this._board;
+        const fromChecker = boardToAnalize.getCellByPosition(select.from).element;
         const moves: MoveDescriptor[] = [];
         if (fromChecker.state === CheckerState.Super) {
             // Todo
@@ -65,7 +66,7 @@ export class MoveAnalyzer implements IMoveAnalyzer {
         return pos;
     }
 
-    private getDistance(from: PositionDefinition, to: PositionDefinition) {
+    private getDistance(from: PositionDefinition, to: PositionDefinition): number {
         return Math.abs(from.y - to.y);
     }
 }

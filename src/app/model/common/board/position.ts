@@ -17,7 +17,7 @@ export class PositionDefinition implements IPosition {
         return this._delta;
     }
 
-    constructor(private _x: number, private _y: number, private _delta: number) {
+    constructor(private _x: number, private _y: number, private _delta = 0) {
 
     }
 }

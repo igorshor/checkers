@@ -31,7 +31,7 @@ export class Model {
     constructor(configurations: Configurations) {
         this._gameState = new GameStateManager();
 
-        this.setMoveComponents();
+        this.setMoveComponents(configurations);
         this.setGameComponents();
         this.setPlayers(configurations);
         this.setBoard(configurations.size);
@@ -41,7 +41,7 @@ export class Model {
         this._gameManager = new GameManager(this._gameState, this._playersManager, this._moveManager);
     }
 
-    private setMoveComponents() {
+    private setMoveComponents(configurations: Configurations) {
         this._playersManager = new PlayersManager(this._gameState);
         const moveValidator = new MoveValidator<Checker>();
 
@@ -51,7 +51,7 @@ export class Model {
 
         const moveAnalizer = new MoveAnalyzer(this._board);
         this._playerMoveStrategy = new PlayerMoveStrategy(this._board, this._gameState, moveValidator, moveAnalizer, this._playersManager);
-        this._computerMoveStrategy = new AiMoveStrategy(this._board, this._gameState, moveValidator, moveAnalizer, this._playersManager);
+        this._computerMoveStrategy = new AiMoveStrategy(this._board, this._gameState, moveValidator, moveAnalizer, this._playersManager, configurations.level);
         this._moveManager = new MoveManager(this._gameState, this._playersManager);
     }
 

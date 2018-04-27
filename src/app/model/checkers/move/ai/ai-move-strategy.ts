@@ -10,20 +10,36 @@ import { PlayersManager } from "../../../common/player/players-manager";
 import { PositionDefinition } from "../../../common/board/position";
 import { Cell } from "../../../common/board/cell";
 import { ComputerLevel } from "../../../api/models/computer-level";
+import { PlayerMoveStrategy } from "../player/player-move-strategy";
 
-export class AiMoveStrategy implements IMoveStrategy<Checker> {
-    private _deep: number;
-    constructor(private _board: Board<Checker>,
-        private _state: GameStateManager<Checker>,
-        private _moveValidator: IMoveValidator<Checker>,
-        private _moveAnalizer: IMoveAnalyzer,
-        private _playersManager: PlayersManager<Checker>,
+export class AiMoveStrategy extends PlayerMoveStrategy {
+    private _depth: number;
+    constructor(_board: Board<Checker>,
+        _state: GameStateManager<Checker>,
+        _moveValidator: IMoveValidator<Checker>,
+        _moveAnalizer: IMoveAnalyzer<Checker>,
+        _playersManager: PlayersManager<Checker>,
         level: ComputerLevel) {
-        this._deep = level;
+        super(_board, _state, _moveValidator, _moveAnalizer, _playersManager);
+        this._depth = level;
     }
 
     play(): Promise<Cell<Checker>[]> {
-        throw new Error("Method not implemented.");
+        this._playDeferredPromise = jQuery.Deferred<Cell<Checker>[]>();
+        const testBoard = this._board.immutableBoard;
+        for (let moveDepth = 0; moveDepth < this._depth; moveDepth++) {
+            const playerCells = testBoard.select(cell => cell.element && cell.element.id === this._playersManager.current.id);
+
+            playerCells.forEach(cell => {
+                const select = new SelectDescriptor(cell.position, this._playersManager.current.id, cell.element.id, this._playersManager.current.direction);
+                const posibleMoves = this.onSelect(select, false);
+            });
+
+
+
+        }
+
+        return this._playDeferredPromise.promise();
     }
     move(from: PositionDefinition, to: PositionDefinition): Cell<Checker>[] {
         throw new Error("Method not implemented.");

@@ -6,23 +6,49 @@ import { CellContext } from "./cell-context";
 import { CellBuilder } from "../builders/cell-builder";
 
 export class Board<T extends IIdentible> {
-    public cells: Cell<T>[][];
+    private _cells: Cell<T>[][];
     public elementsMap: { [id: number]: T[] };
 
     constructor(public size: number,
         private positionStrategy: IPositionStrategy,
         private _identibles: IIdentible[],
         private _cellBuilder: CellBuilder<T>) {
-        this.init();
     }
 
-    private init() {
+    get cells(): Cell<T>[][] {
+        return this._cells;
+    }
+
+    get immutableCells(): Cell<T>[][] {
+        const cells: Cell<T>[][] = new Array(this.size).fill([]);
+        for (let i = 0; i < this.size; i++) {
+            for (let j = 0; j < this.size; j++) {
+                const cell = this.cells[i][j];
+                cells[i][j] = new Cell<T>(new PositionDefinition(cell.position.x, cell.position.y), cell.type, cell.element);
+                cells[i][j].state = cell.state;
+            }
+        }
+
+        return cells;
+    }
+
+    get immutableBoard(): Board<T> {
+        const board = new Board<T>(this.size, this.positionStrategy, this._identibles, this._cellBuilder);
+        board.restore(this.immutableCells);
+
+        return board;
+    }
+
+    restore(cells: Cell<T>[][]) {
+        this._cells = cells;
+    }
+
+    public init() {
         this.elementsMap = {};
         this._identibles.forEach((identible: IIdentible) => this.elementsMap[identible.id] = []);
 
-        this.cells = [];
+        this._cells = new Array(this.size).fill([]);
         for (let i = 0; i < this.size; i++) {
-            this.cells[i] = [];
             for (let j = 0; j < this.size; j++) {
                 const position = new PositionDefinition(j, i, 1);
                 const cell = this._cellBuilder.build(this.positionStrategy, position);
@@ -31,7 +57,7 @@ export class Board<T extends IIdentible> {
                     this.elementsMap[cell.element.id].push(cell.element);
                 }
 
-                this.cells[i].push(cell);
+                this._cells[i].push(cell);
             }
         }
     }
@@ -87,11 +113,11 @@ export class Board<T extends IIdentible> {
     }
 
     public getCellByPosition(pos: IPosition): Cell<T> {
-        return this.cells[pos.y][pos.x];
+        return this._cells[pos.y][pos.x];
     }
 
     public select(predicate: (element: Cell<T>) => boolean): Cell<T>[] {
-        return this.cells
+        return this._cells
             .map((row: Cell<T>[]) => row.filter(predicate))
             .reduce((accumulator: Cell<T>[], currentValue: Cell<T>[]) => {
                 accumulator.push(...currentValue);
