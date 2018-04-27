@@ -10,9 +10,9 @@ export class Board<T extends IIdentible> {
     public elementsMap: { [id: number]: T[] };
 
     constructor(public size: number,
-         private positionStrategy: IPositionStrategy,
-         private _identibles: IIdentible[],
-         private _cellBuilder: CellBuilder<T>) {
+        private positionStrategy: IPositionStrategy,
+        private _identibles: IIdentible[],
+        private _cellBuilder: CellBuilder<T>) {
         this.init();
     }
 
@@ -90,7 +90,7 @@ export class Board<T extends IIdentible> {
         return this.cells[pos.y][pos.x];
     }
 
-    public getCellsByPredicate(predicate: (element: Cell<T>) => boolean): Cell<T>[] {
+    public select(predicate: (element: Cell<T>) => boolean): Cell<T>[] {
         return this.cells
             .map((row: Cell<T>[]) => row.filter(predicate))
             .reduce((accumulator: Cell<T>[], currentValue: Cell<T>[]) => {

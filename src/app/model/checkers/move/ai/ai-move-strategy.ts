@@ -8,20 +8,27 @@ import { IMoveValidator } from "../../../common/interfaces/i-move-validator-inte
 import { IMoveAnalyzer } from "../../../common/interfaces/i-move-analyzer";
 import { PlayersManager } from "../../../common/player/players-manager";
 import { PositionDefinition } from "../../../common/board/position";
+import { Cell } from "../../../common/board/cell";
+import { ComputerLevel } from "../../../api/models/computer-level";
 
-export class AiMoveStrategy implements IMoveStrategy {
+export class AiMoveStrategy implements IMoveStrategy<Checker> {
+    private _deep: number;
     constructor(private _board: Board<Checker>,
         private _state: GameStateManager<Checker>,
         private _moveValidator: IMoveValidator<Checker>,
         private _moveAnalizer: IMoveAnalyzer,
-        private _playersManager: PlayersManager<Checker>) {
+        private _playersManager: PlayersManager<Checker>,
+        level: ComputerLevel) {
+        this._deep = level;
     }
 
-    select(from: PositionDefinition): PositionDefinition[] {
+    play(): Promise<Cell<Checker>[]> {
         throw new Error("Method not implemented.");
     }
-
-    move(from: PositionDefinition, to: PositionDefinition): boolean {
+    move(from: PositionDefinition, to: PositionDefinition): Cell<Checker>[] {
+        throw new Error("Method not implemented.");
+    }
+    select(from: PositionDefinition): PositionDefinition[] {
         throw new Error("Method not implemented.");
     }
 }

@@ -5,7 +5,7 @@ import { PlayersManager } from "../player/players-manager";
 import { IIdentible } from "../interfaces/i-Identible";
 
 export class MoveManager<T extends IIdentible> {
-    private _currentPlayer: Player;
+    private _currentPlayer: Player<T>;
     private _gameStage: GameStage;
 
     constructor(private _state: GameStateManager<T>, private _playersManager: PlayersManager<T>) {
@@ -15,7 +15,8 @@ export class MoveManager<T extends IIdentible> {
 
     async start(): Promise<void> {
         while (this._gameStage === GameStage.Game) {
-             await this._currentPlayer.play();
+             const changes = await this._currentPlayer.play();
+             this._state.updateCells(changes);
              this._currentPlayer = this._playersManager.switch();
         }
     }

@@ -15,20 +15,19 @@ import { PositionDefinition } from "../../../common/board/position";
 import { CellState } from "../../../common/board/cell-state";
 
 
-export class PlayerMoveStrategy implements IMoveStrategy {
+export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
     private _selection: SelectDescriptor;
     private _selectionSubscription: Subscription;
-    private _playDeferredPromise: JQuery.Deferred<void>;
+    private _playDeferredPromise: JQuery.Deferred<Cell<Checker>[]>;
     constructor(private _board: Board<Checker>,
         private _state: GameStateManager<Checker>,
         private _moveValidator: IMoveValidator<Checker>,
         private _moveAnalizer: IMoveAnalyzer,
         private _playersManager: PlayersManager<Checker>) {
-        this._state.selection.subscribe(this.handleSelect);
     }
 
-    async play(): Promise<void> {
-        this._playDeferredPromise = jQuery.Deferred<void>();
+    async play(): Promise<Cell<Checker>[]> {
+        this._playDeferredPromise = jQuery.Deferred<Cell<Checker>[]>();
         this._selectionSubscription = this._state.selection.subscribe(this.handleSelect);
 
         return this._playDeferredPromise.promise();
@@ -105,7 +104,7 @@ export class PlayerMoveStrategy implements IMoveStrategy {
         return moves.map(move => new PositionDefinition(move.to.x, move.to.y, 0));
     }
 
-    public move(from: PositionDefinition, to: PositionDefinition): boolean {
+    public move(from: PositionDefinition, to: PositionDefinition): Cell<Checker>[] {
         const cell = this._board.getCellByPosition(from);
         if (!cell.element || !cell.element.id) {
             throw new Error('no id');
@@ -114,21 +113,20 @@ export class PlayerMoveStrategy implements IMoveStrategy {
         const moveDescriptor = new MoveDescriptor(from, to, this._playersManager.current.id, cell.element.id);
         const validMove = this._moveValidator.validate(moveDescriptor, this._board);
 
-        if (validMove) {
-            const moveType = this._moveAnalizer.getMoveType(from, to);
-            moveDescriptor.type = moveType;
-            this.doLogicalMove(moveDescriptor);
-            this.onUnSelect(this._selection);
-            this.resolveMove();
-
-            return true;
+        if (!validMove) {
+            throw new Error('invalide move');
         }
 
-        this._playDeferredPromise.reject();
-        return false;
+        const moveType = this._moveAnalizer.getMoveType(from, to);
+        moveDescriptor.type = moveType;
+        const changes = this.doLogicalMove(moveDescriptor);
+        this.onUnSelect(this._selection);
+        this.resolveMove();
+
+        return changes;
     }
 
-    private doLogicalMove(moveDescriptor: MoveDescriptor) {
+    private doLogicalMove(moveDescriptor: MoveDescriptor): Cell<Checker>[] {
         const cellsToUpdate: Cell<Checker>[] = [];
         const from = new CellContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
         const to = new CellContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
@@ -149,6 +147,6 @@ export class PlayerMoveStrategy implements IMoveStrategy {
                 break;
         }
 
-        this._state.updateCells(cellsToUpdate);
+        return cellsToUpdate;
     }
 }

@@ -21,8 +21,8 @@ import { CheckrsCellBuilder } from "./common/builders/checkers-cell-builder";
 
 export class Model {
     private _board: Board<Checker>;
-    private _playerMoveStrategy: IMoveStrategy;
-    private _computerMoveStrategy: IMoveStrategy;
+    private _playerMoveStrategy: IMoveStrategy<Checker>;
+    private _computerMoveStrategy: IMoveStrategy<Checker>;
     private _gameState: GameStateManager<Checker>;
     private _playersManager: PlayersManager<Checker>;
     private _gameManager: GameManager<Checker>;
