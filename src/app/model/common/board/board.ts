@@ -113,7 +113,11 @@ export class Board<T extends IIdentible> {
     }
 
     public getCellByPosition(pos: IPosition): Cell<T> {
-        return this._cells[pos.y][pos.x];
+        try {
+            return this._cells[pos.y][pos.x];
+        } catch {
+            return undefined;
+        }
     }
 
     public select(predicate: (element: Cell<T>) => boolean): Cell<T>[] {

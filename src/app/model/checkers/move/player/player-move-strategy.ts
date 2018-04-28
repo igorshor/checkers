@@ -105,7 +105,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
             throw new Error('no id');
         }
         const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, this._playersManager.current.direction, cell.element.id);
-        const moves = this._moveAnalizer.getPosibleMoves(selectDescriptor);
+        const moves = this._moveAnalizer.getPossibleMoves(selectDescriptor, this._board);
 
         return moves.map(move => new PositionDefinition(move.to.x, move.to.y));
     }
@@ -143,7 +143,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
                 cellsToUpdate.push(this._board.add(to));
                 break;
             case MoveType.Atack:
-                const attackedPosition = this._moveAnalizer.getNextPositionByDirection(moveDescriptor);
+                const attackedPosition = this._moveAnalizer.getNextPositionByDirection(moveDescriptor.from, moveDescriptor.moveDirection, this._board);
                 const cell = this._board.getCellByPosition(attackedPosition);
                 const attackedCellContext = new CellContext(moveDescriptor.from, this._playersManager.opponent.id, cell.element.id);
 

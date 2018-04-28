@@ -7,17 +7,26 @@ import { Board } from "../../common/board/board";
 import { SelectDescriptor } from "../../common/descriptor/select-descriptor";
 import { MoveDescriptor } from "../../common/descriptor/move-descriptor";
 import { CheckerState } from "../board/checker-state";
-import { DirectionsDefinition } from "../../common/move/move-direction";
+import { DirectionsDefinition, MoveDirectionsDefinition } from "../../common/move/move-direction";
+import { PlayersManager } from "../../common/player/players-manager";
+import { IMoveValidator } from "../../common/interfaces/i-move-validator-interceptorr";
 
 interface IFromTo<T> {
     from: T;
     to: T;
 }
 
+enum SimulationResult {
+    TryNext,
+    Ok,
+    NotPossible
+}
+
 export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
     private static readonly singleEatRecDistance = 2;
 
-    constructor(private _board: Board<Checker>) {
+    constructor(private _playersManager: PlayersManager<Checker>,
+        private _moveValidator: IMoveValidator<Checker>) {
 
     }
 
@@ -31,36 +40,109 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         }
     }
 
-    getPosibleMoves(select: SelectDescriptor, board?: Board<Checker>): MoveDescriptor[] {
-        const boardToAnalize = board || this._board;
-        const fromChecker = boardToAnalize.getCellByPosition(select.from).element;
-        const moves: MoveDescriptor[] = [];
+    getPossibleMoves(select: SelectDescriptor, board: Board<Checker>): MoveDescriptor[] {
+        const fromChecker = board.getCellByPosition(select.from).element;
+        const unCheckedPosibleNextMoves = [];
         if (fromChecker.state === CheckerState.Super) {
-            // Todo
+            unCheckedPosibleNextMoves.push(...this.getSuperPossibleMoves(select, board));
         } else {
-            // Todo
+            unCheckedPosibleNextMoves.push(...this.getNormalPossibleMoves(select, board));
         }
+
+        const moves = unCheckedPosibleNextMoves
+            .map((pos: IPosition) => new MoveDescriptor(
+                select.from, new PositionDefinition(pos.x, pos.y),
+                this._playersManager.current.id,
+                select.elementId))
+            .filter(move => this._moveValidator.validate(move, board));
 
         return moves;
     }
 
-    getNextPositionByDirection(move: MoveDescriptor): IPosition {
-        const pos = { x: move.from.x, y: move.from.y };
+    private getSuperPossibleMoves(select: SelectDescriptor, board: Board<Checker>) {
+        const unCheckedPosibleNextMoves = [];
 
-        if (move.moveDirection & DirectionsDefinition.Up) {
+        const left = this.getSuperPossibleMove(select, board, DirectionsDefinition.Left);
+        unCheckedPosibleNextMoves.push(...left);
+        const right = this.getSuperPossibleMove(select, board, DirectionsDefinition.Right);
+        unCheckedPosibleNextMoves.push(...right);
+
+        return unCheckedPosibleNextMoves;
+    }
+
+    private getSuperPossibleMove(select: SelectDescriptor, board: Board<Checker>, direction: DirectionsDefinition) {
+        const unCheckedPosibleNextMoves = [];
+        let cell = board.getCellByPosition(select.position);
+        let pos = this.getNextPositionByDirection(select.position, select.direction | direction, board);
+        while (cell) {
+            unCheckedPosibleNextMoves.push(pos);
+
+            pos = this.getNextPositionByDirection(pos, select.direction | direction, board);
+            cell = board.getCellByPosition(pos);
+        }
+
+        return unCheckedPosibleNextMoves;
+    }
+
+    private getNormalPossibleMoves(select: SelectDescriptor, board: Board<Checker>) {
+        const unCheckedPosibleNextMoves = [];
+
+        const left = this.getNextPositionByDirection(select.position, select.direction | DirectionsDefinition.Left, board);
+        unCheckedPosibleNextMoves.push(left);
+        const right = this.getNextPositionByDirection(select.position, select.direction | DirectionsDefinition.Right, board);
+        unCheckedPosibleNextMoves.push(right);
+
+        return unCheckedPosibleNextMoves;
+    }
+
+    private checkIfMoveOrAttack(to: IPosition, moveDirection: MoveDirectionsDefinition, board: Board<Checker>): SimulationResult {
+        const cell = board.getCellByPosition(to);
+
+        if (!cell) {
+            return SimulationResult.NotPossible;
+        }
+
+        if (cell.element) {
+            if (cell.element.id === this._playersManager.opponent.id) {
+                return SimulationResult.TryNext;
+            } else if (cell.element.id === this._playersManager.current.id) {
+                return SimulationResult.NotPossible;
+            } else {
+                throw new Error('id not found');
+            }
+        } else {
+            return SimulationResult.Ok;
+        }
+    }
+
+    private simulateNextCellByDirection(position: IPosition, moveDirection: MoveDirectionsDefinition): IPosition {
+        const pos = { x: position.x, y: position.y };
+
+        if (moveDirection & DirectionsDefinition.Up) {
             pos.y++;
         }
 
-        if (move.moveDirection & DirectionsDefinition.Down) {
+        if (moveDirection & DirectionsDefinition.Down) {
             pos.y--;
         }
 
-        if (move.moveDirection & DirectionsDefinition.Right) {
+        if (moveDirection & DirectionsDefinition.Right) {
             pos.x++;
         }
 
-        if (move.moveDirection & DirectionsDefinition.Left) {
+        if (moveDirection & DirectionsDefinition.Left) {
             pos.x--;
+        }
+
+        return pos;
+    }
+
+    getNextPositionByDirection(position: IPosition, moveDirection: MoveDirectionsDefinition, board: Board<Checker>): IPosition {
+        let pos = this.simulateNextCellByDirection(position, moveDirection);
+        const result = this.checkIfMoveOrAttack(pos, moveDirection, board);
+
+        if (result === SimulationResult.TryNext) {
+            pos = this.simulateNextCellByDirection(position, moveDirection);
         }
 
         return pos;

@@ -4,9 +4,10 @@ import { MoveDescriptor } from "../descriptor/move-descriptor";
 import { SelectDescriptor } from "../descriptor/select-descriptor";
 import { Board } from "../board/board";
 import { IIdentible } from "./i-Identible";
+import { MoveDirectionsDefinition } from "../move/move-direction";
 
 export interface IMoveAnalyzer<T extends IIdentible> {
     getMoveType(from: PositionDefinition, to: PositionDefinition): MoveType;
-    getPosibleMoves(select: SelectDescriptor, board?: Board<T>): MoveDescriptor[];
-    getNextPositionByDirection(move: MoveDescriptor): IPosition
+    getPossibleMoves(select: SelectDescriptor, board: Board<T>): MoveDescriptor[];
+    getNextPositionByDirection(position: PositionDefinition, moveDirection: MoveDirectionsDefinition, board: Board<T>): IPosition
 }

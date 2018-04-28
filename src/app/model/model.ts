@@ -49,7 +49,7 @@ export class Model {
         moveValidator.append(new DirectionValidator());
         moveValidator.append(new DistanceValidator());
 
-        const moveAnalizer = new MoveAnalyzer(this._board);
+        const moveAnalizer = new MoveAnalyzer(this._playersManager, moveValidator);
         this._playerMoveStrategy = new PlayerMoveStrategy(this._board, this._gameState, moveValidator, moveAnalizer, this._playersManager);
         this._computerMoveStrategy = new AiMoveStrategy(this._board, this._gameState, moveValidator, moveAnalizer, this._playersManager, configurations.level);
         this._moveManager = new MoveManager(this._gameState, this._playersManager);

@@ -5,7 +5,7 @@ import { MoveType } from "../move/move-type";
 
 export class SelectDescriptor extends CellContext {
     public type: MoveType;
-    public direction: MoveDirectionsDefinition;
+    public direction: DirectionsDefinition;
     posibleMoves: PositionDefinition[];
 
     get from(): PositionDefinition {
