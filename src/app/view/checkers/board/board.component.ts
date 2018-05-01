@@ -1,3 +1,3 @@
-export class Board extends HTMLElement{
-    
+export class Board extends HTMLElement {
+
 }
