@@ -1,6 +1,5 @@
 export const componentName = 'x';
 export class Compoent extends HTMLElement {
-
     /*
         An instance of the element is created or upgraded. 
         Useful for initializing state, settings up event listeners, or creating shadow dom. 
@@ -12,7 +11,10 @@ export class Compoent extends HTMLElement {
     }
 
     render() {
-        this.innerHTML = `<div>blabla</div>`;
+        this.innerHTML = 
+        `<div>
+            <slot></slot>
+        </div>`;
     }
 
     /*
