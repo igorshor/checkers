@@ -1,3 +1,4 @@
+export const componentName = 'x';
 export class Compoent extends HTMLElement {
 
     /*
@@ -7,6 +8,11 @@ export class Compoent extends HTMLElement {
     */
     constructor() {
         super();
+        this.render();
+    }
+
+    render() {
+        this.innerHTML = `<div>blabla</div>`;
     }
 
     /*
@@ -26,6 +32,14 @@ export class Compoent extends HTMLElement {
     }
 
     /*
+        Elements can react to attribute changes by defining a attributeChangedCallback. 
+        The browser will call this method for every change to attributes listed in the observedAttributes array.
+    */
+    static get observedAttributes() {
+        return ['x'];
+    }
+
+    /*
         Called when an observed attribute has been added, removed, updated, or replaced. 
         Also called for initial values when an element is created by the parser, or upgraded. 
         Note: only attributes listed in the observedAttributes property will receive this callback.
@@ -37,7 +51,9 @@ export class Compoent extends HTMLElement {
     /*
         The custom element has been moved into a new document (e.g. someone called document.adoptNode(el)).
     */
-    adoptedCallback(){
+    adoptedCallback() {
 
     }
 }
+
+customElements.define(componentName, Compoent);
