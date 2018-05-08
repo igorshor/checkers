@@ -11,6 +11,8 @@ import { PositionDefinition } from "../../../common/board/position";
 import { Cell } from "../../../common/board/cell";
 import { ComputerLevel } from "../../../api/models/computer-level";
 import { PlayerMoveStrategy } from "../player/player-move-strategy";
+import { AiMoveDescriptor, AiMovesDescriptor } from "./ai-move-descriptor";
+import { MoveDescriptor } from "../../../common/descriptor/move-descriptor";
 
 export class AiMoveStrategy extends PlayerMoveStrategy {
     private _depth: number;
@@ -27,20 +29,28 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
     play(): Promise<Cell<Checker>[]> {
         this._playDeferredPromise = jQuery.Deferred<Cell<Checker>[]>();
         const testBoard = this._board.immutableBoard;
-        for (let moveDepth = 0; moveDepth < this._depth; moveDepth++) {
-            const playerCells = testBoard.select(cell => cell.element && cell.element.id === this._playersManager.current.id);
+        const aiMoves: AiMovesDescriptor = new AiMovesDescriptor();
 
-            playerCells.forEach(cell => {
-                const select = new SelectDescriptor(cell.position, this._playersManager.current.id, cell.element.id, this._playersManager.current.direction);
-                this._moveAnalizer.getPossibleMoves(select, testBoard);
-            });
-
-
-
-        }
 
         return this._playDeferredPromise.promise();
     }
+
+
+    private aiPlay(board: Board<Checker>, aiMoves: AiMovesDescriptor, moveDepth: number, currentDepth?: number) {
+        if (moveDepth < currentDepth) {
+            return;
+        }
+
+        const playerCells = board.select(cell => cell.element && cell.element.id === this._playersManager.current.id);
+
+        playerCells.forEach(cell => {
+            const select = new SelectDescriptor(cell.position, this._playersManager.current.id, cell.element.id, this._playersManager.current.direction);
+            const possibleMoves = this._moveAnalizer.getPossibleMoves(select, board);
+
+            possibleMoves.forEach((move: MoveDescriptor) => aiMoves.add(move));
+        });
+    }
+
     move(from: PositionDefinition, to: PositionDefinition): Cell<Checker>[] {
         throw new Error("Method not implemented.");
     }

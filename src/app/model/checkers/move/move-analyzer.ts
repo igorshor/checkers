@@ -1,4 +1,3 @@
-
 import { Checker } from "../board/checker";
 import { IMoveAnalyzer } from "../../common/interfaces/i-move-analyzer";
 import { MoveType } from "../../common/move/move-type";

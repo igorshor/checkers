@@ -8,6 +8,7 @@ import { MoveDirectionsDefinition } from "../move/move-direction";
 
 export interface IMoveAnalyzer<T extends IIdentible> {
     getGeneralMoveType(from: PositionDefinition, to: PositionDefinition): MoveType;
+    getSpecificMoveType(from: PositionDefinition, to: PositionDefinition, board: Board<T>): MoveType;
     getPossibleMoves(select: SelectDescriptor, board: Board<T>): MoveDescriptor[];
     getNextPositionByDirection(position: PositionDefinition, moveDirection: MoveDirectionsDefinition, board: Board<T>): IPosition
 }

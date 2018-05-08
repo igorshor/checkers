@@ -1,6 +1,6 @@
 import { MoveType } from "../../../common/move/move-type";
-
-export const moveRankMap = {
+export interface RankMap { [key: number]: number; }
+export const moveRankMap: RankMap = {
     [MoveType.Move]: 3,
     [MoveType.MoveDanger]: -1,
     [MoveType.Attack]: 4,
