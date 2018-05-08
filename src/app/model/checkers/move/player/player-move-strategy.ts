@@ -77,9 +77,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
             const cells = posibleMovesDestinations.map(pos => this._board.getCellByPosition(pos));
 
             cells.forEach(cell => cell.state = CellState.Prediction);
-            if (updatePrediction) {
-                this._state.updateCells([cell, ...cells]);
-            }
+            this._state.updateCells([cell, ...cells]);
 
             return cells;
         }
@@ -123,7 +121,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
             throw new Error('invalide move');
         }
 
-        const moveType = this._moveAnalizer.getMoveType(from, to);
+        const moveType = this._moveAnalizer.getGeneralMoveType(from, to);
         moveDescriptor.type = moveType;
         const changes = this.doLogicalMove(moveDescriptor);
         this.onUnSelect(this._selection);
@@ -142,7 +140,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
                 cellsToUpdate.push(this._board.remove(from));
                 cellsToUpdate.push(this._board.add(to));
                 break;
-            case MoveType.Atack:
+            case MoveType.Attack:
                 const attackedPosition = this._moveAnalizer.getNextPositionByDirection(moveDescriptor.from, moveDescriptor.moveDirection, this._board);
                 const cell = this._board.getCellByPosition(attackedPosition);
                 const attackedCellContext = new CellContext(moveDescriptor.from, this._playersManager.opponent.id, cell.element.id);

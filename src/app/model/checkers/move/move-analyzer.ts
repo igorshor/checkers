@@ -30,14 +30,41 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
 
     }
 
-    getMoveType(from: PositionDefinition, to: PositionDefinition): MoveType {
+    getGeneralMoveType(from: PositionDefinition, to: PositionDefinition): MoveType {
         const distance = this.getDistance(from, to);
 
         if (distance === 1) {
             return MoveType.Move;
+        } else if (distance === 2) {
+            return MoveType.Attack;
         } else {
-            return MoveType.Atack;
+            throw new Error('invalid move');
         }
+    }
+
+    getSpecificMoveType(from: PositionDefinition, to: PositionDefinition, board: Board<Checker>): MoveType {
+        const moveType = this.getGeneralMoveType(from, to);
+        const inDanger = this.isInDanger(to, board);
+        if (inDanger) {
+            switch (moveType) {
+                case MoveType.Attack:
+                    return MoveType.AttackDanger;
+                case MoveType.Move:
+                    return MoveType.MoveDanger;
+            }
+        }
+
+        return moveType;
+    }
+
+    private isInDanger(pos: PositionDefinition, board: Board<Checker>): boolean {
+        const posiibleDanger = [this.simulateNextCellByDirection(pos, this._playersManager.current.direction | DirectionsDefinition.Left),
+        this.simulateNextCellByDirection(pos, this._playersManager.current.direction | DirectionsDefinition.Right)];
+
+        return posiibleDanger.some((pos: IPosition) => {
+            const cell = board.getCellByPosition(pos);
+            return cell && cell.element && cell.element.id === this._playersManager.opponent.id;
+        });
     }
 
     getPossibleMoves(select: SelectDescriptor, board: Board<Checker>): MoveDescriptor[] {

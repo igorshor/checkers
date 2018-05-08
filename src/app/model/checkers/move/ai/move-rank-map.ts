@@ -1,9 +1,9 @@
-import { MoveRank } from "./move-rank";
+import { MoveType } from "../../../common/move/move-type";
 
 export const moveRankMap = {
-    [MoveRank.Move]: 3,
-    [MoveRank.MoveDanger]: -1,
-    [MoveRank.Attack]: 4,
-    [MoveRank.AttackDanger]: -2,
-    [MoveRank.Block]: 2
+    [MoveType.Move]: 3,
+    [MoveType.MoveDanger]: -1,
+    [MoveType.Attack]: 4,
+    [MoveType.AttackDanger]: -2,
+    [MoveType.Block]: 2
 };

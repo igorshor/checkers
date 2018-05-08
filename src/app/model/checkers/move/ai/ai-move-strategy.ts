@@ -32,7 +32,7 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
 
             playerCells.forEach(cell => {
                 const select = new SelectDescriptor(cell.position, this._playersManager.current.id, cell.element.id, this._playersManager.current.direction);
-                const posibleMoves = this.onSelect(select, false);
+                this._moveAnalizer.getPossibleMoves(select, testBoard);
             });
 
 

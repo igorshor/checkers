@@ -7,7 +7,7 @@ import { IIdentible } from "./i-Identible";
 import { MoveDirectionsDefinition } from "../move/move-direction";
 
 export interface IMoveAnalyzer<T extends IIdentible> {
-    getMoveType(from: PositionDefinition, to: PositionDefinition): MoveType;
+    getGeneralMoveType(from: PositionDefinition, to: PositionDefinition): MoveType;
     getPossibleMoves(select: SelectDescriptor, board: Board<T>): MoveDescriptor[];
     getNextPositionByDirection(position: PositionDefinition, moveDirection: MoveDirectionsDefinition, board: Board<T>): IPosition
 }

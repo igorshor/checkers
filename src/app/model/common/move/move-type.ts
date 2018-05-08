@@ -1,6 +1,9 @@
 export enum MoveType {
     Move,
-    Atack,
     KingMove,
-    Virtual
+    Virtual,
+    MoveDanger,
+    Attack,
+    AttackDanger,
+    Block
 }

@@ -2,12 +2,12 @@ import { buildHtmlTemplate } from "../../helpers/html-template-builder";
 
 export const name = 'repeat';
 
-export interface IRepeaterProps{
-    elements:string;
+export interface IRepeaterProps {
+    elements: string;
 }
 
-export interface IRepeaterState{
-    element:string[];
+export interface IRepeaterState {
+    element: string[];
 }
 
 export class Repeater extends HTMLElement {
@@ -38,7 +38,7 @@ export class Repeater extends HTMLElement {
         if (oldVal === newVal) {
             return;
         }
-        if(Repeater.observedRefAttributes.indexOf(attrName) >= 0){
+        if (Repeater.observedRefAttributes.indexOf(attrName) >= 0) {
 
         } else {
 
