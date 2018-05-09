@@ -67,7 +67,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         const posibleDestinations = this.select(selection.from);
         const posibleMovesDestinations = posibleDestinations
             .map(posibleDestination => new MoveDescriptor(selection.from, posibleDestination, this._playersManager.current.id, selection.elementId))
-            .filter(move => this._moveValidator.validate(move, this._board))
+            .filter(move => this._moveValidator.validate(move, this._board, this._playersManager.current))
             .map(move => move.to);
 
         this._selection = selection;
@@ -115,7 +115,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         }
 
         const moveDescriptor = new MoveDescriptor(from, to, this._playersManager.current.id, cell.element.id);
-        const validMove = this._moveValidator.validate(moveDescriptor, this._board);
+        const validMove = this._moveValidator.validate(moveDescriptor, this._board, this._playersManager.current);
 
         if (!validMove) {
             throw new Error('invalide move');
@@ -130,7 +130,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         return changes;
     }
 
-    private doLogicalMove(moveDescriptor: MoveDescriptor): Cell<Checker>[] {
+    protected doLogicalMove(moveDescriptor: MoveDescriptor): Cell<Checker>[] {
         const cellsToUpdate: Cell<Checker>[] = [];
         const from = new CellContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
         const to = new CellContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
@@ -142,12 +142,37 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
                 break;
             case MoveType.Attack:
                 const attackedPosition = this._moveAnalizer.getNextPositionByDirection(moveDescriptor.from, moveDescriptor.moveDirection, this._board);
+                moveDescriptor.attacked = attackedPosition;
                 const cell = this._board.getCellByPosition(attackedPosition);
                 const attackedCellContext = new CellContext(moveDescriptor.from, this._playersManager.opponent.id, cell.element.id);
 
                 cellsToUpdate.push(this._board.remove(from));
                 cellsToUpdate.push(this._board.remove(attackedCellContext, true));
                 cellsToUpdate.push(this._board.add(to));
+                break;
+        }
+
+        return cellsToUpdate;
+    }
+
+    protected undoLogicalMove(moveDescriptor: MoveDescriptor): Cell<Checker>[] {
+        const cellsToUpdate: Cell<Checker>[] = [];
+        const from = new CellContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
+        const to = new CellContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
+
+        switch (moveDescriptor.type) {
+            case MoveType.Move:
+                cellsToUpdate.push(this._board.add(from));
+                cellsToUpdate.push(this._board.remove(to));
+                break;
+            case MoveType.Attack:
+                const attackedPosition = moveDescriptor.attacked;
+                const cell = this._board.getCellByPosition(attackedPosition);
+                const attackedCellContext = new CellContext(moveDescriptor.from, this._playersManager.opponent.id, cell.element.id);
+
+                cellsToUpdate.push(this._board.add(from));
+                cellsToUpdate.push(this._board.add(attackedCellContext));
+                cellsToUpdate.push(this._board.remove(to));
                 break;
         }
 

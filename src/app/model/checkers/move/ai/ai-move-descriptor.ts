@@ -12,6 +12,7 @@ export class AiMoveDescriptor {
         this.append(move);
         this._rankMap = moveRankMap;
         this._rank = 0;
+        this._rankMap = moveRankMap;
     }
 
     public get initialMove(): MoveDescriptor {

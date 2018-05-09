@@ -78,9 +78,9 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         const moves = unCheckedPosibleNextMoves
             .map((pos: IPosition) => new MoveDescriptor(
                 select.from, new PositionDefinition(pos.x, pos.y),
-                this._playersManager.current.id,
+                select.playerId,
                 select.elementId))
-            .filter(move => this._moveValidator.validate(move, board));
+            .filter(move => this._moveValidator.validate(move, board, this._playersManager.get(select.playerId)));
 
         return moves;
     }

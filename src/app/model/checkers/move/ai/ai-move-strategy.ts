@@ -31,7 +31,8 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
         this._playDeferredPromise = jQuery.Deferred<Cell<Checker>[]>();
         const testBoard = this._board.immutableBoard;
         const aiMoves: AiMovesDescriptor = new AiMovesDescriptor();
-        const moveGenerator: Iterable<MoveDescriptor[]> = new AiMoveIterable(this._moveAnalizer, this._playersManager, testBoard, 1);
+        const moveAction = (move: MoveDescriptor) => this.doLogicalMove(move);
+        const moveGenerator: Iterable<MoveDescriptor[]> = new AiMoveIterable(this._moveAnalizer, this._playersManager.mutatePlayers(), testBoard, moveAction);
         let shuldExist = false;
 
         for (const moves of Array.from(moveGenerator)) {
