@@ -13,6 +13,7 @@ import { ComputerLevel } from "../../../api/models/computer-level";
 import { PlayerMoveStrategy } from "../player/player-move-strategy";
 import { AiMoveDescriptor, AiMovesDescriptor } from "./ai-move-descriptor";
 import { MoveDescriptor } from "../../../common/descriptor/move-descriptor";
+import { AiMoveIterable } from "./ai-move-iterable";
 
 export class AiMoveStrategy extends PlayerMoveStrategy {
     private _depth: number;
@@ -30,25 +31,15 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
         this._playDeferredPromise = jQuery.Deferred<Cell<Checker>[]>();
         const testBoard = this._board.immutableBoard;
         const aiMoves: AiMovesDescriptor = new AiMovesDescriptor();
+        const moveGenerator: Iterable<MoveDescriptor[]> = new AiMoveIterable(this._moveAnalizer, this._playersManager, testBoard, 1);
+        let shuldExist = false;
 
-
-        return this._playDeferredPromise.promise();
-    }
-
-
-    private aiPlay(board: Board<Checker>, aiMoves: AiMovesDescriptor, moveDepth: number, currentDepth?: number) {
-        if (moveDepth < currentDepth) {
-            return;
+        for (const moves of Array.from(moveGenerator)) {
+            moves.forEach((move: MoveDescriptor) => aiMoves.add(move, shuldExist));
+            shuldExist = false;
         }
 
-        const playerCells = board.select(cell => cell.element && cell.element.id === this._playersManager.current.id);
-
-        playerCells.forEach(cell => {
-            const select = new SelectDescriptor(cell.position, this._playersManager.current.id, cell.element.id, this._playersManager.current.direction);
-            const possibleMoves = this._moveAnalizer.getPossibleMoves(select, board);
-
-            possibleMoves.forEach((move: MoveDescriptor) => aiMoves.add(move));
-        });
+        return this._playDeferredPromise.promise();
     }
 
     move(from: PositionDefinition, to: PositionDefinition): Cell<Checker>[] {
