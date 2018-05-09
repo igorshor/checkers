@@ -7,6 +7,7 @@ export class DistanceValidator implements IMoveValidatorInterceptor<Checker> {
     error = 'invalid distance';
 
     validate(moveDescriptor: MoveDescriptor, board: Board<Checker>): boolean {
-        throw new Error("Method not implemented.");
+        const dist = Math.abs(moveDescriptor.from.y - moveDescriptor.to.y);
+        return dist > 0 && dist < 2;
     }
 }
