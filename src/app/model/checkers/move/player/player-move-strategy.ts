@@ -13,16 +13,19 @@ import { Cell } from "../../../common/board/cell";
 import { MoveType } from "../../../common/move/move-type";
 import { PositionDefinition } from "../../../common/board/position";
 import { CellState } from "../../../common/board/cell-state";
+import { IBoardController } from "../../../common/interfaces/i-board-controller";
 
 export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
     private _selection: SelectDescriptor;
     private _selectionSubscription: Subscription;
     protected _playDeferredPromise: JQuery.Deferred<Cell<Checker>[]>;
-    constructor(protected _board: Board<Checker>,
-        protected _state: GameStateManager<Checker>,
+    protected _board: Board<Checker>;
+    constructor(protected _state: GameStateManager<Checker>,
         protected _moveValidator: IMoveValidator<Checker>,
         protected _moveAnalizer: IMoveAnalyzer<Checker>,
-        protected _playersManager: PlayersManager<Checker>) {
+        protected _playersManager: PlayersManager<Checker>,
+        private _boardController: IBoardController<Checker>) {
+            this._board = this._boardController.board;
     }
 
     public async play(): Promise<Cell<Checker>[]> {
@@ -123,59 +126,10 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
 
         const moveType = this._moveAnalizer.getGeneralMoveType(from, to);
         moveDescriptor.type = moveType;
-        const changes = this.doLogicalMove(moveDescriptor);
+        const changes = this._boardController.doMove(moveDescriptor);
         this.onUnSelect(this._selection);
         this.resolveMove();
 
         return changes;
-    }
-
-    protected doLogicalMove(moveDescriptor: MoveDescriptor): Cell<Checker>[] {
-        const cellsToUpdate: Cell<Checker>[] = [];
-        const from = new CellContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
-        const to = new CellContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
-
-        switch (moveDescriptor.type) {
-            case MoveType.Move:
-                cellsToUpdate.push(this._board.remove(from));
-                cellsToUpdate.push(this._board.add(to));
-                break;
-            case MoveType.Attack:
-                const attackedPosition = this._moveAnalizer.getNextPositionByDirection(moveDescriptor.from, moveDescriptor.moveDirection, this._board);
-                moveDescriptor.attacked = attackedPosition;
-                const cell = this._board.getCellByPosition(attackedPosition);
-                const attackedCellContext = new CellContext(moveDescriptor.from, this._playersManager.opponent.id, cell.element.id);
-
-                cellsToUpdate.push(this._board.remove(from));
-                cellsToUpdate.push(this._board.remove(attackedCellContext, true));
-                cellsToUpdate.push(this._board.add(to));
-                break;
-        }
-
-        return cellsToUpdate;
-    }
-
-    protected undoLogicalMove(moveDescriptor: MoveDescriptor): Cell<Checker>[] {
-        const cellsToUpdate: Cell<Checker>[] = [];
-        const from = new CellContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
-        const to = new CellContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
-
-        switch (moveDescriptor.type) {
-            case MoveType.Move:
-                cellsToUpdate.push(this._board.add(from));
-                cellsToUpdate.push(this._board.remove(to));
-                break;
-            case MoveType.Attack:
-                const attackedPosition = moveDescriptor.attacked;
-                const cell = this._board.getCellByPosition(attackedPosition);
-                const attackedCellContext = new CellContext(moveDescriptor.from, this._playersManager.opponent.id, cell.element.id);
-
-                cellsToUpdate.push(this._board.add(from));
-                cellsToUpdate.push(this._board.add(attackedCellContext));
-                cellsToUpdate.push(this._board.remove(to));
-                break;
-        }
-
-        return cellsToUpdate;
     }
 }

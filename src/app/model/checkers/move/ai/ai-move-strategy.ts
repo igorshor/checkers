@@ -14,29 +14,36 @@ import { PlayerMoveStrategy } from "../player/player-move-strategy";
 import { AiMoveDescriptor, AiMovesDescriptor } from "./ai-move-descriptor";
 import { MoveDescriptor } from "../../../common/descriptor/move-descriptor";
 import { AiMoveIterable } from "./ai-move-iterable";
+import { IBoardController } from "../../../common/interfaces/i-board-controller";
+import { BoardController } from "../../board/board-controller";
 
 export class AiMoveStrategy extends PlayerMoveStrategy {
     private _depth: number;
-    constructor(_board: Board<Checker>,
-        _state: GameStateManager<Checker>,
-        _moveValidator: IMoveValidator<Checker>,
-        _moveAnalizer: IMoveAnalyzer<Checker>,
-        _playersManager: PlayersManager<Checker>,
-        level: ComputerLevel) {
-        super(_board, _state, _moveValidator, _moveAnalizer, _playersManager);
+    constructor(state: GameStateManager<Checker>,
+        moveValidator: IMoveValidator<Checker>,
+        moveAnalizer: IMoveAnalyzer<Checker>,
+        playersManager: PlayersManager<Checker>,
+        level: ComputerLevel,
+        boardController: IBoardController<Checker>) {
+        super(state, moveValidator, moveAnalizer, playersManager, boardController);
         this._depth = level;
     }
 
     play(): Promise<Cell<Checker>[]> {
         this._playDeferredPromise = jQuery.Deferred<Cell<Checker>[]>();
-        const testBoard = this._board.immutableBoard;
+        const simulationBoard = this._board.immutableBoard;
+        const simulationPlayers = this._playersManager.mutatePlayers();
         const aiMoves: AiMovesDescriptor = new AiMovesDescriptor();
-        const moveAction = (move: MoveDescriptor) => this.doLogicalMove(move);
-        const moveGenerator: Iterable<MoveDescriptor[]> = new AiMoveIterable(this._moveAnalizer, this._playersManager.mutatePlayers(), testBoard, moveAction);
+        const boardController = new BoardController(simulationBoard, this._moveAnalizer, simulationPlayers);
+        const aiMoveIterable = new AiMoveIterable(this._moveAnalizer, simulationPlayers, simulationBoard, boardController);
+        const moveGenerator = aiMoveIterable.getGenerator();
         let shuldExist = false;
+        let done = false;
 
-        for (const moves of Array.from(moveGenerator)) {
-            moves.forEach((move: MoveDescriptor) => aiMoves.add(move, shuldExist));
+        while (!done) {
+            const moves = moveGenerator.next(this._depth > aiMoveIterable.depth);
+            moves.value.forEach((move: MoveDescriptor) => aiMoves.add(move, shuldExist));
+            done = moves.done;
             shuldExist = false;
         }
 

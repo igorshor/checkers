@@ -6,37 +6,43 @@ import { SelectDescriptor } from "../../../common/descriptor/select-descriptor";
 import { Players } from "../../../common/player/players";
 import { Player } from "../../../common/player/player";
 import { RankMap, moveRankMap } from "./move-rank-map";
-
-export type Action<T> = (element: T) => {};
+import { IBoardController } from "../../../common/interfaces/i-board-controller";
 
 export class AiMoveIterable implements Iterable<MoveDescriptor[]> {
-    private _depth: number;
+    public depth: number;
     private _maxDepth = 10;
     private _rankMap: RankMap;
     constructor(private _moveAnalizer: IMoveAnalyzer<Checker>,
         private _players: Players<Checker>,
         private _board: Board<Checker>,
-        private _moveAction: Action<MoveDescriptor>) {
-        this._depth = 1;
+        private _boardController: IBoardController<Checker>) {
+        this.depth = 0;
         this._rankMap = moveRankMap;
     }
 
-    *[Symbol.iterator](): IterableIterator<MoveDescriptor[]> {
-        if (this._depth > this._maxDepth) {
-            return;
-        }
+    *getGenerator(value?: any): IterableIterator<MoveDescriptor[]> {
+        let stop = false;
 
-        this.getPosiibleMoves(this._players.current).forEach(move => {
-            this._moveAction(move);
+        while (!stop) {
+            stop = yield ++this.depth > this._maxDepth && this.singleAiMove();
+        }
+    }
+
+    *[Symbol.iterator](): IterableIterator<MoveDescriptor[]> {
+        return yield *this.getGenerator();
+    }
+
+    private singleAiMove(): MoveDescriptor[] {
+        const possibleMoves = this.getPosiibleMoves(this._players.current);
+        possibleMoves.forEach(move => {
+            this._boardController.doMove(move);
             const counterMove = this.getPosiibleMoves(this._players.opponent);
             const bestCouterMove = counterMove.reduce((prev, current) => this._rankMap[prev.type] > this._rankMap[current.type] ? prev : current);
             move.counterMove = bestCouterMove;
-            this._moveAction(bestCouterMove);
+            this._boardController.doMove(bestCouterMove);
         });
 
-        this._depth++;
-
-        yield* Array.from(this[Symbol.iterator]());
+        return possibleMoves;
     }
 
     private getPosiibleMoves(player: Player<Checker>) {

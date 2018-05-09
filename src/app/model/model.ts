@@ -17,6 +17,7 @@ import { DirectionsDefinition } from "./common/move/move-direction";
 import { Player, AiPlayer } from "./common/player/player";
 import { CheckersPositionStrategy } from "./checkers/board/checkers-position-strategy";
 import { CheckrsCellBuilder } from "./common/builders/checkers-cell-builder";
+import { BoardController } from "./checkers/board/board-controller";
 
 
 export class Model {
@@ -31,10 +32,10 @@ export class Model {
     constructor(configurations: Configurations) {
         this._gameState = new GameStateManager();
 
+        this.setBoard(configurations.size);
         this.setMoveComponents(configurations);
         this.setGameComponents();
         this.setPlayers(configurations);
-        this.setBoard(configurations.size);
     }
 
     private setGameComponents() {
@@ -50,8 +51,9 @@ export class Model {
         moveValidator.append(new DistanceValidator());
 
         const moveAnalizer = new MoveAnalyzer(this._playersManager, moveValidator);
-        this._playerMoveStrategy = new PlayerMoveStrategy(this._board, this._gameState, moveValidator, moveAnalizer, this._playersManager);
-        this._computerMoveStrategy = new AiMoveStrategy(this._board, this._gameState, moveValidator, moveAnalizer, this._playersManager, configurations.level);
+        const boardController = new BoardController(this._board, moveAnalizer, this._playersManager);
+        this._playerMoveStrategy = new PlayerMoveStrategy(this._gameState, moveValidator, moveAnalizer, this._playersManager, boardController);
+        this._computerMoveStrategy = new AiMoveStrategy(this._gameState, moveValidator, moveAnalizer, this._playersManager, configurations.level, boardController);
         this._moveManager = new MoveManager(this._gameState, this._playersManager);
     }
 
