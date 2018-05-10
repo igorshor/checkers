@@ -11,7 +11,6 @@ import { PositionDefinition } from "../../../common/board/position";
 import { Cell } from "../../../common/board/cell";
 import { ComputerLevel } from "../../../api/models/computer-level";
 import { PlayerMoveStrategy } from "../player/player-move-strategy";
-import { AiMoveDescriptor, AiMovesDescriptor } from "./ai-move-descriptor";
 import { MoveDescriptor } from "../../../common/descriptor/move-descriptor";
 import { AiMoveRunner } from "./ai-move-runner";
 import { IBoardController } from "../../../common/interfaces/i-board-controller";
@@ -29,12 +28,13 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
         this._depth = level;
     }
 
-    play(): Promise<Cell<Checker>[]> {
+    async play(): Promise<Cell<Checker>[]> {
         this._playDeferredPromise = jQuery.Deferred<Cell<Checker>[]>();
         const simulationBoard = this._board.immutableBoard;
         const simulationPlayers = this._playersManager.mutatePlayers();
         const boardController = new BoardController(simulationBoard, this._moveAnalizer, simulationPlayers);
         const aiMoveIterable = new AiMoveRunner(this._moveAnalizer, simulationPlayers, simulationBoard, boardController, this._depth);
+        const moveTree = await aiMoveIterable.calculate();
 
         return this._playDeferredPromise.promise();
     }
