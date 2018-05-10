@@ -8,43 +8,43 @@ import { Player } from "../../../common/player/player";
 import { RankMap, moveRankMap } from "./move-rank-map";
 import { IBoardController } from "../../../common/interfaces/i-board-controller";
 import { AiMoveDescriptorItem } from "./ai-move-descriptor-item";
+import { AiMovesDescriptor } from "./ai-move-descriptor";
 
-export class AiMoveIterable implements Iterable<AiMoveDescriptorItem[]> {
-    public depth: number;
-    private _maxDepth = 10;
+export class AiMoveRunner {
     private _rankMap: RankMap;
+    private _aiMoves: AiMovesDescriptor;
+
     constructor(private _moveAnalizer: IMoveAnalyzer<Checker>,
         private _players: Players<Checker>,
         private _board: Board<Checker>,
-        private _boardController: IBoardController<Checker>) {
-        this.depth = 0;
+        private _boardController: IBoardController<Checker>,
+        private _maxDepth = 1) {
         this._rankMap = moveRankMap;
+        this._aiMoves = new AiMovesDescriptor();
     }
 
-    *getGenerator(value?: any): IterableIterator<AiMoveDescriptorItem[]> {
-        let stop = false;
+    private calc() {
+        this.aiMoveRunner(1, undefined);
+    }
 
-        while (!stop) {
-            stop = yield ++this.depth > this._maxDepth && this.singleAiMove();
+    private aiMoveRunner(depth: number, parent: AiMoveDescriptorItem): AiMoveDescriptorItem[] {
+        if (this._maxDepth < depth) {
+            return;
         }
-    }
-
-    *[Symbol.iterator](): IterableIterator<AiMoveDescriptorItem[]> {
-        return yield *this.getGenerator();
-    }
-
-    private singleAiMove(): AiMoveDescriptorItem[] {
         const possibleMoves = this.getPosiibleMoves(this._players.current)
-        .map(move => new AiMoveDescriptorItem(move));
+            .map(move => new AiMoveDescriptorItem(move, parent));
+
         possibleMoves.forEach(move => {
             this._boardController.doMove(move);
             const counterMove = this.getPosiibleMoves(this._players.opponent);
             const bestCouterMove = counterMove.reduce((prev, current) => this._rankMap[prev.type] > this._rankMap[current.type] ? prev : current);
             move.counterMove = bestCouterMove;
+            this._players.switch();
             this._boardController.doMove(bestCouterMove);
+            move.boardState = this._board.immutableCells;
+            this._aiMoves.add(move, depth === 1);
+            this.aiMoveRunner(depth++, move);
         });
-
-        return possibleMoves;
     }
 
     private getPosiibleMoves(player: Player<Checker>) {

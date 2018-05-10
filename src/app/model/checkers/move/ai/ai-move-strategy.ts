@@ -13,7 +13,7 @@ import { ComputerLevel } from "../../../api/models/computer-level";
 import { PlayerMoveStrategy } from "../player/player-move-strategy";
 import { AiMoveDescriptor, AiMovesDescriptor } from "./ai-move-descriptor";
 import { MoveDescriptor } from "../../../common/descriptor/move-descriptor";
-import { AiMoveIterable } from "./ai-move-iterable";
+import { AiMoveRunner } from "./ai-move-runner";
 import { IBoardController } from "../../../common/interfaces/i-board-controller";
 import { BoardController } from "../../board/board-controller";
 
@@ -33,19 +33,8 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
         this._playDeferredPromise = jQuery.Deferred<Cell<Checker>[]>();
         const simulationBoard = this._board.immutableBoard;
         const simulationPlayers = this._playersManager.mutatePlayers();
-        const aiMoves: AiMovesDescriptor = new AiMovesDescriptor();
         const boardController = new BoardController(simulationBoard, this._moveAnalizer, simulationPlayers);
-        const aiMoveIterable = new AiMoveIterable(this._moveAnalizer, simulationPlayers, simulationBoard, boardController);
-        const moveGenerator = aiMoveIterable.getGenerator();
-        let shuldExist = false;
-        let done = false;
-
-        while (!done) {
-            const moves = moveGenerator.next(this._depth > aiMoveIterable.depth);
-            moves.value.forEach(move => aiMoves.add(move, shuldExist));
-            done = moves.done;
-            shuldExist = false;
-        }
+        const aiMoveIterable = new AiMoveRunner(this._moveAnalizer, simulationPlayers, simulationBoard, boardController, this._depth);
 
         return this._playDeferredPromise.promise();
     }
