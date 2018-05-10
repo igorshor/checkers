@@ -7,8 +7,9 @@ import { Players } from "../../../common/player/players";
 import { Player } from "../../../common/player/player";
 import { RankMap, moveRankMap } from "./move-rank-map";
 import { IBoardController } from "../../../common/interfaces/i-board-controller";
+import { AiMoveDescriptorItem } from "./ai-move-descriptor-item";
 
-export class AiMoveIterable implements Iterable<MoveDescriptor[]> {
+export class AiMoveIterable implements Iterable<AiMoveDescriptorItem[]> {
     public depth: number;
     private _maxDepth = 10;
     private _rankMap: RankMap;
@@ -20,7 +21,7 @@ export class AiMoveIterable implements Iterable<MoveDescriptor[]> {
         this._rankMap = moveRankMap;
     }
 
-    *getGenerator(value?: any): IterableIterator<MoveDescriptor[]> {
+    *getGenerator(value?: any): IterableIterator<AiMoveDescriptorItem[]> {
         let stop = false;
 
         while (!stop) {
@@ -28,12 +29,13 @@ export class AiMoveIterable implements Iterable<MoveDescriptor[]> {
         }
     }
 
-    *[Symbol.iterator](): IterableIterator<MoveDescriptor[]> {
+    *[Symbol.iterator](): IterableIterator<AiMoveDescriptorItem[]> {
         return yield *this.getGenerator();
     }
 
-    private singleAiMove(): MoveDescriptor[] {
-        const possibleMoves = this.getPosiibleMoves(this._players.current);
+    private singleAiMove(): AiMoveDescriptorItem[] {
+        const possibleMoves = this.getPosiibleMoves(this._players.current)
+        .map(move => new AiMoveDescriptorItem(move));
         possibleMoves.forEach(move => {
             this._boardController.doMove(move);
             const counterMove = this.getPosiibleMoves(this._players.opponent);

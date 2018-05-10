@@ -42,7 +42,7 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
 
         while (!done) {
             const moves = moveGenerator.next(this._depth > aiMoveIterable.depth);
-            moves.value.forEach((move: MoveDescriptor) => aiMoves.add(move, shuldExist));
+            moves.value.forEach(move => aiMoves.add(move, shuldExist));
             done = moves.done;
             shuldExist = false;
         }

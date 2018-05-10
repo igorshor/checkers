@@ -1,13 +1,13 @@
-import { MoveDescriptor } from "../../../common/descriptor/move-descriptor";
 import { RankMap, moveRankMap } from "./move-rank-map";
 import { MoveType } from "../../../common/move/move-type";
+import { AiMoveDescriptorItem } from "./ai-move-descriptor-item";
 
 export class AiMoveDescriptor {
     private _rank: number;
     private _rankMap: RankMap;
-    private _moves: MoveDescriptor[];
+    private _moves: AiMoveDescriptorItem[];
 
-    constructor(move: MoveDescriptor) {
+    constructor(move: AiMoveDescriptorItem) {
         this._moves = [];
         this.append(move);
         this._rankMap = moveRankMap;
@@ -15,7 +15,7 @@ export class AiMoveDescriptor {
         this._rankMap = moveRankMap;
     }
 
-    public get initialMove(): MoveDescriptor {
+    public get initialMove(): AiMoveDescriptorItem {
         return this._moves[0];
     }
 
@@ -31,7 +31,7 @@ export class AiMoveDescriptor {
         return this._rank;
     }
 
-    public append(move: MoveDescriptor): void {
+    public append(move: AiMoveDescriptorItem): void {
         this._moves.push(move);
     }
 
@@ -43,7 +43,7 @@ export class AiMoveDescriptor {
 export class AiMovesDescriptor {
     private _aiMoves: { [id: number]: AiMoveDescriptor } = {};
 
-    public add(move: MoveDescriptor, shouldExist?: boolean) {
+    public add(move: AiMoveDescriptorItem, shouldExist?: boolean) {
         if (!this._aiMoves[move.elementId]) {
             if (shouldExist) {
                 throw new Error('something went wrong');
