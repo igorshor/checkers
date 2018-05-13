@@ -5,20 +5,20 @@ import { Board } from "../../../common/board/board";
 import { SelectDescriptor } from "../../../common/descriptor/select-descriptor";
 import { Players } from "../../../common/player/players";
 import { Player } from "../../../common/player/player";
-import { RankMap, moveRankMap } from "./move-rank-map";
 import { IBoardController } from "../../../common/interfaces/i-board-controller";
 import { AiMoveDescriptor } from "./ai-move-descriptor";
+import { IMovePicker } from "../../interfaces/i-move-picker";
+import { AiMoveInsights } from "./ai-move-insights";
 
 export class AiMoveRunner {
-    private _rankMap: RankMap;
     private _root: AiMoveDescriptor;
 
     constructor(private _moveAnalizer: IMoveAnalyzer<Checker>,
         private _players: Players<Checker>,
         board: Board<Checker>,
         private _boardController: IBoardController<Checker>,
+        private _movePicker: IMovePicker,
         private _maxDepth = 1) {
-        this._rankMap = moveRankMap;
         this._root = new AiMoveDescriptor(undefined, undefined);
         this._root.boardState = board.immutableBoard;
     }
@@ -41,7 +41,7 @@ export class AiMoveRunner {
             this._boardController.doMove(move);
             move.boardState = board.immutableBoard;
             const counterMove = this.getPosiibleMoves(this._players.opponent, board);
-            const bestCouterMove = counterMove.reduce((prev, current) => this._rankMap[prev.type] > this._rankMap[current.type] ? prev : current);
+            const bestCouterMove = this._movePicker.calcBestMove(counterMove);
             move.counterMove = bestCouterMove;
             this._players.switch();
             this._boardController.doMove(bestCouterMove);
@@ -51,7 +51,7 @@ export class AiMoveRunner {
         });
     }
 
-    private getPosiibleMoves(player: Player<Checker>, board: Board<Checker>) {
+    private getPosiibleMoves(player: Player<Checker>, board: Board<Checker>): MoveDescriptor[] {
         const playerCells = board.select(cell => cell.element && cell.element.id === player.id);
         let possibleMoves: MoveDescriptor[];
         playerCells.forEach(cell => {

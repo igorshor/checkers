@@ -15,9 +15,12 @@ import { MoveDescriptor } from "../../../common/descriptor/move-descriptor";
 import { AiMoveRunner } from "./ai-move-runner";
 import { IBoardController } from "../../../common/interfaces/i-board-controller";
 import { BoardController } from "../../board/board-controller";
+import { AiMoveInsights } from "./ai-move-insights";
 
 export class AiMoveStrategy extends PlayerMoveStrategy {
     private _depth: number;
+    private _moveInsights: AiMoveInsights;
+
     constructor(state: GameStateManager<Checker>,
         moveValidator: IMoveValidator<Checker>,
         moveAnalizer: IMoveAnalyzer<Checker>,
@@ -25,6 +28,7 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
         level: ComputerLevel,
         boardController: IBoardController<Checker>) {
         super(state, moveValidator, moveAnalizer, playersManager, boardController);
+        this._moveInsights = new AiMoveInsights();
         this._depth = level;
     }
 
@@ -33,7 +37,7 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
         const simulationBoard = this._board.immutableBoard;
         const simulationPlayers = this._playersManager.mutatePlayers();
         const boardController = new BoardController(simulationBoard, this._moveAnalizer, simulationPlayers);
-        const aiMoveIterable = new AiMoveRunner(this._moveAnalizer, simulationPlayers, simulationBoard, boardController, this._depth);
+        const aiMoveIterable = new AiMoveRunner(this._moveAnalizer, simulationPlayers, simulationBoard, boardController, this._moveInsights, this._depth);
         const moveTree = await aiMoveIterable.calculate();
 
         return this._playDeferredPromise.promise();
