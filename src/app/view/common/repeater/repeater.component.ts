@@ -1,6 +1,6 @@
 import { buildHtmlTemplate } from "../../helpers/html-template-builder";
 
-export const name = 'repeat';
+export const name = 'is-repeat';
 
 export interface IRepeaterProps {
     elements: string;
@@ -15,7 +15,6 @@ export class Repeater extends HTMLElement {
     constructor() {
         super();
 
-        //this._template = buildHtmlTemplate(name, require('./repeater.template.html'));
         const element = document.getElementById('item');
         const strData = element.getAttribute('data-array');
         const data = JSON.parse(strData);
@@ -39,9 +38,9 @@ export class Repeater extends HTMLElement {
             return;
         }
         if (Repeater.observedRefAttributes.indexOf(attrName) >= 0) {
-
+            //
         } else {
-
+            //
         }
         const data = JSON.parse(newVal);
     }
