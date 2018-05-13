@@ -25,7 +25,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         protected _moveAnalizer: IMoveAnalyzer<Checker>,
         protected _playersManager: PlayersManager<Checker>,
         private _boardController: IBoardController<Checker>) {
-            this._board = this._boardController.board;
+        this._board = this._boardController.board;
     }
 
     public async play(): Promise<Cell<Checker>[]> {
@@ -56,6 +56,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
                 }
 
                 this.move(prevSelectionCell.position, currentSelectionCell.position);
+                this.resolveMove();
             }
         }
     }
@@ -128,7 +129,6 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         moveDescriptor.type = moveType;
         const changes = this._boardController.doMove(moveDescriptor);
         this.onUnSelect(this._selection);
-        this.resolveMove();
 
         return changes;
     }

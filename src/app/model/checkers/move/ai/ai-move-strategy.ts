@@ -33,20 +33,25 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
     }
 
     async play(): Promise<Cell<Checker>[]> {
-        this._playDeferredPromise = jQuery.Deferred<Cell<Checker>[]>();
         const simulationBoard = this._board.immutableBoard;
         const simulationPlayers = this._playersManager.mutatePlayers();
         const boardController = new BoardController(simulationBoard, this._moveAnalizer, simulationPlayers);
         const aiMoveIterable = new AiMoveRunner(this._moveAnalizer, simulationPlayers, simulationBoard, boardController, this._moveInsights, this._depth);
         const moveTree = await aiMoveIterable.calculate();
+        const bestMove = await this._moveInsights.evaluate(moveTree);
 
-        return this._playDeferredPromise.promise();
+        await setTimeout(() => this.select(bestMove.from));
+        let changedCells;
+        await setTimeout(() => changedCells = this.move(bestMove.from, bestMove.to));
+
+        return changedCells;
     }
 
     move(from: PositionDefinition, to: PositionDefinition): Cell<Checker>[] {
-        throw new Error("Method not implemented.");
+        return super.move(from, to);
     }
+
     select(from: PositionDefinition): PositionDefinition[] {
-        throw new Error("Method not implemented.");
+        return super.select(from);
     }
 }
