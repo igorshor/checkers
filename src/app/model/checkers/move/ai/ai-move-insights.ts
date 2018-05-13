@@ -10,7 +10,7 @@ export class AiMoveInsights implements IMovePicker {
         this._rankMap = moveRankMap;
     }
 
-    calcBestMove(moves: MoveDescriptor[]): MoveDescriptor {
+    public calcBestMove(moves: MoveDescriptor[]): MoveDescriptor {
         return moves.reduce((prev, current) => this._rankMap[prev.type] > this._rankMap[current.type] ? prev : current);
     }
 
