@@ -15,8 +15,30 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
-                loader: 'awesome-typescript-loader'
+                test: /\.worker\.js$/,
+                use: { loader: 'worker-loader' }
+            },
+            {
+                enforce: 'pre',
+                test: /\.js$/,
+                use: "source-map-loader"
+            },
+            {
+                enforce: 'pre',
+                test: /\.ts?$/,
+                use: "source-map-loader"
+            },
+            {
+                test: /\.ts?$/,
+                use: [
+                    {
+                        loader: 'awesome-typescript-loader',
+                        options: {
+                            configFileName: 'tsconfig.json'
+                        }
+                    }
+                ],
+                exclude: /(?:node_modules)/,
             },
             {
                 test: /\.scss$/,
@@ -46,7 +68,7 @@ module.exports = {
             path.resolve(__dirname, "app")
         ],
     },
-    devtool: 'source-map',
+    devtool: 'inline-source-map',
     performance: {
         hints: "warning", // enum
         maxAssetSize: 200000, // int (in bytes),

@@ -9,6 +9,7 @@ import { IBoardController } from "../../../common/interfaces/i-board-controller"
 import { AiMoveDescriptor } from "./ai-move-descriptor";
 import { IMovePicker } from "../../interfaces/i-move-picker";
 import { AiMoveInsights } from "./ai-move-insights";
+import AiRunnerWorker from "worker-loader!../../../workers/checkers/ai-move-worker";
 
 export class AiMoveRunner {
     private _root: AiMoveDescriptor;
@@ -25,7 +26,6 @@ export class AiMoveRunner {
 
     async calculate(): Promise<AiMoveDescriptor> {
         await this.aiMoveRunner(1, this._root);
-
         return this._root;
     }
 
@@ -47,6 +47,7 @@ export class AiMoveRunner {
             this._boardController.doMove(bestCouterMove);
             move.boardState = board.immutableBoard;
             this._root.add(move);
+            const worker: Worker = new AiRunnerWorker();
             this.aiMoveRunner(depth++, move);
         });
     }

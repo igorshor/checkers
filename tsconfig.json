@@ -7,10 +7,12 @@
         "preserveConstEnums": true,
         "sourceMap": true,
         "downlevelIteration": true,
+        "allowSyntheticDefaultImports":true,
         "typeRoots": [
             "./node_modules/@types"
         ],
         "lib": [
+            "webworker",
             "es2015",
             "dom"
         ]

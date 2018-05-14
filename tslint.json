@@ -83,7 +83,7 @@
             "check-type"
         ],
 
-        "no-implicit-dependencies": [true, "dev"],
+        "no-implicit-dependencies": [false, "dev"],
         "object-literal-key-quotes": [true, "consistent-as-needed"],
         "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
 
