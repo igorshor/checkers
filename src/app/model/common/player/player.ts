@@ -9,12 +9,12 @@ export class Player<T extends IIdentible> implements IIdentible {
         public id: any,
         public base: number,
         public direction: DirectionsDefinition,
-        private _moveManager: IMoveStrategy<T>) {
+        private _moveStrategy: IMoveStrategy<T>) {
 
     }
 
     async play(): Promise<Cell<T>[]> {
-        return this._moveManager.play();
+        return this._moveStrategy.play();
     }
 }
 

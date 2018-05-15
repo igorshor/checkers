@@ -1,7 +1,7 @@
 import { Board } from "./common/board/board";
 import { Checker } from "./checkers/board/checker";
 import { IMoveStrategy } from "./common/interfaces/i-move-strategy";
-import { GameStateManager } from "./common/game/game-state";
+import { GameStateManager } from "./common/game/game-state-manager";
 import { PlayersManager } from "./common/player/players-manager";
 import { GameManager } from "./common/game/game-manager";
 import { MoveManager } from "./common/move/move-manager";
@@ -18,7 +18,7 @@ import { Player, AiPlayer } from "./common/player/player";
 import { CheckersPositionStrategy } from "./checkers/board/checkers-position-strategy";
 import { CheckrsCellBuilder } from "./common/builders/checkers-cell-builder";
 import { BoardController } from "./checkers/board/board-controller";
-
+import { CheckersGameAnalyzer } from "./checkers/game/checkers-game-analyzer";
 
 export class Model {
     private _board: Board<Checker>;
@@ -39,7 +39,8 @@ export class Model {
     }
 
     private setGameComponents() {
-        this._gameManager = new GameManager(this._gameState, this._playersManager, this._moveManager);
+        const gameAnalyzer = new CheckersGameAnalyzer(this._board, this._playersManager);
+        this._gameManager = new GameManager(this._gameState, this._playersManager, this._moveManager, gameAnalyzer);
     }
 
     private setMoveComponents(configurations: Configurations) {

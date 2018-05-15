@@ -2,7 +2,7 @@ import { IMoveStrategy } from "../../../common/interfaces/i-move-strategy";
 import { SelectDescriptor } from "../../../common/descriptor/select-descriptor";
 import { Subscription } from "@reactivex/rxjs";
 import { Checker } from "../../board/checker";
-import { GameStateManager } from "../../../common/game/game-state";
+import { GameStateManager } from "../../../common/game/game-state-manager";
 import { Board } from "../../../common/board/board";
 import { IMoveValidator } from "../../../common/interfaces/i-move-validator-interceptorr";
 import { IMoveAnalyzer } from "../../../common/interfaces/i-move-analyzer";

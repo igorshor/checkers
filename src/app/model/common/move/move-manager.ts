@@ -1,4 +1,4 @@
-import { GameStateManager } from "../game/game-state";
+import { GameStateManager } from "../game/game-state-manager";
 import { GameStage } from "../game/game-stage";
 import { Player } from "../player/player";
 import { PlayersManager } from "../player/players-manager";
@@ -9,8 +9,8 @@ export class MoveManager<T extends IIdentible> {
     private _gameStage: GameStage;
 
     constructor(private _state: GameStateManager<T>, private _playersManager: PlayersManager<T>) {
-        this._state.gameStage.subscribe(stage => this._gameStage = stage);
-        this._state.player.first().subscribe(player => this._currentPlayer = player);
+        this._state.gameStage.subscribe(stageDescriptor => this._gameStage = stageDescriptor.gameStage);
+        this._state.currentPlayer.first().subscribe(player => this._currentPlayer = player);
     }
 
     async start(): Promise<void> {
