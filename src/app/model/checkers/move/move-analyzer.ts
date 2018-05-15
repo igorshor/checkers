@@ -9,6 +9,7 @@ import { CheckerState } from "../board/checker-state";
 import { DirectionsDefinition, MoveDirectionsDefinition } from "../../common/move/move-direction";
 import { PlayersManager } from "../../common/player/players-manager";
 import { IMoveValidator } from "../../common/interfaces/i-move-validator-interceptorr";
+import { Player } from "../../common/player/player";
 
 interface IFromTo<T> {
     from: T;
@@ -66,7 +67,18 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         });
     }
 
-    getPossibleMoves(select: SelectDescriptor, board: Board<Checker>): MoveDescriptor[] {
+    getPossibleMovesByPlayer(player: Player<Checker>, board: Board<Checker>): MoveDescriptor[] {
+        const playerCells = board.select(cell => cell.element && cell.element.id === player.id);
+        let possibleMoves: MoveDescriptor[];
+        playerCells.forEach(cell => {
+            const select = new SelectDescriptor(cell.position, player.id, cell.element.id, player.direction);
+            possibleMoves = this.getPossibleMovesBySelect(select, board);
+        });
+
+        return possibleMoves;
+    }
+
+    getPossibleMovesBySelect(select: SelectDescriptor, board: Board<Checker>): MoveDescriptor[] {
         const fromChecker = board.getCellByPosition(select.from).element;
         const unCheckedPosibleNextMoves = [];
         if (fromChecker.state === CheckerState.Super) {

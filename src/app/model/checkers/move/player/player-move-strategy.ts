@@ -107,7 +107,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
             throw new Error('no id');
         }
         const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, this._playersManager.current.direction, cell.element.id);
-        const moves = this._moveAnalizer.getPossibleMoves(selectDescriptor, this._board);
+        const moves = this._moveAnalizer.getPossibleMovesBySelect(selectDescriptor, this._board);
 
         return moves.map(move => new PositionDefinition(move.to.x, move.to.y));
     }

@@ -34,13 +34,13 @@ export class AiMoveRunner {
             return;
         }
         const board = parent.boardState;
-        const possibleMoves = this.getPosiibleMoves(this._players.current, board)
+        const possibleMoves = this._moveAnalizer.getPossibleMovesByPlayer(this._players.current, board)
             .map(move => new AiMoveDescriptor(move, parent));
 
         possibleMoves.forEach(move => {
             this._boardController.doMove(move);
             move.boardState = board.immutableBoard;
-            const counterMove = this.getPosiibleMoves(this._players.opponent, board);
+            const counterMove = this._moveAnalizer.getPossibleMovesByPlayer(this._players.opponent, board);
             const bestCouterMove = this._movePicker.calcBestMove(counterMove);
             move.counterMove = bestCouterMove;
             this._players.switch();
@@ -50,16 +50,5 @@ export class AiMoveRunner {
             const worker: Worker = new AiRunnerWorker();
             this.aiMoveRunner(depth++, move);
         });
-    }
-
-    private getPosiibleMoves(player: Player<Checker>, board: Board<Checker>): MoveDescriptor[] {
-        const playerCells = board.select(cell => cell.element && cell.element.id === player.id);
-        let possibleMoves: MoveDescriptor[];
-        playerCells.forEach(cell => {
-            const select = new SelectDescriptor(cell.position, player.id, cell.element.id, player.direction);
-            possibleMoves = this._moveAnalizer.getPossibleMoves(select, board);
-        });
-
-        return possibleMoves;
     }
 }
