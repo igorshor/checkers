@@ -10,7 +10,6 @@ import { GameStateDescriptor } from "./game-state-descriptor";
 
 
 export class GameManager<T extends IIdentible> {
-    private _currentPlayer: Player<T>;
     private _gameStage: GameStage;
     private _gameState: GameState;
 
@@ -18,20 +17,29 @@ export class GameManager<T extends IIdentible> {
         private _playersManager: PlayersManager<T>,
         private _moveManager: MoveManager<T>,
         private _gameAnalyzer: IGameAnalyzer<T>) {
-        this._state.beforePlayerChanged.subscribe(() => {
-            this._gameState = this._gameAnalyzer.getGameState();
-
-            if (this._gameState === GameState.Game) {
-                return;
-            }
-
-            const result = new GameStateDescriptor(GameStage.Finish);
-            this._state.updateGameState(result);
-        });
+        this._state.beforePlayerChanged.subscribe(() => this.checkGameStateBeforeContinue());
     }
 
     startNewGame() {
-        this._state.currentPlayer.subscribe(player => this._currentPlayer = player);
+        this._state.updateGameState(new GameStateDescriptor<T>(GameStage.Game));
         this._moveManager.start();
+    }
+
+    private checkGameStateBeforeContinue() {
+        this._gameState = this._gameAnalyzer.getGameState();
+
+        if (this._gameState === GameState.Game) {
+            return;
+        }
+
+        const result = new GameStateDescriptor<T>(GameStage.Finish);
+
+        if (this._gameState === GameState.Winner) {
+            result.winner = this._playersManager.current;
+        } else if (this._gameState === GameState.Draw) {
+            result.draw = true;
+        }
+
+        this._state.updateGameState(result);
     }
 }

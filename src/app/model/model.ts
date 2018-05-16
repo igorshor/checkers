@@ -28,18 +28,26 @@ export class Model {
     private _playersManager: PlayersManager<Checker>;
     private _gameManager: GameManager<Checker>;
     private _moveManager: MoveManager<Checker>;
+    private _moveAnalizer: MoveAnalyzer;
 
-    constructor(configurations: Configurations) {
+    constructor(private _configurations: Configurations) {
+    }
+
+    public init() {
         this._gameState = new GameStateManager();
 
-        this.setBoard(configurations.size);
-        this.setMoveComponents(configurations);
+        this.setBoard(this._configurations.size);
+        this.setMoveComponents(this._configurations);
         this.setGameComponents();
-        this.setPlayers(configurations);
+        this.setPlayers(this._configurations);
+    }
+
+    public start() {
+        this._gameManager.startNewGame();
     }
 
     private setGameComponents() {
-        const gameAnalyzer = new CheckersGameAnalyzer(this._board, this._playersManager);
+        const gameAnalyzer = new CheckersGameAnalyzer(this._board, this._moveAnalizer, this._playersManager);
         this._gameManager = new GameManager(this._gameState, this._playersManager, this._moveManager, gameAnalyzer);
     }
 
@@ -51,10 +59,10 @@ export class Model {
         moveValidator.append(new DirectionValidator());
         moveValidator.append(new DistanceValidator());
 
-        const moveAnalizer = new MoveAnalyzer(this._playersManager, moveValidator);
-        const boardController = new BoardController(this._board, moveAnalizer, this._playersManager);
-        this._playerMoveStrategy = new PlayerMoveStrategy(this._gameState, moveValidator, moveAnalizer, this._playersManager, boardController);
-        this._computerMoveStrategy = new AiMoveStrategy(this._gameState, moveValidator, moveAnalizer, this._playersManager, configurations.level, boardController);
+        this._moveAnalizer = new MoveAnalyzer(this._playersManager, moveValidator);
+        const boardController = new BoardController(this._board, this._moveAnalizer, this._playersManager);
+        this._playerMoveStrategy = new PlayerMoveStrategy(this._gameState, moveValidator, this._moveAnalizer, this._playersManager, boardController);
+        this._computerMoveStrategy = new AiMoveStrategy(this._gameState, moveValidator, this._moveAnalizer, this._playersManager, configurations.level, boardController);
         this._moveManager = new MoveManager(this._gameState, this._playersManager);
     }
 

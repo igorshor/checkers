@@ -1,5 +1,5 @@
 import { Player } from "./player";
-import { GameStateManager } from "../game/game-state";
+import { GameStateManager } from "../game/game-state-manager";
 import { IIdentible } from "../interfaces/i-Identible";
 
 export class Players<T extends IIdentible> {

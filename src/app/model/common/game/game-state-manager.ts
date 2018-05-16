@@ -8,7 +8,7 @@ import { GameStateDescriptor } from './game-state-descriptor';
 
 export class GameStateManager<T extends IIdentible> {
     private _currentPlayerChanged = new Subject<Player<T>>();
-    private _gameState = new BehaviorSubject<GameStateDescriptor>(new GameStateDescriptor());
+    private _gameState = new BehaviorSubject<GameStateDescriptor<T>>(new GameStateDescriptor());
     private _cellChanged = new Subject<Cell<T>>();
     private _cellsChanged = new Subject<Cell<T>[]>();
     private _boardChanged = new Subject<Cell<T>[][]>();
@@ -39,11 +39,11 @@ export class GameStateManager<T extends IIdentible> {
         return this._currentPlayerChanged.asObservable();
     }
 
-    public updateGameState(value: GameStateDescriptor) {
+    public updateGameState(value: GameStateDescriptor<T>) {
         this._gameState.next(value);
     }
 
-    get gameStage(): Observable<GameStateDescriptor> {
+    get gameStage(): Observable<GameStateDescriptor<T>> {
         return this._gameState.asObservable();
     }
 
