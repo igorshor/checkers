@@ -21,9 +21,12 @@ export class ConsumerApi {
     private init() {
         this._state.currentPlayer.subscribe(player => this._currentPlayer = player);
         this._state.gameStage.subscribe(game => this._game.next(new GameEvent(game.gameStage, game.winner, game.draw)));
-        this._state.cells.subscribe((cells: Cell<Checker>[]) => this._change.next(new ChangeEvent(this._currentPlayer.publicId, [
-            ...cells.map(cell => new CheckerEvent(cell.position, cell.element ? cell.element.id : this._currentPlayer.id, cell.type, cell.state === CellState.Prediction))
-        ])));
+        this._state.cells.subscribe((cells: Cell<Checker>[]) => this._change
+            .next(new ChangeEvent(new PlayerEvent(this._currentPlayer.publicId, this._currentPlayer.name),
+                cells
+                    .map(cell => new CheckerEvent(cell.position, cell.element ? cell.element.id : this._currentPlayer.id, cell.type, cell.state === CellState.Prediction))
+            )));
+
         this._state.board.subscribe((cells: Cell<Checker>[][]) => this._board
             .next(new BoardEvent(
                 cells
