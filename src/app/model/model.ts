@@ -30,16 +30,17 @@ export class Model {
     private _moveManager: MoveManager<Checker>;
     private _moveAnalizer: MoveAnalyzer;
 
-    constructor(private _configurations: Configurations) {
+    get gameState(): GameStateManager<Checker> {
+        return this._gameState;
     }
 
-    public init(): GameStateManager<Checker> {
+    public init(configurations: Configurations): GameStateManager<Checker> {
         this._gameState = new GameStateManager();
 
-        this.setBoard(this._configurations);
-        this.setMoveComponents(this._configurations);
+        this.setBoard(configurations);
+        this.setMoveComponents(configurations);
         this.setGameComponents();
-        this.setPlayers(this._configurations);
+        this.setPlayers(configurations);
 
         return this._gameState;
     }
