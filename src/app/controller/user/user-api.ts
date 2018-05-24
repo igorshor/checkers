@@ -1,4 +1,4 @@
-import { Configurations } from "../models/game-configurations";
+import { Configurations } from "../../model/models/game-configurations";
 
 export class UserApi {
     private _configurations: Configurations;

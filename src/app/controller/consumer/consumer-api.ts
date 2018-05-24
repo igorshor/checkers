@@ -1,14 +1,14 @@
 import { Observable, Subject } from "@reactivex/rxjs";
-import { GameStateManager } from "../../common/game/game-state-manager";
+import { GameStateManager } from "../../model/common/game/game-state-manager";
 import { PlayerEvent } from "../models/player-event";
 import { GameEvent } from "../models/game-event";
-import { Cell } from "../../common/board/cell";
-import { Checker } from "../../checkers/board/checker";
+import { Cell } from "../../model/common/board/cell";
+import { Checker } from "../../model/checkers/board/checker";
 import { CheckerEvent } from "../models/checker-event";
 import { BoardEvent } from "../models/board-event";
-import { Player } from "../../common/player/player";
+import { Player } from "../../model/common/player/player";
 import { ChangeEvent } from "../models/change-event";
-import { CellState } from "../../common/board/cell-state";
+import { CellState } from "../../model/common/board/cell-state";
 
 export class ConsumerApi {
     private _change = new Subject<ChangeEvent>();

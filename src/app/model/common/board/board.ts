@@ -9,7 +9,7 @@ export class Board<T extends IIdentible> {
     private _cells: Cell<T>[][];
     public elementsMap: { [id: number]: T[] };
 
-    constructor(public size: number,
+    constructor(public width: number, public height: number,
         private positionStrategy: IPositionStrategy,
         private _identibles: IIdentible[],
         private _cellBuilder: CellBuilder<T>) {
@@ -20,9 +20,9 @@ export class Board<T extends IIdentible> {
     }
 
     get immutableCells(): Cell<T>[][] {
-        const cells: Cell<T>[][] = new Array(this.size).fill([]);
-        for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j < this.size; j++) {
+        const cells: Cell<T>[][] = new Array(this.height).fill([]);
+        for (let i = 0; i < this.height; i++) {
+            for (let j = 0; j < this.width; j++) {
                 const cell = this.cells[i][j];
                 cells[i][j] = new Cell<T>(new PositionDefinition(cell.position.x, cell.position.y), cell.type, cell.element);
                 cells[i][j].state = cell.state;
@@ -33,7 +33,7 @@ export class Board<T extends IIdentible> {
     }
 
     get immutableBoard(): Board<T> {
-        const board = new Board<T>(this.size, this.positionStrategy, this._identibles, this._cellBuilder);
+        const board = new Board<T>(this.width, this.height, this.positionStrategy, this._identibles, this._cellBuilder);
         board.restore(this.immutableCells);
 
         return board;
@@ -47,9 +47,9 @@ export class Board<T extends IIdentible> {
         this.elementsMap = {};
         this._identibles.forEach((identible: IIdentible) => this.elementsMap[identible.id] = []);
 
-        this._cells = new Array(this.size).fill([]);
-        for (let i = 0; i < this.size; i++) {
-            for (let j = 0; j < this.size; j++) {
+        this._cells = new Array(this.height).fill([]);
+        for (let i = 0; i < this.height; i++) {
+            for (let j = 0; j < this.width; j++) {
                 const position = new PositionDefinition(j, i, 1);
                 const cell = this._cellBuilder.build(this.positionStrategy, position);
 

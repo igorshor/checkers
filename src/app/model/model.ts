@@ -5,7 +5,7 @@ import { GameStateManager } from "./common/game/game-state-manager";
 import { PlayersManager } from "./common/player/players-manager";
 import { GameManager } from "./common/game/game-manager";
 import { MoveManager } from "./common/move/move-manager";
-import { Configurations } from "./api/models/game-configurations";
+import { Configurations } from "./models/game-configurations";
 import { MoveValidator } from "./common/descriptor/move-validator";
 import { BoundariesValidator } from "./common/move/move-validators/boundaries-validator";
 import { DirectionValidator } from "./checkers/move/move-validators/direction-validator";
@@ -33,13 +33,15 @@ export class Model {
     constructor(private _configurations: Configurations) {
     }
 
-    public init() {
+    public init(): GameStateManager<Checker> {
         this._gameState = new GameStateManager();
 
-        this.setBoard(this._configurations.size);
+        this.setBoard(this._configurations);
         this.setMoveComponents(this._configurations);
         this.setGameComponents();
         this.setPlayers(this._configurations);
+
+        return this._gameState;
     }
 
     public start() {
@@ -62,23 +64,30 @@ export class Model {
         this._moveAnalizer = new MoveAnalyzer(this._playersManager, moveValidator);
         const boardController = new BoardController(this._board, this._moveAnalizer, this._playersManager);
         this._playerMoveStrategy = new PlayerMoveStrategy(this._gameState, moveValidator, this._moveAnalizer, this._playersManager, boardController);
-        this._computerMoveStrategy = new AiMoveStrategy(this._gameState, moveValidator, this._moveAnalizer, this._playersManager, configurations.level, boardController);
+
+        if (configurations.players[1].computer) {
+            this._computerMoveStrategy = new AiMoveStrategy(this._gameState, moveValidator, this._moveAnalizer, this._playersManager, configurations.players[1].computerLevel, boardController);
+        }
+
         this._moveManager = new MoveManager(this._gameState, this._playersManager);
     }
 
     private setPlayers(configurations: Configurations) {
         const players = [];
-        players.push(new Player(configurations.players[0], 1, 1, DirectionsDefinition.Up, this._playerMoveStrategy));
-        players.push(configurations.computer ?
-            new AiPlayer('computer', 2, configurations.size, DirectionsDefinition.Down, this._computerMoveStrategy) :
-            new Player(configurations.players[1], 2, configurations.size, DirectionsDefinition.Down, this._playerMoveStrategy));
+        players.push(new Player(configurations.players[0].name, 1, configurations.players[0].id, 1, DirectionsDefinition.Up, this._playerMoveStrategy));
+        players.push(configurations.players[1].computer ?
+            new AiPlayer(configurations.players[1].name || 'computer', 2, configurations.players[1].id, configurations.height, DirectionsDefinition.Down, this._computerMoveStrategy) :
+            new Player(configurations.players[1].name, 2, configurations.players[1].id, configurations.height, DirectionsDefinition.Down, this._playerMoveStrategy));
 
         this._playersManager.addPlayer(players[0]);
         this._playersManager.addPlayer(players[1]);
         this._gameState.updateCurrentPlayer(players[0]);
     }
-
-    private setBoard(size: number) {
-        this._board = new Board<Checker>(size, new CheckersPositionStrategy(size, this._playersManager), this._playersManager.players, new CheckrsCellBuilder());
+    private setBoard(configurations: Configurations) {
+        this._board = new Board<Checker>(configurations.width,
+            configurations.height,
+            new CheckersPositionStrategy(configurations.width, configurations.height, this._playersManager),
+            this._playersManager.players,
+            new CheckrsCellBuilder());
     }
 }

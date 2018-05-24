@@ -15,7 +15,7 @@ export class CheckersPositionStrategy implements IPositionStrategy {
     private _validRows: { [key: number]: IValidPlayerPosition };
     private _players: Player<Checker>[];
 
-    constructor(private _size: number, _playersManager: PlayersManager<Checker>) {
+    constructor(public width: number, public height: number, _playersManager: PlayersManager<Checker>) {
         this._players = _playersManager.players;
         this.calcValidRowsToInitPosition();
 
@@ -24,12 +24,12 @@ export class CheckersPositionStrategy implements IPositionStrategy {
     private calcValidRowsToInitPosition() {
         const delta = 1;
         this._validRows = {};
-        const maxValidRow = Math.floor(this._size * 0.4);
-        for (let i = 0 + delta; i <= this._size; i++) {
+        const maxValidRow = Math.floor(this.height * 0.4);
+        for (let i = 0 + delta; i <= this.height; i++) {
             if (i <= maxValidRow) {
                 this._validRows[i] = { valid: true, player: this._players[1].id };
             }
-            else if (i >= this._size - maxValidRow) {
+            else if (i >= this.height - maxValidRow) {
                 this._validRows[i] = { valid: true, player: this._players[0].id };
             }
             else {
