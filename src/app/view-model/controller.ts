@@ -2,10 +2,12 @@ import { Model } from "../model";
 import { View } from "../view";
 
 import { Configurations } from "../model/models/game-configurations";
+import { ViewModel } from "./view-model";
 
 export class Controller {
-    constructor(private _model: Model, private _vire: View) {
-
+    public viewModel: ViewModel;
+    constructor(private _model: Model) {
+        this.viewModel = new ViewModel(_model.gameState);
     }
 
     public set(configurations: Configurations): void {

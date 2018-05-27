@@ -15,6 +15,10 @@ export class GameStateManager<T extends IIdentible> {
     private _selectionChanged = new Subject<SelectDescriptor>();
     private _beforePlayerChanged = new Subject<void>();
 
+    constructor(public readonly height: number, public readonly width: number) {
+
+    }
+
     public updateSelection(value: SelectDescriptor) {
         this._selectionChanged.next(value);
     }

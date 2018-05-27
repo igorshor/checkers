@@ -10,7 +10,7 @@ import { Player } from "../model/common/player/player";
 import { ChangeEvent } from "./models/change-event";
 import { CellState } from "../model/common/board/cell-state";
 
-export class Api {
+export class ViewModel {
     private _change = new Subject<ChangeEvent>();
     private _game = new Subject<GameEvent>();
     private _board = new Subject<BoardEvent>();
@@ -32,7 +32,7 @@ export class Api {
                 cells
                     .map(i => i
                         .map(j => new CheckerEvent({ x: j.position.x, y: j.position.y }, j.element.id, j.type)
-                        )))));
+                        )), this._state.width, this._state.height)));
     }
 
     get change() {

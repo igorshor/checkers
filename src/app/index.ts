@@ -1,5 +1,9 @@
 import { Model } from './model';
 import { View } from './view';
-import { Controller } from './controller';
+import { Controller } from './view-model';
 
-const view = new View();
+const boardSize = 10;
+
+const model = new Model(boardSize, boardSize);
+const controller = new Controller(model);
+const view = new View(controller);

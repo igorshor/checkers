@@ -30,14 +30,16 @@ export class Model {
     private _moveManager: MoveManager<Checker>;
     private _moveAnalizer: MoveAnalyzer;
 
+    constructor(public height: number, public width: number) {
+        this._gameState = new GameStateManager(height, width);
+        this.setBoard(height, width);
+    }
+
     get gameState(): GameStateManager<Checker> {
         return this._gameState;
     }
 
     public init(configurations: Configurations): GameStateManager<Checker> {
-        this._gameState = new GameStateManager();
-
-        this.setBoard(configurations);
         this.setMoveComponents(configurations);
         this.setGameComponents();
         this.setPlayers(configurations);
@@ -84,10 +86,9 @@ export class Model {
         this._playersManager.addPlayer(players[1]);
         this._gameState.updateCurrentPlayer(players[0]);
     }
-    private setBoard(configurations: Configurations) {
-        this._board = new Board<Checker>(configurations.width,
-            configurations.height,
-            new CheckersPositionStrategy(configurations.width, configurations.height, this._playersManager),
+    private setBoard(height: number, width: number) {
+        this._board = new Board<Checker>(width, height,
+            new CheckersPositionStrategy(width, height, this._playersManager),
             this._playersManager.players,
             new CheckrsCellBuilder());
     }
