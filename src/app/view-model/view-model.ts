@@ -46,4 +46,12 @@ export class ViewModel {
     get board(): Observable<BoardEvent> {
         return this._board.asObservable();
     }
+
+    get width(): number {
+        return this._state.width;
+    }
+
+    get height(): number {
+        return this._state.height;
+    }
 }
