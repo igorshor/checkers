@@ -27,6 +27,6 @@ export class Updater {
     };
 
     public static game = (gameEvent: GameEvent, board: Board): void => {
-
+        // todo
     };
 }

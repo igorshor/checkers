@@ -1,1 +1,1 @@
-export { Controller } from './controller'
+export { ViewModel } from './view-model';
