@@ -9,7 +9,7 @@ export class Board<T extends IIdentible> {
     private _cells: Cell<T>[][];
     public elementsMap: { [id: number]: T[] };
 
-    constructor(public width: number, public height: number,
+    constructor(public readonly width: number, public readonly height: number,
         private positionStrategy: IPositionStrategy,
         private _identibles: IIdentible[],
         private _cellBuilder: CellBuilder<T>) {
