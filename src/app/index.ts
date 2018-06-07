@@ -6,6 +6,6 @@ import { ViewModel } from './view-model';
 const boardSize = 10;
 
 const model = new Model(boardSize, boardSize);
-const viewModel = new ViewModel(model);
+const viewModel = new ViewModel(model.gameState);
 const view = new View(viewModel);
 const controller = new Controller(model, view);

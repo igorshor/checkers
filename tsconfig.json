@@ -1,5 +1,5 @@
 {
-    "compilerOptions": {
+    "compilerOptions": {        
         "module": "CommonJS",
         "target": "es2015",
         "noImplicitAny": true,
@@ -7,7 +7,10 @@
         "preserveConstEnums": true,
         "sourceMap": true,
         "downlevelIteration": true,
-        "allowSyntheticDefaultImports":true,
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "allowJs": true,
+        "jsx": "react",
         "typeRoots": [
             "./node_modules/@types"
         ],
@@ -18,10 +21,6 @@
         ]
     },
     "include": [
-        "src/**/*.ts"
-    ],
-    "exclude": [
-        "./node_modules",
-        "**/*.spec.ts"
+        "src/**/*"
     ]
 }
