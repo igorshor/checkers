@@ -12,3 +12,19 @@ html, body {
         margin: auto; 
     }
 }
+
+.board{
+     color:red;
+     &__row{
+         color:blue;
+     }
+     &--mod{
+         color:green
+     }
+     &--mod &{
+        &__element{
+            color:cyan;
+        }
+        color:green
+    }
+}

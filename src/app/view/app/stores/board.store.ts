@@ -1,7 +1,7 @@
 import { observable, computed, reaction, action } from 'mobx';
 import { Board } from '../../models/board.model';
 import { ViewModel } from '../../../view-model';
-import { Cell } from '../../models/cell.model';
+import { Cell, CellType } from '../../models/cell.model';
 import { BoardEvent } from '../../../view-model/models/board-event';
 import { CheckerEvent } from '../../../view-model/models/checker-event';
 import { ChangeEvent } from '../../../view-model/models/change-event';
@@ -33,21 +33,26 @@ export class BoardStore {
 
     @action
     private init() {
-        this.board = {
-            cells: this.initCells()
-        };
+        this.board = this.initBoard();
     }
 
-    private initCells(): Cell[][] {
+    private initBoard(): Board {
+        const flatCells = [];
         const cells: Cell[][] = new Array(this._viewModel.height).fill([]);
+
         for (let i = 0; i < this._viewModel.height; i++) {
             for (let j = 0; j < this._viewModel.width; j++) {
-                cells[i][j] = {
+                const cell = {
+                    id: i + j + '',
+                    type: i % 2 && j % 2 ? CellType.White : CellType.Black,
                     position: { y: i, x: j }
                 };
+
+                cells[i][j] = cell;
+                flatCells.push(cell);
             }
         }
 
-        return cells;
+        return { cells, flatCells };
     }
 }
