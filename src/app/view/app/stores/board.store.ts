@@ -42,9 +42,10 @@ export class BoardStore {
         const cells: Cell[][] = new Array(this._viewModel.height).fill([]);
 
         for (let i = 0; i < this._viewModel.height; i++) {
+            cells[i] = [];
             for (let j = 0; j < this._viewModel.width; j++) {
                 const cell = {
-                    id: i + j + '',
+                    id: (i * 10) + (j + 1) + '',
                     type: i % 2 && j % 2 ? CellType.White : CellType.Black,
                     position: { y: i, x: j }
                 };
