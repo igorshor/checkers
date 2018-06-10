@@ -1,5 +1,5 @@
-import ReactDOM from 'react-dom';
-import React from 'react';
+import * as ReactDOM from 'react-dom';
+import * as React from 'react';
 import { ViewModel } from '../view-model/view-model';
 import { Board } from '../model/common/board/board';
 import { AppComponent, AppProps } from './app/app.component';

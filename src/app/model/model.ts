@@ -32,6 +32,8 @@ export class Model {
 
     constructor(public height: number, public width: number) {
         this._gameState = new GameStateManager(height, width);
+        this._playersManager = new PlayersManager(this._gameState);
+
         this.setBoard(height, width);
     }
 
@@ -57,7 +59,6 @@ export class Model {
     }
 
     private setMoveComponents(configurations: Configurations) {
-        this._playersManager = new PlayersManager(this._gameState);
         const moveValidator = new MoveValidator<Checker>();
 
         moveValidator.append(new BoundariesValidator());
@@ -88,7 +89,7 @@ export class Model {
     }
     private setBoard(height: number, width: number) {
         this._board = new Board<Checker>(width, height,
-            new CheckersPositionStrategy(width, height, this._playersManager),
+            new CheckersPositionStrategy(width, height),
             this._playersManager.players,
             new CheckrsCellBuilder());
     }

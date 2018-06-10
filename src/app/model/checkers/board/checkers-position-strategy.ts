@@ -8,17 +8,15 @@ import { PositionType } from "../../common/board/position-type";
 
 interface IValidPlayerPosition {
     valid: boolean;
-    player: Player<Checker>;
+    player: boolean;
 }
 
 export class CheckersPositionStrategy implements IPositionStrategy {
     private _validRows: { [key: number]: IValidPlayerPosition };
     private _players: Player<Checker>[];
 
-    constructor(public width: number, public height: number, _playersManager: PlayersManager<Checker>) {
-        this._players = _playersManager.players;
+    constructor(public width: number, public height: number) {
         this.calcValidRowsToInitPosition();
-
     }
 
     private calcValidRowsToInitPosition() {
@@ -26,11 +24,8 @@ export class CheckersPositionStrategy implements IPositionStrategy {
         this._validRows = {};
         const maxValidRow = Math.floor(this.height * 0.4);
         for (let i = 0 + delta; i <= this.height; i++) {
-            if (i <= maxValidRow) {
-                this._validRows[i] = { valid: true, player: this._players[1].id };
-            }
-            else if (i >= this.height - maxValidRow) {
-                this._validRows[i] = { valid: true, player: this._players[0].id };
+            if (i <= maxValidRow || i >= this.height - maxValidRow) {
+                this._validRows[i] = { valid: true, player: true };
             }
             else {
                 this._validRows[i] = { valid: false, player: undefined };
