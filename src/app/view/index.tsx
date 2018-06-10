@@ -1,10 +1,11 @@
+import ReactDOM from 'react-dom';
+import React from 'react';
 import { ViewModel } from '../view-model/view-model';
 import { Board } from '../model/common/board/board';
 import { AppComponent, AppProps } from './app/app.component';
-import ReactDOM from 'react-dom';
 import { BoardStore } from './app/stores/board.store';
-
-
+import { GameStore } from './app/stores/game.store';
+import { PlayersStore } from './app/stores/players.store';
 
 export class View {
 	private _appProps: AppProps;
@@ -17,8 +18,10 @@ export class View {
 	// tslint:disable-next-line:indent
 	private createStores() {
 		this._appProps = {
-			boardStore: new BoardStore(this._viewModel);
-		}
+			boardStore: new BoardStore(this._viewModel),
+			gameStore: new GameStore(),
+			playersStore: new PlayersStore(this._viewModel),
+		};
 	}
 
 	private bootstrap() {
@@ -28,7 +31,7 @@ export class View {
 				playersStore={this._appProps.playersStore}
 				boardStore={this._appProps.boardStore}
 			/>,
-			document.getElementById('checkers');
+			document.getElementById('game')
 		);
 	}
 }

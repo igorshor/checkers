@@ -3,42 +3,23 @@ const { CheckerPlugin } = require('awesome-typescript-loader');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
-    mode: "development", // "production" | "development" | "none"
-    entry: "./src/index.ts", // string | object | array
+    entry: "./src/index.ts",
     output: {
         path: path.resolve(__dirname, "dist"),
         filename: "bundle.js",
         publicPath: "/assets/",
         library: "checkers",
     },
-
+    devtool: 'inline-source-map',
     module: {
         rules: [
             {
                 test: /\.worker\.js$/,
-                use: { loader: 'worker-loader' }
+                loader: 'worker-loader'
             },
             {
-                enforce: 'pre',
-                test: /\.js$/,
-                use: "source-map-loader"
-            },
-            {
-                enforce: 'pre',
-                test: /\.ts?$/,
-                use: "source-map-loader"
-            },
-            {
-                test: /\.ts?$/,
-                use: [
-                    {
-                        loader: 'awesome-typescript-loader',
-                        options: {
-                            configFileName: 'tsconfig.json'
-                        }
-                    }
-                ],
-                exclude: /(?:node_modules)/,
+                test: /\.(ts|tsx)$/,
+                loader: 'awesome-typescript-loader',
             },
             {
                 test: /\.scss$/,
@@ -56,19 +37,17 @@ module.exports = {
             },
             {
                 test: /\.html$/,
-                use: ["html-loader"]
+                loader: "html-loader"
             }
         ]
     },
-
     resolve: {
-        extensions: ['.js', '.ts', '.tsx'],
+        extensions: ['.js', '.json', '.ts', '.tsx'],
         modules: [
             "node_modules",
             path.resolve(__dirname, "app")
         ],
     },
-    devtool: 'eval',
     performance: {
         hints: "warning", // enum
         maxAssetSize: 200000, // int (in bytes),

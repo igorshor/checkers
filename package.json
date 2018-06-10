@@ -4,7 +4,7 @@
   "description": "checkers game",
   "main": "index.ts",
   "scripts": {
-    "start": "webpack-dev-server --debug --devtool source-map --output-pathinfo --inline --hot --progress --open",
+    "start": "webpack-dev-server -d",
     "test": "test"
   },
   "repository": {

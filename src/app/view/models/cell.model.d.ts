@@ -1,8 +1,5 @@
 import { Position } from "./position.model";
-export enum CellType {
-    Black,
-    White
-}
+import { CellType } from "./cell-type.model";
 
 export interface Cell {
     id: string;

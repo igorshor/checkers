@@ -1,10 +1,11 @@
 import { observable, computed, reaction, action } from 'mobx';
+import { Cell } from '../../models/cell.model';
 import { Board } from '../../models/board.model';
 import { ViewModel } from '../../../view-model';
-import { Cell, CellType } from '../../models/cell.model';
 import { BoardEvent } from '../../../view-model/models/board-event';
 import { CheckerEvent } from '../../../view-model/models/checker-event';
 import { ChangeEvent } from '../../../view-model/models/change-event';
+import { CellType } from '../../models/cell-type.model';
 
 export class BoardStore {
     @observable board: Board;

@@ -1,7 +1,7 @@
+import * as React from 'react';
 import { GameStore } from './stores/game.store';
 import { PlayersStore } from './stores/players.store';
 import { BoardStore } from './stores/board.store';
-import React from 'react';
 
 export interface AppProps {
     gameStore: GameStore;
@@ -10,5 +10,7 @@ export interface AppProps {
 }
 
 export class AppComponent extends React.Component<AppProps, {}> {
-
+    render() {
+        return <div>dsadsadsdasd</div>;
+    }
 }

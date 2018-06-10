@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { BoardStore } from "../stores/board.store";
 import { Position } from "../../models/position.model";
-import { CellType } from "../../models/cell.model";
+import { CellType } from "../../models/cell-type.model";
 
 export interface CellProps {
     position: Position;

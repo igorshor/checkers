@@ -1,0 +1,19 @@
+.cell{
+    &--black{
+        background-color: black;
+    }
+
+    &--white{
+        background-color: white;
+    }
+
+    &_checker{
+        &--one{
+            background-color: red;
+        }
+    
+        &--too{
+            background-color: green;
+        }
+    }
+}
