@@ -46,7 +46,7 @@ export class BoardStore {
             for (let j = 0; j < this._viewModel.width; j++) {
                 const cell = {
                     id: (i * 10) + (j + 1) + '',
-                    type: i % 2 && j % 2 ? CellType.White : CellType.Black,
+                    type: (i + j) % 2 === 0 ? CellType.Black : CellType.White,
                     position: { y: i, x: j }
                 };
 

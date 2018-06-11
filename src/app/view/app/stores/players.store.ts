@@ -1,5 +1,5 @@
 import { Player } from "../../models/player.model";
-import { observable } from "mobx";
+import { observable, action } from "mobx";
 import { ViewModel } from "../../../view-model/view-model";
 import { ChangeEvent } from "../../../view-model/models/change-event";
 
@@ -11,5 +11,11 @@ export class PlayersStore {
         _viewModel.change.subscribe((changeEvent: ChangeEvent) => {
             this.currentPlayer = this.players[changeEvent.playerId.id];
         });
+    }
+
+    @action
+    public addPlayer(player: Player) {
+        this.players = this.players || {};
+        this.players[player.id] = player;
     }
 }

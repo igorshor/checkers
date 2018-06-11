@@ -1,7 +1,7 @@
 .board{
-    color:red;
+    align-self: center;
     &__row{
-        color:blue;
+        display: flex;
     }
     &--mod{
         color:green
@@ -10,6 +10,7 @@
        &__element{
            color:cyan;
        }
+       
        color:green
    }
 }

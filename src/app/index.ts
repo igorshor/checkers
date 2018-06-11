@@ -3,7 +3,7 @@ import { View } from './view';
 import { Controller } from './controller';
 import { ViewModel } from './view-model';
 
-const boardSize = 10;
+const boardSize = 8;
 
 const model = new Model(boardSize, boardSize);
 const viewModel = new ViewModel(model.gameState);

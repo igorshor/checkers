@@ -80,8 +80,8 @@ export class Model {
         const players = [];
         players.push(new Player(configurations.players[0].name, 1, configurations.players[0].id, 1, DirectionsDefinition.Up, this._playerMoveStrategy));
         players.push(configurations.players[1].computer ?
-            new AiPlayer(configurations.players[1].name || 'computer', 2, configurations.players[1].id, configurations.height, DirectionsDefinition.Down, this._computerMoveStrategy) :
-            new Player(configurations.players[1].name, 2, configurations.players[1].id, configurations.height, DirectionsDefinition.Down, this._playerMoveStrategy));
+            new AiPlayer(configurations.players[1].name || 'computer', 2, configurations.players[1].id, this.height, DirectionsDefinition.Down, this._computerMoveStrategy) :
+            new Player(configurations.players[1].name, 2, configurations.players[1].id, 0, DirectionsDefinition.Down, this._playerMoveStrategy));
 
         this._playersManager.addPlayer(players[0]);
         this._playersManager.addPlayer(players[1]);
