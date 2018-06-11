@@ -6,9 +6,9 @@ import { ChangeEvent } from "../../../view-model/models/change-event";
 export class PlayersStore {
     public players: { [id: string]: Player };
     @observable currentPlayer: Player;
-    constructor(private _viewModel: ViewModel) {
+    constructor(private vm: ViewModel) {
 
-        _viewModel.change.subscribe((changeEvent: ChangeEvent) => {
+        vm.change.subscribe((changeEvent: ChangeEvent) => {
             this.currentPlayer = this.players[changeEvent.playerId.id];
         });
     }

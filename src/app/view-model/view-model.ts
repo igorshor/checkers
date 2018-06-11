@@ -9,15 +9,30 @@ import { BoardEvent } from "./models/board-event";
 import { Player } from "../model/common/player/player";
 import { ChangeEvent } from "./models/change-event";
 import { CellState } from "../model/common/board/cell-state";
+import { Model } from "../model";
+import { View } from "../view";
 
-export class ViewModel {
+interface ModelEvents {
+    readonly change: Observable<ChangeEvent>;
+    readonly game: Observable<GameEvent>;
+    readonly board: Observable<BoardEvent>;
+}
+
+export class ViewModel implements ModelEvents {
     private _change = new Subject<ChangeEvent>();
     private _game = new Subject<GameEvent>();
     private _board = new Subject<BoardEvent>();
     private _currentPlayer: Player<Checker>;
-    constructor(private _state: GameStateManager<Checker>) {
+    private _state: GameStateManager<Checker>;
+    constructor(private _model: Model, private _view: View) {
+        this._state = this._model.gameState;
         this.init();
     }
+
+    public bootstrap() {
+        this._view.bootstrap(this);
+    }
+
     private init() {
         this._state.currentPlayer.subscribe(player => this._currentPlayer = player);
         this._state.gameStage.subscribe(game => this._game.next(new GameEvent(game.gameStage, game.winner, game.draw)));
@@ -35,7 +50,7 @@ export class ViewModel {
                         )), this._state.width, this._state.height)));
     }
 
-    get change() {
+    get change(): Observable<ChangeEvent> {
         return this._change.asObservable();
     }
 

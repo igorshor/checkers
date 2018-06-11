@@ -1,6 +1,7 @@
 import { observable, computed, reaction, action } from 'mobx';
 import { Board } from '../../models/board.model';
 import { Configurations } from '../../../model/models/game-configurations';
+import { ViewModel } from '../../../view-model/view-model';
 
 export enum GameState {
     Init,
@@ -13,7 +14,7 @@ export class GameStore {
     @observable configurations: Configurations;
 
 
-    constructor(state: GameState = GameState.Init) {
+    constructor(private vm: ViewModel, state: GameState = GameState.Init) {
         this.state = state;
     }
 

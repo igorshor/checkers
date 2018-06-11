@@ -7,31 +7,32 @@ import { BoardStore } from './app/stores/board.store';
 import { GameStore } from './app/stores/game.store';
 import { PlayersStore } from './app/stores/players.store';
 import { Provider } from 'mobx-react';
+import { Observable } from '@reactivex/rxjs';
 
 export interface AppStores {
-    gameStore: GameStore;
-    playersStore: PlayersStore;
-    boardStore: BoardStore;
+	gameStore: GameStore;
+	playersStore: PlayersStore;
+	boardStore: BoardStore;
 }
 
 export class View {
 	private _appProps: AppStores;
-	constructor(private _viewModel: ViewModel) {
-		// tslint:disable-next-line:indent
-		this.createStores();
-		this.bootstrap();
-	}
 
-	// tslint:disable-next-line:indent
-	private createStores() {
+	private createStores(vm: ViewModel) {
 		this._appProps = {
-			boardStore: new BoardStore(this._viewModel),
-			gameStore: new GameStore(),
-			playersStore: new PlayersStore(this._viewModel),
+			boardStore: new BoardStore(vm),
+			gameStore: new GameStore(vm),
+			playersStore: new PlayersStore(vm),
 		};
 	}
 
-	private bootstrap() {
+	private initEvents() {
+		//todo
+	}
+
+	public bootstrap(vm: ViewModel) {
+		this.createStores(vm);
+		this.initEvents();
 		ReactDOM.render(
 			<Provider
 				gameStore={this._appProps.gameStore}

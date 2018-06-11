@@ -23,11 +23,7 @@ interface CheckersProps extends CheckersStores {
 })
 export class CheckersGameComponent extends React.Component<CheckersProps, {}> {
     render() {
-        let initialization = null;
-
-        if (this.props.gameStore.initialized) {
-            initialization = <InitializationComponent />;
-        }
+        const initialization = !this.props.gameStore.initialized ? <InitializationComponent /> : null;
 
         return (
             <form>
