@@ -2,7 +2,9 @@ import { observable, computed, reaction, action } from 'mobx';
 import { Board } from '../../models/board.model';
 import { Configurations } from '../../../model/models/game-configurations';
 import { ViewModel } from '../../../view-model/view-model';
-
+// TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// view update its state :(
+// reference to actual model :(
 export enum GameState {
     Init,
     Play,
@@ -25,6 +27,6 @@ export class GameStore {
 
     @action
     public start() {
-        this.state = GameState.Play;
+        // todo : EVENT !
     }
 }

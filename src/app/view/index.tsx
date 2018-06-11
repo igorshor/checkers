@@ -1,7 +1,6 @@
 import * as ReactDOM from 'react-dom';
 import * as React from 'react';
 import { ViewModel } from '../view-model/view-model';
-import { Board } from '../model/common/board/board';
 import { AppComponent } from './app/app.component';
 import { BoardStore } from './app/stores/board.store';
 import { GameStore } from './app/stores/game.store';
