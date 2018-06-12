@@ -64,6 +64,7 @@ export class ViewModel implements ModelEvents {
             .next(new BoardEvent(
                 cells
                     .map(i => i
+                        .filter(k => k.element)
                         .map(j => new CheckerEvent({ x: j.position.x, y: j.position.y }, j.element.id, j.type)
                         )), this._state.width, this._state.height)));
     }

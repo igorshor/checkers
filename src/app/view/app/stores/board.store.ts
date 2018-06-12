@@ -26,7 +26,7 @@ export class BoardStore {
         checkerEvents.forEach(this.updateCell);
     }
 
-    @action
+    @action.bound
     private updateCell(checkerEvent: CheckerEvent) {
         const cell = this.board.cells[checkerEvent.position.y][checkerEvent.position.y];
         cell.playerId = checkerEvent.playerId;

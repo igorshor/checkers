@@ -55,7 +55,7 @@ interface InitializationState {
         } as any);
     }
 
-    private handleStartGame(event: React.ChangeEvent<HTMLFormElement>) {
+    private handleStartGame(event: React.MouseEvent<HTMLButtonElement>) {
         this.startGame();
     }
 
@@ -84,7 +84,7 @@ interface InitializationState {
     render() {
         return (
             <div>
-                <form onSubmit={this.handleStartGame}>
+                <form>
                     <label>Multiplayer
                         <input
                             type="checkbox"
@@ -109,7 +109,7 @@ interface InitializationState {
                             required={true}
                             onChange={this.handleInputChange}
                         /></label>
-                    <label>Start<button type="submit" /></label>
+                    <label>Start<button type="button" onClick={this.handleStartGame} /></label>
                 </form>
             </div>
         );

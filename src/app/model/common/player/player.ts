@@ -14,7 +14,8 @@ export class Player<T extends IIdentible> implements IIdentible {
     }
 
     async play(): Promise<Cell<T>[]> {
-        return this._moveStrategy.play();
+        // tslint:disable-next-line:no-return-await
+        return await this._moveStrategy.play();
     }
 }
 

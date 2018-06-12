@@ -33,20 +33,19 @@ export class Model {
     constructor(public height: number, public width: number) {
         this._gameState = new GameStateManager(height, width);
         this._playersManager = new PlayersManager(this._gameState);
-
-        this.setBoard(height, width);
     }
 
     get gameState(): GameStateManager<Checker> {
         return this._gameState;
     }
 
-    public init(configurations: Configurations): GameStateManager<Checker> {
+    public init(configurations: Configurations): void {
+        this.setBoard(this.height, this.width);
         this.setMoveComponents(configurations);
-        this.setGameComponents();
         this.setPlayers(configurations);
-
-        return this._gameState;
+        this._board.init(this._playersManager.players);
+        this.setGameComponents();
+        this._gameState.updateBoard(this._board.cells);
     }
 
     public start() {
@@ -90,7 +89,6 @@ export class Model {
     private setBoard(height: number, width: number) {
         this._board = new Board<Checker>(width, height,
             new CheckersPositionStrategy(width, height),
-            this._playersManager.players,
             new CheckrsCellBuilder());
     }
 }

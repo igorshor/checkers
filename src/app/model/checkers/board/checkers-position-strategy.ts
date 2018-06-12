@@ -20,10 +20,9 @@ export class CheckersPositionStrategy implements IPositionStrategy {
     }
 
     private calcValidRowsToInitPosition() {
-        const delta = 1;
         this._validRows = {};
-        const maxValidRow = Math.floor(this.height * 0.4);
-        for (let i = 0 + delta; i <= this.height; i++) {
+        const maxValidRow = Math.floor((this.height - 1) * 0.4);
+        for (let i = 0; i <= this.height; i++) {
             if (i <= maxValidRow || i >= this.height - maxValidRow) {
                 this._validRows[i] = { valid: true, player: true };
             }

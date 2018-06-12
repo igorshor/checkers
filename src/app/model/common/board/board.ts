@@ -7,12 +7,15 @@ import { CellBuilder } from "../builders/cell-builder";
 
 export class Board<T extends IIdentible> {
     private _cells: Cell<T>[][];
+    private _identibles: IIdentible[];
     public elementsMap: { [id: string]: T[] };
 
     constructor(public readonly width: number, public readonly height: number,
         private positionStrategy: IPositionStrategy,
-        private _identibles: IIdentible[],
-        private _cellBuilder: CellBuilder<T>) {
+        private _cellBuilder: CellBuilder<T>, identibles?: IIdentible[]) {
+        if (identibles) {
+            this._identibles = identibles;
+        }
     }
 
     get cells(): Cell<T>[][] {
@@ -33,7 +36,7 @@ export class Board<T extends IIdentible> {
     }
 
     get immutableBoard(): Board<T> {
-        const board = new Board<T>(this.width, this.height, this.positionStrategy, this._identibles, this._cellBuilder);
+        const board = new Board<T>(this.width, this.height, this.positionStrategy, this._cellBuilder, this._identibles);
         board.restore(this.immutableCells);
 
         return board;
@@ -43,8 +46,9 @@ export class Board<T extends IIdentible> {
         this._cells = cells;
     }
 
-    public init() {
+    public init(identibles: IIdentible[]) {
         this.elementsMap = {};
+        this._identibles = identibles;
         this._identibles.forEach((identible: IIdentible) => this.elementsMap[identible.id] = []);
 
         this._cells = new Array(this.height).fill([]);
@@ -53,7 +57,7 @@ export class Board<T extends IIdentible> {
                 const position = { x: j, y: i };
                 const cell = this._cellBuilder.build(this.positionStrategy, position);
 
-                if (cell.element && this._identibles.findIndex(cell.element.id) >= 0 && this.elementsMap[cell.element.id]) {
+                if (cell.element && this.elementsMap[cell.element.id]) {
                     this.elementsMap[cell.element.id].push(cell.element);
                 }
 

@@ -10,12 +10,11 @@ export class MoveManager<T extends IIdentible> {
 
     constructor(private _state: GameStateManager<T>, private _playersManager: PlayersManager<T>) {
         this._state.gameStage.subscribe(stageDescriptor => this._gameStage = stageDescriptor.gameStage);
-        this._state.currentPlayer.first().subscribe(player => this._currentPlayer = player);
     }
 
     async start(): Promise<void> {
         while (this._gameStage === GameStage.Game) {
-             const changes = await this._currentPlayer.play();
+             const changes = await this._playersManager.current.play();
              this._state.updateCells(changes);
              this._currentPlayer = this._playersManager.switch();
         }
