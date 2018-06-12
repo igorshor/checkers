@@ -34,8 +34,8 @@ interface InitializationState {
         super(props);
         this.state = {
             multiplayer: false,
-            firstPlayer: '',
-            secondPlayer: ''
+            firstPlayer: 'aaaa',
+            secondPlayer: 'ccccccc'
         };
 
         this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
@@ -77,6 +77,8 @@ interface InitializationState {
 
         players.forEach((player: PlayerDefinition) => this.props.playersStore.addPlayer(player));
         configurations.players = players;
+
+        this.props.gameStore.start(configurations);
     }
 
     render() {

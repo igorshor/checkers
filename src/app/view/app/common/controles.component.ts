@@ -1,6 +1,6 @@
 import React from "react";
 import { GameStore } from "../stores/game.store";
 
-export class Board extends React.Component<{ gameStore: GameStore }, {}> {
+export class ControlesComponent extends React.Component<{ gameStore: GameStore }, {}> {
 
 }

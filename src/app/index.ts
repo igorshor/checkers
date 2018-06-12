@@ -4,8 +4,13 @@ import { ViewModel } from './view-model';
 
 const boardSize = 8;
 
-const model = new Model(boardSize, boardSize);
-const view = new View();
-const viewModel = new ViewModel(model, view);
+try {
+    const model = new Model(boardSize, boardSize);
+    const view = new View();
+    const viewModel = new ViewModel(model, view);
 
-viewModel.bootstrap();
+    viewModel.bootstrap();
+} catch (error) {
+    console.log(error);
+}
+

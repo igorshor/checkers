@@ -9,6 +9,8 @@ export class Players<T extends IIdentible> {
 
     addPlayer(player: Player<T>) {
         this._players = this._players || [];
+        this._playersMap = this._playersMap || {};
+
         if (this._playersMap[player.id] !== undefined) {
             throw new Error('two player with the same id');
         }

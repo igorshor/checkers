@@ -2,6 +2,8 @@ const path = require('path');
 const { CheckerPlugin } = require('awesome-typescript-loader');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
+
 module.exports = {
     entry: "./src/index.ts",
     output: {
@@ -63,6 +65,10 @@ module.exports = {
     },
 
     plugins: [
+        new webpack.ProvidePlugin({
+            $: "jquery",
+            jQuery: "jquery"
+        }),
         new HtmlWebpackPlugin({
             inject: true,
             template: "./src/index.html"

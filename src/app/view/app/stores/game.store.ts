@@ -2,31 +2,50 @@ import { observable, computed, reaction, action } from 'mobx';
 import { Board } from '../../models/board.model';
 import { Configurations } from '../../../model/models/game-configurations';
 import { ViewModel } from '../../../view-model/view-model';
+import { GameEvent, GameStage } from '../../../view-model/models/game-event';
+import { Observable, Subject } from '@reactivex/rxjs';
+import { SelectionEvent } from '../../../view-model/models/selection-event';
 // TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// view update its state :(
 // reference to actual model :(
-export enum GameState {
-    Init,
-    Play,
-    Finish
-}
 
 export class GameStore {
-    @observable state: GameState;
-    @observable configurations: Configurations;
+    @observable _state: GameStage;
 
+    private _configurationSetted = new Subject<Configurations>();
+    private _selected = new Subject<SelectionEvent>();
 
-    constructor(private vm: ViewModel, state: GameState = GameState.Init) {
-        this.state = state;
+    constructor(private vm: ViewModel) {
+        vm.game.subscribe((gameEvent: GameEvent) => {
+            this.setState(gameEvent.state);
+        });
     }
 
     @computed
     get initialized(): boolean {
-        return this.state !== GameState.Init;
+        return this._state === GameStage.Game || this._state === GameStage.Finish;
+    }
+
+    @computed
+    get state(): GameStage {
+        return this._state;
     }
 
     @action
-    public start() {
-        // todo : EVENT !
+    private setState(value: GameStage) {
+        this._state = value;
     }
+
+    public get configurationSetted(): Observable<Configurations> {
+        return this._configurationSetted.asObservable();
+    }
+
+    public get selected(): Observable<SelectionEvent> {
+        return this._selected.asObservable();
+    }
+
+    public start(configurations: Configurations) {
+        this._configurationSetted.next(configurations);
+    }
+
+
 }

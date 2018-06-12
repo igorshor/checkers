@@ -13,6 +13,7 @@ import { Model } from "../model";
 import { View } from "../view";
 import { SelectDescriptor } from "../model/common/descriptor/select-descriptor";
 import { SelectionEvent } from "./models/selection-event";
+import { Configurations } from "../model/models/game-configurations";
 
 interface ModelEvents {
     readonly change: Observable<ChangeEvent>;
@@ -26,6 +27,7 @@ export class ViewModel implements ModelEvents {
     private _board = new Subject<BoardEvent>();
     private _currentPlayer: Player<Checker>;
     private _state: GameStateManager<Checker>;
+
     constructor(private _model: Model, private _view: View) {
         this._state = this._model.gameState;
         this.init();
@@ -33,11 +35,20 @@ export class ViewModel implements ModelEvents {
 
     public bootstrap() {
         this._view.bootstrap(this);
-        this.registerEvents()
+        this.registerEvents();
     }
 
-    private registerEvents(selectionEvent: SelectionEvent) {
-        this._state.updateSelection(new SelectDescriptor(selectionEvent.position, selectionEvent.playerId, selectionEvent.elementId))
+    private registerEvents() {
+        const { selected, configurationSetted } = this._view.viewHooks;
+        selected.subscribe((selectionEvent: SelectionEvent) => {
+            const selectDes = new SelectDescriptor(selectionEvent.position, selectionEvent.playerId, selectionEvent.elementId);
+            this._state.updateSelection(selectDes);
+        });
+
+        configurationSetted.subscribe((configuration: Configurations) => {
+            this._model.init(configuration);
+            this._model.start();
+        });
     }
 
     private init() {

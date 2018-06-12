@@ -7,6 +7,8 @@ import { GameStore } from './app/stores/game.store';
 import { PlayersStore } from './app/stores/players.store';
 import { Provider } from 'mobx-react';
 import { Observable } from '@reactivex/rxjs';
+import { SelectionEvent } from '../view-model/models/selection-event';
+import { Configurations } from '../model/models/game-configurations';
 
 export interface AppStores {
 	gameStore: GameStore;
@@ -14,9 +16,15 @@ export interface AppStores {
 	boardStore: BoardStore;
 }
 
+export interface ViewHooks {
+	selected: Observable<SelectionEvent>;
+	configurationSetted: Observable<Configurations>;
+}
+
 export class View {
 	private _appProps: AppStores;
-	
+	private _viewHooks: ViewHooks;
+
 	private createStores(vm: ViewModel) {
 		this._appProps = {
 			boardStore: new BoardStore(vm),
@@ -25,13 +33,12 @@ export class View {
 		};
 	}
 
-	private initEvents() {
-		// todo
+	get viewHooks(): ViewHooks {
+		return this._appProps.gameStore;
 	}
 
 	public bootstrap(vm: ViewModel) {
 		this.createStores(vm);
-		this.initEvents();
 		ReactDOM.render(
 			<Provider
 				gameStore={this._appProps.gameStore}
