@@ -1,18 +1,17 @@
-import { PositionDefinition } from "../board/position";
-import { CellContext } from "../board/cell-context";
+import { IPosition } from "../board/position";
+import { SelectionContext } from "../board/selection-context";
 import { DirectionsDefinition, MoveDirectionsDefinition } from "../move/move-direction";
 import { MoveType } from "../move/move-type";
 
-export class SelectDescriptor extends CellContext {
+export class SelectDescriptor extends SelectionContext {
     public type: MoveType;
-    public direction: DirectionsDefinition;
-    posibleMoves: PositionDefinition[];
+    posibleMoves: IPosition[];
 
-    get from(): PositionDefinition {
+    get from(): IPosition {
         return this.position;
     }
 
-    constructor(from: PositionDefinition, playerId: number, elementId: number, direction: DirectionsDefinition) {
+    constructor(from: IPosition, playerId: string, elementId: number) {
         super(from, playerId, elementId);
         this.posibleMoves = [];
     }

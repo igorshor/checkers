@@ -1,4 +1,3 @@
-import { PositionDefinition } from "../board/position";
 import { Cell } from "../board/cell";
 import { IIdentible } from "./i-Identible";
 

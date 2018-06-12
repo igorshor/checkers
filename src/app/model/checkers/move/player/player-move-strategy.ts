@@ -8,10 +8,10 @@ import { IMoveValidator } from "../../../common/interfaces/i-move-validator-inte
 import { IMoveAnalyzer } from "../../../common/interfaces/i-move-analyzer";
 import { PlayersManager } from "../../../common/player/players-manager";
 import { MoveDescriptor } from "../../../common/descriptor/move-descriptor";
-import { CellContext } from "../../../common/board/cell-context";
+import { SelectionContext } from "../../../common/board/selection-context";
 import { Cell } from "../../../common/board/cell";
 import { MoveType } from "../../../common/move/move-type";
-import { PositionDefinition } from "../../../common/board/position";
+import { IPosition } from "../../../common/board/position";
 import { CellState } from "../../../common/board/cell-state";
 import { IBoardController } from "../../../common/interfaces/i-board-controller";
 
@@ -101,18 +101,20 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         this._state.updateCells(cells);
     }
 
-    protected select(from: PositionDefinition): PositionDefinition[] {
+    protected select(from: IPosition): IPosition[] {
         const cell = this._board.getCellByPosition(from);
         if (!cell.element || !cell.element.id) {
             throw new Error('no id');
         }
-        const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, this._playersManager.current.direction, cell.element.id);
+        const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, cell.element.id);
         const moves = this._moveAnalizer.getPossibleMovesBySelect(selectDescriptor, this._board);
 
-        return moves.map(move => new PositionDefinition(move.to.x, move.to.y));
+        return moves.map(move => {
+            return { x: move.to.x, y: move.to.y};
+        });
     }
 
-    public move(from: PositionDefinition, to: PositionDefinition): Cell<Checker>[] {
+    public move(from: IPosition, to: IPosition): Cell<Checker>[] {
         const cell = this._board.getCellByPosition(from);
         if (!cell.element || !cell.element.id) {
             throw new Error('no id');

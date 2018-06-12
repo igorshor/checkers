@@ -5,6 +5,7 @@ import { IIdentible } from '../interfaces/i-Identible';
 import { Player } from '../player/player';
 import { SelectDescriptor } from '../descriptor/select-descriptor';
 import { GameStateDescriptor } from './game-state-descriptor';
+import { SelectionContext } from '../board/selection-context';
 
 export class GameStateManager<T extends IIdentible> {
     private _currentPlayerChanged = new Subject<Player<T>>();
@@ -19,8 +20,8 @@ export class GameStateManager<T extends IIdentible> {
 
     }
 
-    public updateSelection(value: SelectDescriptor) {
-        this._selectionChanged.next(value);
+    public updateSelection(value: SelectionContext) {
+        this._selectionChanged.next(new SelectDescriptor(value.position, value.playerId, value.elementId));
     }
 
     get selection(): Observable<SelectDescriptor> {

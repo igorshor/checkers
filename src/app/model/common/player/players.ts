@@ -5,7 +5,7 @@ import { IIdentible } from "../interfaces/i-Identible";
 export class Players<T extends IIdentible> {
     protected _currentPlayer: Player<T>;
     private _players: Player<T>[];
-    private _playersMap: { [id: number]: Player<T> };
+    private _playersMap: { [id: string]: Player<T> };
 
     addPlayer(player: Player<T>) {
         this._players = this._players || [];
@@ -33,7 +33,7 @@ export class Players<T extends IIdentible> {
         return this._players.findIndex(player => player.id === id) >= 0;
     }
 
-    get(id: number) {
+    get(id: string) {
         if (this._playersMap[id] === undefined) {
             throw new Error('player does not exist');
         }

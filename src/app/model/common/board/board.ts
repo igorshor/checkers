@@ -1,13 +1,13 @@
 import { IIdentible } from "../interfaces/i-Identible";
 import { Cell } from "./cell";
 import { IPositionStrategy } from "../interfaces/i-position-strategy";
-import { PositionDefinition, IPosition } from "./position";
-import { CellContext } from "./cell-context";
+import { IPosition } from "./position";
+import { SelectionContext } from "./selection-context";
 import { CellBuilder } from "../builders/cell-builder";
 
 export class Board<T extends IIdentible> {
     private _cells: Cell<T>[][];
-    public elementsMap: { [id: number]: T[] };
+    public elementsMap: { [id: string]: T[] };
 
     constructor(public readonly width: number, public readonly height: number,
         private positionStrategy: IPositionStrategy,
@@ -24,7 +24,7 @@ export class Board<T extends IIdentible> {
         for (let i = 0; i < this.height; i++) {
             for (let j = 0; j < this.width; j++) {
                 const cell = this.cells[i][j];
-                cells[i][j] = new Cell<T>(new PositionDefinition(cell.position.x, cell.position.y), cell.type, cell.element);
+                cells[i][j] = new Cell<T>({ x: cell.position.x, y: cell.position.y }, cell.type, cell.element);
                 cells[i][j].state = cell.state;
             }
         }
@@ -50,7 +50,7 @@ export class Board<T extends IIdentible> {
         this._cells = new Array(this.height).fill([]);
         for (let i = 0; i < this.height; i++) {
             for (let j = 0; j < this.width; j++) {
-                const position = new PositionDefinition(j, i, 1);
+                const position = { x: j, y: i };
                 const cell = this._cellBuilder.build(this.positionStrategy, position);
 
                 if (cell.element && this._identibles.findIndex(cell.element.id) >= 0 && this.elementsMap[cell.element.id]) {
@@ -62,7 +62,7 @@ export class Board<T extends IIdentible> {
         }
     }
 
-    remove(cellContext: CellContext, removeFromBoard = false): Cell<T> {
+    remove(cellContext: SelectionContext, removeFromBoard = false): Cell<T> {
         const elements = this.getEementsById(cellContext.playerId);
         const index = this.getElementIndex(cellContext.playerId, cellContext.elementId);
         const cell = this.getCellByPosition(cellContext.position);
@@ -76,7 +76,7 @@ export class Board<T extends IIdentible> {
         return cell;
     }
 
-    add(cellContext: CellContext): Cell<T> {
+    add(cellContext: SelectionContext): Cell<T> {
         const elements = this.getEementsById(cellContext.playerId);
         const index = this.getElementIndex(cellContext.playerId, cellContext.elementId);
         const element = elements[index];
@@ -91,7 +91,7 @@ export class Board<T extends IIdentible> {
         return cell;
     }
 
-    private getElementIndex(id: number, elementId: number): number {
+    private getElementIndex(id: string, elementId: number): number {
         const elements = this.elementsMap[id];
         const index = elements.findIndex(element => element.id === elementId);
 
@@ -102,7 +102,7 @@ export class Board<T extends IIdentible> {
         return index;
     }
 
-    private getEementsById(id: number): T[] {
+    private getEementsById(id: string): T[] {
         const elements = this.elementsMap[id];
 
         if (!elements) {

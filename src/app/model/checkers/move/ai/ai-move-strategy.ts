@@ -6,7 +6,7 @@ import { Board } from "../../../common/board/board";
 import { IMoveValidator } from "../../../common/interfaces/i-move-validator-interceptorr";
 import { IMoveAnalyzer } from "../../../common/interfaces/i-move-analyzer";
 import { PlayersManager } from "../../../common/player/players-manager";
-import { PositionDefinition } from "../../../common/board/position";
+import { IPosition } from "../../../common/board/position";
 import { Cell } from "../../../common/board/cell";
 import { PlayerMoveStrategy } from "../player/player-move-strategy";
 import { MoveDescriptor } from "../../../common/descriptor/move-descriptor";
@@ -47,11 +47,11 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
         return changedCells;
     }
 
-    move(from: PositionDefinition, to: PositionDefinition): Cell<Checker>[] {
+    move(from: IPosition, to: IPosition): Cell<Checker>[] {
         return super.move(from, to);
     }
 
-    select(from: PositionDefinition): PositionDefinition[] {
+    select(from: IPosition): IPosition[] {
         return super.select(from);
     }
 }

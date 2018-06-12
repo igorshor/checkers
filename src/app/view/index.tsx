@@ -16,7 +16,7 @@ export interface AppStores {
 
 export class View {
 	private _appProps: AppStores;
-
+	
 	private createStores(vm: ViewModel) {
 		this._appProps = {
 			boardStore: new BoardStore(vm),
@@ -26,7 +26,7 @@ export class View {
 	}
 
 	private initEvents() {
-		//todo
+		// todo
 	}
 
 	public bootstrap(vm: ViewModel) {

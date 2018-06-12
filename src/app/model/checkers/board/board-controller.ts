@@ -2,7 +2,7 @@ import { IBoardController } from "../../common/interfaces/i-board-controller";
 import { Checker } from "./checker";
 import { Cell } from "../../common/board/cell";
 import { MoveDescriptor } from "../../common/descriptor/move-descriptor";
-import { CellContext } from "../../common/board/cell-context";
+import { SelectionContext } from "../../common/board/selection-context";
 import { MoveType } from "../../common/move/move-type";
 import { IMoveAnalyzer } from "../../common/interfaces/i-move-analyzer";
 import { Board } from "../../common/board/board";
@@ -21,8 +21,8 @@ export class BoardController implements IBoardController<Checker> {
 
     public doMove(moveDescriptor: MoveDescriptor): Cell<Checker>[] {
         const cellsToUpdate: Cell<Checker>[] = [];
-        const from = new CellContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
-        const to = new CellContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
+        const from = new SelectionContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
+        const to = new SelectionContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
 
         switch (moveDescriptor.type) {
             case MoveType.Move:
@@ -33,7 +33,7 @@ export class BoardController implements IBoardController<Checker> {
                 const attackedPosition = this._moveAnalizer.getNextPositionByDirection(moveDescriptor.from, moveDescriptor.moveDirection, this._board);
                 moveDescriptor.attacked = attackedPosition;
                 const cell = this._board.getCellByPosition(attackedPosition);
-                const attackedCellContext = new CellContext(moveDescriptor.from, this._players.opponent.id, cell.element.id);
+                const attackedCellContext = new SelectionContext(moveDescriptor.from, this._players.opponent.id, cell.element.id);
 
                 cellsToUpdate.push(this._board.remove(from));
                 cellsToUpdate.push(this._board.remove(attackedCellContext, true));
@@ -46,8 +46,8 @@ export class BoardController implements IBoardController<Checker> {
 
     public undoMove(moveDescriptor: MoveDescriptor): Cell<Checker>[] {
         const cellsToUpdate: Cell<Checker>[] = [];
-        const from = new CellContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
-        const to = new CellContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
+        const from = new SelectionContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
+        const to = new SelectionContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
 
         switch (moveDescriptor.type) {
             case MoveType.Move:
@@ -57,7 +57,7 @@ export class BoardController implements IBoardController<Checker> {
             case MoveType.Attack:
                 const attackedPosition = moveDescriptor.attacked;
                 const cell = this._board.getCellByPosition(attackedPosition);
-                const attackedCellContext = new CellContext(moveDescriptor.from, this._players.opponent.id, cell.element.id);
+                const attackedCellContext = new SelectionContext(moveDescriptor.from, this._players.opponent.id, cell.element.id);
 
                 cellsToUpdate.push(this._board.add(from));
                 cellsToUpdate.push(this._board.add(attackedCellContext));

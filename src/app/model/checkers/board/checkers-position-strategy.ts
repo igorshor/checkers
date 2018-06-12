@@ -2,7 +2,7 @@ import { IPositionStrategy } from "../../common/interfaces/i-position-strategy";
 import { Player } from "../../common/player/player";
 import { PlayersManager } from "../../common/player/players-manager";
 import { Checker } from "./checker";
-import { PositionDefinition } from "../../common/board/position";
+import { IPosition } from "../../common/board/position";
 import { PositionType } from "../../common/board/position-type";
 
 
@@ -33,7 +33,7 @@ export class CheckersPositionStrategy implements IPositionStrategy {
         }
     }
 
-    public getCellTypeByPosition(position: PositionDefinition): PositionType {
+    public getCellTypeByPosition(position: IPosition): PositionType {
         if (position.x % 2 === 0 && position.y % 2 === 0 ||
             position.x % 2 === 1 && position.y % 2 === 1) {
             return PositionType.Black;
@@ -46,7 +46,7 @@ export class CheckersPositionStrategy implements IPositionStrategy {
         return positionType === PositionType.Black;
     }
 
-    public getPlayerByPosition(positionType: PositionType, position: PositionDefinition) {
+    public getPlayerByPosition(positionType: PositionType, position: IPosition) {
         if (positionType === PositionType.White) {
             return undefined;
         }

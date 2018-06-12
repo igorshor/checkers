@@ -11,6 +11,8 @@ import { ChangeEvent } from "./models/change-event";
 import { CellState } from "../model/common/board/cell-state";
 import { Model } from "../model";
 import { View } from "../view";
+import { SelectDescriptor } from "../model/common/descriptor/select-descriptor";
+import { SelectionEvent } from "./models/selection-event";
 
 interface ModelEvents {
     readonly change: Observable<ChangeEvent>;
@@ -31,6 +33,11 @@ export class ViewModel implements ModelEvents {
 
     public bootstrap() {
         this._view.bootstrap(this);
+        this.registerEvents()
+    }
+
+    private registerEvents(selectionEvent: SelectionEvent) {
+        this._state.updateSelection(new SelectDescriptor(selectionEvent.position, selectionEvent.playerId, selectionEvent.elementId))
     }
 
     private init() {

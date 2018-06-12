@@ -1,7 +1,7 @@
 import { Checker } from "../board/checker";
 import { IMoveAnalyzer } from "../../common/interfaces/i-move-analyzer";
 import { MoveType } from "../../common/move/move-type";
-import { PositionDefinition, IPosition } from "../../common/board/position";
+import { IPosition } from "../../common/board/position";
 import { Board } from "../../common/board/board";
 import { SelectDescriptor } from "../../common/descriptor/select-descriptor";
 import { MoveDescriptor } from "../../common/descriptor/move-descriptor";
@@ -30,7 +30,7 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
 
     }
 
-    getGeneralMoveType(from: PositionDefinition, to: PositionDefinition): MoveType {
+    getGeneralMoveType(from: IPosition, to: IPosition): MoveType {
         const distance = this.getDistance(from, to);
 
         if (distance === 1) {
@@ -42,7 +42,7 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         }
     }
 
-    getSpecificMoveType(from: PositionDefinition, to: PositionDefinition, board: Board<Checker>): MoveType {
+    getSpecificMoveType(from: IPosition, to: IPosition, board: Board<Checker>): MoveType {
         const moveType = this.getGeneralMoveType(from, to);
         const inDanger = this.isInDanger(to, board);
         if (inDanger) {
@@ -57,7 +57,7 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         return moveType;
     }
 
-    private isInDanger(pos: PositionDefinition, board: Board<Checker>): boolean {
+    private isInDanger(pos: IPosition, board: Board<Checker>): boolean {
         const posiibleDanger = [this.simulateNextCellByDirection(pos, this._playersManager.current.direction | DirectionsDefinition.Left),
         this.simulateNextCellByDirection(pos, this._playersManager.current.direction | DirectionsDefinition.Right)];
 
@@ -71,7 +71,7 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         const playerCells = board.select(cell => cell.element && cell.element.id === player.id);
         let possibleMoves: MoveDescriptor[];
         playerCells.forEach(cell => {
-            const select = new SelectDescriptor(cell.position, player.id, cell.element.id, player.direction);
+            const select = new SelectDescriptor(cell.position, player.id, cell.element.id);
             possibleMoves = this.getPossibleMovesBySelect(select, board);
         });
 
@@ -89,7 +89,7 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
 
         const moves = unCheckedPosibleNextMoves
             .map((pos: IPosition) => new MoveDescriptor(
-                select.from, new PositionDefinition(pos.x, pos.y),
+                select.from, { x: pos.x, y: pos.y },
                 select.playerId,
                 select.elementId))
             .filter(move => this._moveValidator.validate(move, board, this._playersManager.get(select.playerId)));
@@ -111,11 +111,12 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
     private getSuperPossibleMove(select: SelectDescriptor, board: Board<Checker>, direction: DirectionsDefinition) {
         const unCheckedPosibleNextMoves = [];
         let cell = board.getCellByPosition(select.position);
-        let pos = this.getNextPositionByDirection(select.position, select.direction | direction, board);
+        const selectDirection = this._playersManager.get(select.playerId).direction;
+        let pos = this.getNextPositionByDirection(select.position, selectDirection | direction, board);
         while (cell) {
             unCheckedPosibleNextMoves.push(pos);
 
-            pos = this.getNextPositionByDirection(pos, select.direction | direction, board);
+            pos = this.getNextPositionByDirection(pos, selectDirection | direction, board);
             cell = board.getCellByPosition(pos);
         }
 
@@ -124,10 +125,11 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
 
     private getNormalPossibleMoves(select: SelectDescriptor, board: Board<Checker>) {
         const unCheckedPosibleNextMoves = [];
+        const selectDirection = this._playersManager.get(select.playerId).direction;
 
-        const left = this.getNextPositionByDirection(select.position, select.direction | DirectionsDefinition.Left, board);
+        const left = this.getNextPositionByDirection(select.position, selectDirection | DirectionsDefinition.Left, board);
         unCheckedPosibleNextMoves.push(left);
-        const right = this.getNextPositionByDirection(select.position, select.direction | DirectionsDefinition.Right, board);
+        const right = this.getNextPositionByDirection(select.position, selectDirection | DirectionsDefinition.Right, board);
         unCheckedPosibleNextMoves.push(right);
 
         return unCheckedPosibleNextMoves;
@@ -186,7 +188,7 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         return pos;
     }
 
-    private getDistance(from: PositionDefinition, to: PositionDefinition): number {
+    private getDistance(from: IPosition, to: IPosition): number {
         return Math.abs(from.y - to.y);
     }
 }

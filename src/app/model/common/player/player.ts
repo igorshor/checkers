@@ -1,6 +1,5 @@
 import { DirectionsDefinition } from "../move/move-direction";
 import { IMoveStrategy } from "../interfaces/i-move-strategy";
-import { PositionDefinition } from "../board/position";
 import { IIdentible } from "../interfaces/i-Identible";
 import { Cell } from "../board/cell";
 
