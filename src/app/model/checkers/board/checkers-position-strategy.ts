@@ -4,6 +4,7 @@ import { PlayersManager } from "../../common/player/players-manager";
 import { Checker } from "./checker";
 import { IPosition } from "../../common/board/position";
 import { PositionType } from "../../common/board/position-type";
+import { IIdentible } from "../../common/interfaces/i-Identible";
 
 
 interface IValidPlayerPosition {
@@ -11,9 +12,8 @@ interface IValidPlayerPosition {
     player: boolean;
 }
 
-export class CheckersPositionStrategy implements IPositionStrategy {
+export class CheckersPositionStrategy implements IPositionStrategy<Checker> {
     private _validRows: { [key: number]: IValidPlayerPosition };
-    private _players: Player<Checker>[];
 
     constructor(public width: number, public height: number) {
         this.calcValidRowsToInitPosition();
@@ -21,9 +21,10 @@ export class CheckersPositionStrategy implements IPositionStrategy {
 
     private calcValidRowsToInitPosition() {
         this._validRows = {};
-        const maxValidRow = Math.floor((this.height - 1) * 0.4);
-        for (let i = 0; i <= this.height; i++) {
-            if (i <= maxValidRow || i >= this.height - maxValidRow) {
+        const maxValidRow = 3;
+
+        for (let i = 0; i < this.height; i++) {
+            if (i < maxValidRow || i >= this.height - maxValidRow) {
                 this._validRows[i] = { valid: true, player: true };
             }
             else {
@@ -45,14 +46,14 @@ export class CheckersPositionStrategy implements IPositionStrategy {
         return positionType === PositionType.Black;
     }
 
-    public getPlayerByPosition(positionType: PositionType, position: IPosition) {
+    public getPlayerByPosition(positionType: PositionType, players: Player<Checker>[], position: IPosition): string {
         if (positionType === PositionType.White) {
             return undefined;
         }
 
         const pos = this._validRows[position.y];
-        if (pos.valid) {
-            return pos.player;
+        if (pos.valid && pos.player) {
+            return players[position.y < 3 ? 0 : 1].id;
         }
 
         return undefined;

@@ -4,17 +4,18 @@ import { IPositionStrategy } from "../interfaces/i-position-strategy";
 import { IPosition } from "./position";
 import { SelectionContext } from "./selection-context";
 import { CellBuilder } from "../builders/cell-builder";
+import { Player } from "../player/player";
 
 export class Board<T extends IIdentible> {
     private _cells: Cell<T>[][];
-    private _identibles: IIdentible[];
+    private _players: Player<T>[];
     public elementsMap: { [id: string]: T[] };
 
     constructor(public readonly width: number, public readonly height: number,
-        private positionStrategy: IPositionStrategy,
-        private _cellBuilder: CellBuilder<T>, identibles?: IIdentible[]) {
+        private positionStrategy: IPositionStrategy<T>,
+        private _cellBuilder: CellBuilder<T>, identibles?: Player<T>[]) {
         if (identibles) {
-            this._identibles = identibles;
+            this._players = identibles;
         }
     }
 
@@ -23,8 +24,10 @@ export class Board<T extends IIdentible> {
     }
 
     get immutableCells(): Cell<T>[][] {
-        const cells: Cell<T>[][] = new Array(this.height).fill([]);
+        const cells: Cell<T>[][] = [];
+
         for (let i = 0; i < this.height; i++) {
+            cells[i] = [];
             for (let j = 0; j < this.width; j++) {
                 const cell = this.cells[i][j];
                 cells[i][j] = new Cell<T>({ x: cell.position.x, y: cell.position.y }, cell.type, cell.element);
@@ -36,7 +39,7 @@ export class Board<T extends IIdentible> {
     }
 
     get immutableBoard(): Board<T> {
-        const board = new Board<T>(this.width, this.height, this.positionStrategy, this._cellBuilder, this._identibles);
+        const board = new Board<T>(this.width, this.height, this.positionStrategy, this._cellBuilder, this._players);
         board.restore(this.immutableCells);
 
         return board;
@@ -46,16 +49,18 @@ export class Board<T extends IIdentible> {
         this._cells = cells;
     }
 
-    public init(identibles: IIdentible[]) {
+    public init(players: Player<T>[]) {
         this.elementsMap = {};
-        this._identibles = identibles;
-        this._identibles.forEach((identible: IIdentible) => this.elementsMap[identible.id] = []);
+        this._players = players;
+        this._players.forEach((identible: IIdentible) => this.elementsMap[identible.id] = []);
+        this._cells = [];
 
-        this._cells = new Array(this.height).fill([]);
         for (let i = 0; i < this.height; i++) {
+            this._cells[i] = [];
+
             for (let j = 0; j < this.width; j++) {
                 const position = { x: j, y: i };
-                const cell = this._cellBuilder.build(this.positionStrategy, position);
+                const cell = this._cellBuilder.build(this.positionStrategy, this._players, position);
 
                 if (cell.element && this.elementsMap[cell.element.id]) {
                     this.elementsMap[cell.element.id].push(cell.element);

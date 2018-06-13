@@ -16,9 +16,9 @@ import { AiMoveStrategy } from "./checkers/move/ai/ai-move-strategy";
 import { DirectionsDefinition } from "./common/move/move-direction";
 import { Player, AiPlayer } from "./common/player/player";
 import { CheckersPositionStrategy } from "./checkers/board/checkers-position-strategy";
-import { CheckrsCellBuilder } from "./common/builders/checkers-cell-builder";
 import { BoardController } from "./checkers/board/board-controller";
 import { CheckersGameAnalyzer } from "./checkers/game/checkers-game-analyzer";
+import { CheckrsCellBuilder } from "./checkers/board/checkers-cell-builder";
 
 export class Model {
     private _board: Board<Checker>;
@@ -77,10 +77,10 @@ export class Model {
 
     private setPlayers(configurations: Configurations) {
         const players = [];
-        players.push(new Player(configurations.players[0].name, 1, configurations.players[0].id, 1, DirectionsDefinition.Up, this._playerMoveStrategy));
         players.push(configurations.players[1].computer ?
             new AiPlayer(configurations.players[1].name || 'computer', 2, configurations.players[1].id, this.height, DirectionsDefinition.Down, this._computerMoveStrategy) :
             new Player(configurations.players[1].name, 2, configurations.players[1].id, 0, DirectionsDefinition.Down, this._playerMoveStrategy));
+        players.push(new Player(configurations.players[0].name, 1, configurations.players[0].id, 1, DirectionsDefinition.Up, this._playerMoveStrategy));
 
         this._playersManager.addPlayer(players[0]);
         this._playersManager.addPlayer(players[1]);

@@ -4,8 +4,8 @@ import { Board } from '../../models/board.model';
 import { BoardEvent } from '../../../view-model/models/board-event';
 import { CheckerEvent } from '../../../view-model/models/checker-event';
 import { ChangeEvent } from '../../../view-model/models/change-event';
-import { CellType } from '../../models/cell-type.model';
 import { ViewModel } from '../../../view-model/view-model';
+import { PositionType } from '../../../model/common/board/position-type';
 
 export class BoardStore {
     @observable board: Board;
@@ -28,8 +28,27 @@ export class BoardStore {
 
     @action.bound
     private updateCell(checkerEvent: CheckerEvent) {
-        const cell = this.board.cells[checkerEvent.position.y][checkerEvent.position.y];
-        cell.playerId = checkerEvent.playerId;
+        const cell = {
+            ...this.board.cells[checkerEvent.position.y][checkerEvent.position.x],
+            playerId: checkerEvent.playerId.toString(),
+            type: checkerEvent.type,
+            prediction: checkerEvent.prediction,
+            superMode: checkerEvent.superMode
+        };
+
+        const cellRow = [
+            ...this.board.cells[checkerEvent.position.y].slice(0, checkerEvent.position.x),
+            cell,
+            ...this.board.cells[checkerEvent.position.y].slice(checkerEvent.position.x + 1)
+        ];
+
+        const immutableCells = [
+            ...this.board.cells.slice(0, checkerEvent.position.y),
+            cellRow,
+            ...this.board.cells.slice(checkerEvent.position.y + 1)
+        ];
+
+        this.board = { ...this.board, cells: immutableCells as Cell[][] };
     }
 
     @action
@@ -46,7 +65,7 @@ export class BoardStore {
             for (let j = 0; j < this.vm.width; j++) {
                 const cell = {
                     id: (i * 10) + (j + 1) + '',
-                    type: (i + j) % 2 === 0 ? CellType.Black : CellType.White,
+                    type: (i + j) % 2 === 0 ? PositionType.Black : PositionType.White,
                     position: { y: i, x: j }
                 };
 
@@ -55,6 +74,6 @@ export class BoardStore {
             }
         }
 
-        return { cells, flatCells };
+        return { cells };
     }
 }

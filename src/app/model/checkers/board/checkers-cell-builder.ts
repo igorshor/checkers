@@ -1,5 +1,5 @@
-import { CellBuilder } from "./cell-builder";
-import { Checker } from "../../checkers/board/checker";
+import { Checker } from "./checker";
+import { CellBuilder } from "../../common/builders/cell-builder";
 
 export class CheckrsCellBuilder extends CellBuilder<Checker> {
     createElement(id: any): Checker {

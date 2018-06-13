@@ -15,12 +15,22 @@ interface BoardProps extends BoardStores { }
 @inject((stores: AppStores) => {
     return { boardStore: stores.boardStore };
 })
-@observer export class BoardComponent extends React.Component<BoardStores, {}> {
+@observer export class BoardComponent extends React.Component<BoardProps, {}> {
+    private getCellComponent(cell: Cell): React.ReactNode {
+        return (
+            <CellComponent
+                key={cell.id}
+                position={cell.position}
+                type={cell.type}
+                playerId={cell.playerId}
+            />
+        );
+    }
     render(): React.ReactNode {
         const cellsComponents = this.props.boardStore.board.cells
             .map((cells: Cell[]) => (
                 <div className={'board__row'} key={cells[0].position.y}>
-                    {cells.map((cell: Cell) => <CellComponent key={cell.id} position={cell.position} type={cell.type} />)}
+                    {cells.map(this.getCellComponent)}
                 </div>
             ));
 
