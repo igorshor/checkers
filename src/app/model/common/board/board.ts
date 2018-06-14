@@ -52,7 +52,7 @@ export class Board<T extends IIdentible> {
     public init(players: Player<T>[]) {
         this.elementsMap = {};
         this._players = players;
-        this._players.forEach((identible: IIdentible) => this.elementsMap[identible.id] = []);
+        this._players.forEach((identible: Player<T>) => this.elementsMap[identible.id] = []);
         this._cells = [];
 
         for (let i = 0; i < this.height; i++) {
@@ -62,8 +62,8 @@ export class Board<T extends IIdentible> {
                 const position = { x: j, y: i };
                 const cell = this._cellBuilder.build(this.positionStrategy, this._players, position);
 
-                if (cell.element && this.elementsMap[cell.element.id]) {
-                    this.elementsMap[cell.element.id].push(cell.element);
+                if (cell.element && this.elementsMap[cell.element.associatedId]) {
+                    this.elementsMap[cell.element.associatedId].push(cell.element);
                 }
 
                 this._cells[i].push(cell);

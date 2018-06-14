@@ -5,12 +5,13 @@ import { IPosition } from "../board/position";
 import { Player } from "../player/player";
 
 export abstract class CellBuilder<T extends IIdentible> {
-    abstract createElement(id: any): T;
+    abstract createElement(id: any, associatedId: any): T;
+    private static elementsCounter = 0;
     public build(positionStrategy: IPositionStrategy<T>, players: Player<T>[], position: IPosition): Cell<T> {
         const type = positionStrategy.getCellTypeByPosition(position);
         const playerId = positionStrategy.getPlayerByPosition(type, players, position);
         const include = positionStrategy.includeInGame(type);
-        const element = this.createElement(playerId);
+        const element = this.createElement(++CellBuilder.elementsCounter, playerId);
         const cell = new Cell<T>(position, type, element);
 
         return cell;

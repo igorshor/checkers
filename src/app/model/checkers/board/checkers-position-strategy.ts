@@ -1,15 +1,15 @@
 import { IPositionStrategy } from "../../common/interfaces/i-position-strategy";
 import { Player } from "../../common/player/player";
-import { PlayersManager } from "../../common/player/players-manager";
 import { Checker } from "./checker";
 import { IPosition } from "../../common/board/position";
 import { PositionType } from "../../common/board/position-type";
-import { IIdentible } from "../../common/interfaces/i-Identible";
+import { DirectionsDefinition } from "../../common/move/move-direction";
 
 
 interface IValidPlayerPosition {
     valid: boolean;
     player: boolean;
+    direction: DirectionsDefinition;
 }
 
 export class CheckersPositionStrategy implements IPositionStrategy<Checker> {
@@ -25,10 +25,14 @@ export class CheckersPositionStrategy implements IPositionStrategy<Checker> {
 
         for (let i = 0; i < this.height; i++) {
             if (i < maxValidRow || i >= this.height - maxValidRow) {
-                this._validRows[i] = { valid: true, player: true };
+                this._validRows[i] = {
+                    valid: true,
+                    player: true,
+                    direction: i < maxValidRow ? DirectionsDefinition.Down : DirectionsDefinition.Up
+                };
             }
             else {
-                this._validRows[i] = { valid: false, player: undefined };
+                this._validRows[i] = { valid: false, player: undefined, direction: undefined };
             }
         }
     }
@@ -53,7 +57,8 @@ export class CheckersPositionStrategy implements IPositionStrategy<Checker> {
 
         const pos = this._validRows[position.y];
         if (pos.valid && pos.player) {
-            return players[position.y < 3 ? 0 : 1].id;
+            const player = players.find(player => player.direction === pos.direction);
+            return player && player.id;
         }
 
         return undefined;

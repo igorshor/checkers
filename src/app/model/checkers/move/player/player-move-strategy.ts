@@ -8,9 +8,7 @@ import { IMoveValidator } from "../../../common/interfaces/i-move-validator-inte
 import { IMoveAnalyzer } from "../../../common/interfaces/i-move-analyzer";
 import { PlayersManager } from "../../../common/player/players-manager";
 import { MoveDescriptor } from "../../../common/descriptor/move-descriptor";
-import { SelectionContext } from "../../../common/board/selection-context";
 import { Cell } from "../../../common/board/cell";
-import { MoveType } from "../../../common/move/move-type";
 import { IPosition } from "../../../common/board/position";
 import { CellState } from "../../../common/board/cell-state";
 import { IBoardController } from "../../../common/interfaces/i-board-controller";
@@ -30,13 +28,14 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
 
     public async play(): Promise<Cell<Checker>[]> {
         this._playDeferredPromise = jQuery.Deferred<Cell<Checker>[]>();
-        this._selectionSubscription = this._state.selection.subscribe(this.handleSelect);
+        this._selectionSubscription = this._state.selection.subscribe((selection) => this.handleSelect(selection));
 
         return this._playDeferredPromise.promise();
     }
 
     private resolveMove(): void {
         this._selectionSubscription.unsubscribe();
+        // TODO NEEDTO RESOLVE WITH CHANGES !!! OR CHANGE LOGIC !
         this._playDeferredPromise.resolve();
     }
 
@@ -47,16 +46,13 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
             const prevSelectionCell = this._board.getCellByPosition(this._selection.from);
             const currentSelectionCell = this._board.getCellByPosition(selection.from);
 
-
-            if (prevSelectionCell.element.id === currentSelectionCell.element.id) {
+            if (prevSelectionCell.element.associatedId === (currentSelectionCell.element && currentSelectionCell.element.associatedId)) {
                 this.onReSelect(selection);
             } else {
-                if (this._playersManager.exist(prevSelectionCell.element.id) || this._playersManager.exist(currentSelectionCell.element.id)) {
-                    throw new Error('something went wrong');
+                if (this._selection.posibleMoves.some(pos => pos.x === selection.position.x && pos.y === selection.position.y)) {
+                    this.move(prevSelectionCell.position, currentSelectionCell.position);
+                    this.resolveMove();
                 }
-
-                this.move(prevSelectionCell.position, currentSelectionCell.position);
-                this.resolveMove();
             }
         }
     }
@@ -64,18 +60,18 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
     protected onSelect(selection: SelectDescriptor, updatePrediction = true): Cell<Checker>[] {
         const cell = this._board.getCellByPosition(selection.from);
 
-        if (!cell.element || cell.element.id !== this._playersManager.current.id) {
-            throw new Error('something went wrong');
+        if (!cell.element || cell.element.associatedId !== this._playersManager.current.id) {
+            return;
         }
 
         const posibleDestinations = this.select(selection.from);
         const posibleMovesDestinations = posibleDestinations
-            .map(posibleDestination => new MoveDescriptor(selection.from, posibleDestination, this._playersManager.current.id, selection.elementId))
+            .map(posibleDestination => new MoveDescriptor(selection.from, posibleDestination, this._playersManager.current.id, cell.element.id))
             .filter(move => this._moveValidator.validate(move, this._board, this._playersManager.current))
             .map(move => move.to);
 
         this._selection = selection;
-
+        cell.element.selected = true;
         if (posibleMovesDestinations.length) {
             this._selection.posibleMoves = posibleMovesDestinations;
             const cells = posibleMovesDestinations.map(pos => this._board.getCellByPosition(pos));
@@ -95,28 +91,39 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
     }
 
     private onUnSelect(selection: SelectDescriptor) {
+        const previousSelectionCell = this._board.getCellByPosition(this._selection.from);
         const cells = this._selection.posibleMoves.map(pos => this._board.getCellByPosition(pos));
+
+        if (previousSelectionCell.element) {
+            previousSelectionCell.element.selected = false;
+        }
+
         this._selection = undefined;
-        cells.forEach(cell => cell.state = CellState.Normal);
-        this._state.updateCells(cells);
+
+        cells.forEach(cell => {
+            cell.state = CellState.Normal;
+            cell.element = undefined;
+        });
+
+        this._state.updateCells([previousSelectionCell, ...cells]);
     }
 
     protected select(from: IPosition): IPosition[] {
         const cell = this._board.getCellByPosition(from);
-        if (!cell.element || !cell.element.id) {
+        if (!cell.element || !cell.element.id || !cell.element.associatedId) {
             throw new Error('no id');
         }
         const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, cell.element.id);
         const moves = this._moveAnalizer.getPossibleMovesBySelect(selectDescriptor, this._board);
 
         return moves.map(move => {
-            return { x: move.to.x, y: move.to.y};
+            return { x: move.to.x, y: move.to.y };
         });
     }
 
     public move(from: IPosition, to: IPosition): Cell<Checker>[] {
         const cell = this._board.getCellByPosition(from);
-        if (!cell.element || !cell.element.id) {
+        if (!cell.element || !cell.element.id || !cell.element.associatedId) {
             throw new Error('no id');
         }
 

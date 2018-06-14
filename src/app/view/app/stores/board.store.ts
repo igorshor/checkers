@@ -6,6 +6,7 @@ import { CheckerEvent } from '../../../view-model/models/checker-event';
 import { ChangeEvent } from '../../../view-model/models/change-event';
 import { ViewModel } from '../../../view-model/view-model';
 import { PositionType } from '../../../model/common/board/position-type';
+import { IPosition } from '../../../model/common/board/position';
 
 export class BoardStore {
     @observable board: Board;
@@ -30,10 +31,11 @@ export class BoardStore {
     private updateCell(checkerEvent: CheckerEvent) {
         const cell = {
             ...this.board.cells[checkerEvent.position.y][checkerEvent.position.x],
-            playerId: checkerEvent.playerId.toString(),
+            playerId: checkerEvent.playerId ? checkerEvent.playerId.toString() : undefined,
             type: checkerEvent.type,
             prediction: checkerEvent.prediction,
-            superMode: checkerEvent.superMode
+            superMode: checkerEvent.superMode,
+            selected: checkerEvent.selected
         };
 
         const cellRow = [
@@ -54,6 +56,10 @@ export class BoardStore {
     @action
     private init() {
         this.board = this.initBoard();
+    }
+
+    public getCell(position: IPosition): Cell {
+        return this.board.cells[position.y][position.x];
     }
 
     private initBoard(): Board {

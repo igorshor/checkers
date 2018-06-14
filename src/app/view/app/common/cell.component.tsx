@@ -1,18 +1,22 @@
 import * as React from "react";
-import { Position } from "../../models/position.model";
 import '../styles/cell.style.scss';
 import { inject, observer } from "mobx-react";
 import { PlayersStore } from "../stores/players.store";
 import { AppStores } from "../..";
 import { PositionType } from "../../../model/common/board/position-type";
+import { IPosition } from "../../../model/common/board/position";
 interface CellStores {
     playersStore?: PlayersStore;
 }
 
 export interface CellProps extends CellStores {
-    position: Position;
+    onCellSelection: (position: IPosition) => void;
+    position: IPosition;
     type: PositionType;
     playerId?: string;
+    prediction: boolean;
+    superMode: boolean;
+    selected: boolean;
 }
 
 @inject((stores: AppStores) => {
@@ -20,19 +24,40 @@ export interface CellProps extends CellStores {
 })
 @observer export class CellComponent extends React.Component<CellProps, {}> {
     private getPlayerUiIdentifier(): string {
-        return this.props.playerId === this.props.playersStore.first.id ? 'one' : 'two';
+        let checkerUiClasses = 'cell__checker cell__checker--';
+        checkerUiClasses += this.props.playerId === this.props.playersStore.first.id ? 'one' : 'two';
+
+        if (this.props.selected) {
+            checkerUiClasses += ' cell__checker--selected';
+        }
+
+        if (this.props.prediction) {
+            checkerUiClasses += ' cell__checker--prediction';
+        }
+
+        if (this.props.superMode) {
+            checkerUiClasses += ' cell__checker--super';
+        }
+
+        return checkerUiClasses;
+    }
+
+    private handleClick = () => {
+        this.props.onCellSelection(this.props.position);
     }
 
     private getCellUiIdentifier(): string {
-        return this.props.type === PositionType.Black ? 'black' : 'white';
+        return 'cell cell--' +
+            (this.props.type === PositionType.Black ? 'black' : 'white' as string);
     }
     render(): React.ReactNode {
         let checker = null;
         if (this.props.playerId) {
-            checker = <div className={'cell__checker cell__checker--' + this.getPlayerUiIdentifier()} />;
+            checker = <div className={this.getPlayerUiIdentifier()} />;
         }
+
         return (
-            <div className={'cell cell--' + this.getCellUiIdentifier()}>
+            <div onClick={this.handleClick} className={this.getCellUiIdentifier()}>
                 {checker}
             </div>
         );

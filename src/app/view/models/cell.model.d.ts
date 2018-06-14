@@ -1,11 +1,13 @@
-import { Position } from "./position.model";
 import { PositionType } from "../../model/common/board/position-type";
+import { IPosition } from "../../model/common/board/position";
+
 
 export interface Cell {
     id: string;
     type: PositionType;
     playerId?: string;
-    position: Position
+    position: IPosition
     prediction?: boolean;
     superMode?: boolean;
+    selected?: boolean;
 }

@@ -3,7 +3,7 @@ import { IIdentible } from "../../common/interfaces/i-Identible";
 
 export class Checker implements IIdentible {
     public state: CheckerState;
-    constructor(public id: any, public selected = false) {
+    constructor(public id: number, public associatedId: string, public selected = false) {
         this.state = CheckerState.Normal;
     }
 }

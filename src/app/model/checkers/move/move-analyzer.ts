@@ -63,12 +63,12 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
 
         return posiibleDanger.some((pos: IPosition) => {
             const cell = board.getCellByPosition(pos);
-            return cell && cell.element && cell.element.id === this._playersManager.opponent.id;
+            return cell && cell.element && cell.element.associatedId === this._playersManager.opponent.id;
         });
     }
 
     getPossibleMovesByPlayer(player: Player<Checker>, board: Board<Checker>): MoveDescriptor[] {
-        const playerCells = board.select(cell => cell.element && cell.element.id === player.id);
+        const playerCells = board.select(cell => cell.element && cell.element.associatedId === player.id);
         let possibleMoves: MoveDescriptor[];
         playerCells.forEach(cell => {
             const select = new SelectDescriptor(cell.position, player.id, cell.element.id);
@@ -88,10 +88,7 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         }
 
         const moves = unCheckedPosibleNextMoves
-            .map((pos: IPosition) => new MoveDescriptor(
-                select.from, { x: pos.x, y: pos.y },
-                select.playerId,
-                select.elementId))
+            .map((pos: IPosition) => new MoveDescriptor(select.from, { x: pos.x, y: pos.y }, select.playerId, fromChecker.id))
             .filter(move => this._moveValidator.validate(move, board, this._playersManager.get(select.playerId)));
 
         return moves;
@@ -143,9 +140,9 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         }
 
         if (cell.element) {
-            if (cell.element.id === this._playersManager.opponent.id) {
+            if (cell.element.associatedId === this._playersManager.opponent.id) {
                 return SimulationResult.TryNext;
-            } else if (cell.element.id === this._playersManager.current.id) {
+            } else if (cell.element.associatedId === this._playersManager.current.id) {
                 return SimulationResult.NotPossible;
             } else {
                 throw new Error('id not found');
@@ -159,11 +156,11 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         const pos = { x: position.x, y: position.y };
 
         if (moveDirection & DirectionsDefinition.Up) {
-            pos.y++;
+            pos.y--;
         }
 
         if (moveDirection & DirectionsDefinition.Down) {
-            pos.y--;
+            pos.y++;
         }
 
         if (moveDirection & DirectionsDefinition.Right) {

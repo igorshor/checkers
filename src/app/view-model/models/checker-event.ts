@@ -6,6 +6,7 @@ export class CheckerEvent {
         public playerId?: string,
         public type?: PositionType,
         public prediction?: boolean,
-        public superMode?: boolean) {
+        public superMode?: boolean,
+        public selected?: boolean) {
     }
 }

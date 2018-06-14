@@ -14,6 +14,7 @@ import { View } from "../view";
 import { SelectDescriptor } from "../model/common/descriptor/select-descriptor";
 import { SelectionEvent } from "./models/selection-event";
 import { Configurations } from "../model/models/game-configurations";
+import { SelectionContext } from "../model/common/board/selection-context";
 
 interface ModelEvents {
     readonly change: Observable<ChangeEvent>;
@@ -41,8 +42,8 @@ export class ViewModel implements ModelEvents {
     private registerEvents() {
         const { selected, configurationSetted } = this._view.viewHooks;
         selected.subscribe((selectionEvent: SelectionEvent) => {
-            const selectDes = new SelectDescriptor(selectionEvent.position, selectionEvent.playerId, selectionEvent.elementId);
-            this._state.updateSelection(selectDes);
+            const selectDescriptor = new SelectionContext(selectionEvent.position, selectionEvent.playerId);
+            this._state.updateSelection(selectDescriptor);
         });
 
         configurationSetted.subscribe((configuration: Configurations) => {
@@ -57,7 +58,17 @@ export class ViewModel implements ModelEvents {
         this._state.cells.subscribe((cells: Cell<Checker>[]) => this._change
             .next(new ChangeEvent(new PlayerEvent(this._currentPlayer.publicId, this._currentPlayer.name),
                 cells
-                    .map(cell => new CheckerEvent(cell.position, cell.element ? cell.element.id : this._currentPlayer.id, cell.type, cell.state === CellState.Prediction))
+                    .map(cell => {
+                        const isPrediction = cell.state === CellState.Prediction;
+                        return new CheckerEvent(
+                            cell.position,
+                            cell.element ? cell.element.associatedId : isPrediction ? this._currentPlayer.id : undefined,
+                            cell.type,
+                            isPrediction,
+                            false,
+                            cell.element && cell.element.selected
+                        );
+                    })
             )));
 
         this._state.board.subscribe((cells: Cell<Checker>[][]) => this._board
@@ -65,7 +76,7 @@ export class ViewModel implements ModelEvents {
                 cells
                     .map(i => i
                         .filter(k => k.element)
-                        .map(j => new CheckerEvent({ x: j.position.x, y: j.position.y }, j.element.id, j.type)
+                        .map(j => new CheckerEvent({ x: j.position.x, y: j.position.y }, j.element.associatedId, j.type)
                         )), this._state.width, this._state.height)));
     }
 
