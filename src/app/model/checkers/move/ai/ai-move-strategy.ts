@@ -1,15 +1,10 @@
-import { IMoveStrategy } from "../../../common/interfaces/i-move-strategy";
-import { SelectDescriptor } from "../../../common/descriptor/select-descriptor";
-import { Subscription } from "@reactivex/rxjs";
 import { Checker } from "../../board/checker";
-import { Board } from "../../../common/board/board";
 import { IMoveValidator } from "../../../common/interfaces/i-move-validator-interceptorr";
 import { IMoveAnalyzer } from "../../../common/interfaces/i-move-analyzer";
 import { PlayersManager } from "../../../common/player/players-manager";
 import { IPosition } from "../../../common/board/position";
 import { Cell } from "../../../common/board/cell";
 import { PlayerMoveStrategy } from "../player/player-move-strategy";
-import { MoveDescriptor } from "../../../common/descriptor/move-descriptor";
 import { AiMoveRunner } from "./ai-move-runner";
 import { IBoardController } from "../../../common/interfaces/i-board-controller";
 import { BoardController } from "../../board/board-controller";

@@ -33,10 +33,9 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         return this._playDeferredPromise.promise();
     }
 
-    private resolveMove(): void {
+    private resolveMove(changes: Cell<Checker>[]): void {
         this._selectionSubscription.unsubscribe();
-        // TODO NEEDTO RESOLVE WITH CHANGES !!! OR CHANGE LOGIC !
-        this._playDeferredPromise.resolve();
+        this._playDeferredPromise.resolve(changes);
     }
 
     private handleSelect(selection: SelectDescriptor): void {
@@ -50,8 +49,8 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
                 this.onReSelect(selection);
             } else {
                 if (this._selection.posibleMoves.some(pos => pos.x === selection.position.x && pos.y === selection.position.y)) {
-                    this.move(prevSelectionCell.position, currentSelectionCell.position);
-                    this.resolveMove();
+                    const moveChanges = this.move(prevSelectionCell.position, currentSelectionCell.position);
+                    this.resolveMove(moveChanges);
                 }
             }
         }
@@ -136,8 +135,8 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
 
         const moveType = this._moveAnalizer.getGeneralMoveType(from, to);
         moveDescriptor.type = moveType;
-        const changes = this._boardController.doMove(moveDescriptor);
         this.onUnSelect(this._selection);
+        const changes = this._boardController.doMove(moveDescriptor);
 
         return changes;
     }

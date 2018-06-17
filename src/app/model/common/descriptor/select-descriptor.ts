@@ -5,7 +5,7 @@ import { MoveType } from "../move/move-type";
 
 export class SelectDescriptor extends SelectionContext {
     public type: MoveType;
-    posibleMoves: IPosition[];
+    public posibleMoves: IPosition[];
 
     get from(): IPosition {
         return this.position;

@@ -72,7 +72,7 @@ export class Board<T extends IIdentible> {
     }
 
     remove(cellContext: SelectionContext, removeFromBoard = false): Cell<T> {
-        const elements = this.getEementsById(cellContext.playerId);
+        const elements = this.getPlayerEementsByPlayerId(cellContext.playerId);
         const index = this.getElementIndex(cellContext.playerId, cellContext.elementId);
         const cell = this.getCellByPosition(cellContext.position);
 
@@ -86,7 +86,7 @@ export class Board<T extends IIdentible> {
     }
 
     add(cellContext: SelectionContext): Cell<T> {
-        const elements = this.getEementsById(cellContext.playerId);
+        const elements = this.getPlayerEementsByPlayerId(cellContext.playerId);
         const index = this.getElementIndex(cellContext.playerId, cellContext.elementId);
         const element = elements[index];
         const cell = this.getCellByPosition(cellContext.position);
@@ -100,8 +100,8 @@ export class Board<T extends IIdentible> {
         return cell;
     }
 
-    private getElementIndex(id: string, elementId: number): number {
-        const elements = this.elementsMap[id];
+    private getElementIndex(playerId: string, elementId: number): number {
+        const elements = this.elementsMap[playerId];
         const index = elements.findIndex(element => element.id === elementId);
 
         if (index < 0) {
@@ -111,7 +111,13 @@ export class Board<T extends IIdentible> {
         return index;
     }
 
-    private getEementsById(id: string): T[] {
+    public getElement(playerId: string, elementId: number): T {
+        const index = this.getElementIndex(playerId, elementId);
+
+        return this.elementsMap[playerId][index];
+    }
+
+    private getPlayerEementsByPlayerId(id: string): T[] {
         const elements = this.elementsMap[id];
 
         if (!elements) {

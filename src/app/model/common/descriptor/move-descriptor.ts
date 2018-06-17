@@ -7,8 +7,10 @@ export class MoveDescriptor extends SelectDescriptor {
     public direction: DirectionsDefinition;
     public moveDirection: MoveDirectionsDefinition;
     public attacked?: IPosition;
-    constructor(from: IPosition, public to: IPosition, playerId: string, elementId: number) {
+    public to: IPosition
+    constructor(from: IPosition, to: IPosition, playerId: string, elementId: number) {
         super(from, playerId, elementId);
+        this.to = to;
         this.direction = (from.y - to.y) > 0 ? DirectionsDefinition.Up : DirectionsDefinition.Down;
         const horizontal = (from.x - to.x) > 0 ? DirectionsDefinition.Left : DirectionsDefinition.Right;
         this.moveDirection = this.direction & horizontal;
