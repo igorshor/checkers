@@ -47,25 +47,25 @@ export class Board<T extends IIdentible> {
         return board;
     }
 
-    restore(cells: Cell<T>[][], players:Player<T>[]) {
+    restore(cells: Cell<T>[][], players: Player<T>[]) {
         this._cells = cells;
         this._players = players;
         this.calculateElementsMap();
     }
 
-    private calculateElementsMap(){
+    private calculateElementsMap() {
         this.initElementsMap();
 
-        this._cells.forEach(row => row.forEach(this.tryToAddElementToElementsMap))
+        this._cells.forEach(row => row.forEach(cell => this.tryToAddElementToElementsMap(cell)))
     }
 
-    private initElementsMap(){
+    private initElementsMap() {
         this.elementsMap = {};
         this._players.forEach((identible: IIdentible) => this.elementsMap[identible.id] = []);
     }
 
-    private tryToAddElementToElementsMap(cell: Cell<T>){
-        if(cell.element && this.elementsMap[cell.element.associatedId]){
+    private tryToAddElementToElementsMap(cell: Cell<T>) {
+        if (cell.element && this.elementsMap[cell.element.associatedId]) {
             this.elementsMap[cell.element.associatedId].push(cell.element);
         }
     }
