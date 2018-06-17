@@ -16,6 +16,10 @@ export class Player<T extends IIdentible> implements IIdentible {
         // tslint:disable-next-line:no-return-await
         return await this._moveStrategy.play();
     }
+
+    public mutateObject(): Player<T> {
+        return new Player<T>(this.name, this.id, this.base, this.direction, this._moveStrategy);
+    }
 }
 
 export class AiPlayer<T extends IIdentible> extends Player<T> {

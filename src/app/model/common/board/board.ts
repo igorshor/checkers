@@ -29,30 +29,50 @@ export class Board<T extends IIdentible> {
         for (let i = 0; i < this.height; i++) {
             cells[i] = [];
             for (let j = 0; j < this.width; j++) {
-                const cell = this.cells[i][j];
-                cells[i][j] = new Cell<T>({ x: cell.position.x, y: cell.position.y }, cell.type, cell.element);
-                cells[i][j].state = cell.state;
+                cells[i][j] = this.cells[i][j].mutateObject();
             }
         }
 
         return cells;
     }
 
+    get immutablePlayers(): Player<T>[] {
+        return this._players.map(player => player.mutateObject());
+    }
+
     get immutableBoard(): Board<T> {
         const board = new Board<T>(this.width, this.height, this.positionStrategy, this._cellBuilder, this._players);
-        board.restore(this.immutableCells);
+        board.restore(this.immutableCells, this.immutablePlayers);
 
         return board;
     }
 
-    restore(cells: Cell<T>[][]) {
+    restore(cells: Cell<T>[][], players:Player<T>[]) {
         this._cells = cells;
+        this._players = players;
+        this.calculateElementsMap();
+    }
+
+    private calculateElementsMap(){
+        this.initElementsMap();
+
+        this._cells.forEach(row => row.forEach(this.tryToAddElementToElementsMap))
+    }
+
+    private initElementsMap(){
+        this.elementsMap = {};
+        this._players.forEach((identible: IIdentible) => this.elementsMap[identible.id] = []);
+    }
+
+    private tryToAddElementToElementsMap(cell: Cell<T>){
+        if(cell.element && this.elementsMap[cell.element.associatedId]){
+            this.elementsMap[cell.element.associatedId].push(cell.element);
+        }
     }
 
     public init(players: Player<T>[]) {
-        this.elementsMap = {};
         this._players = players;
-        this._players.forEach((identible: Player<T>) => this.elementsMap[identible.id] = []);
+        this.initElementsMap();
         this._cells = [];
 
         for (let i = 0; i < this.height; i++) {
@@ -62,10 +82,7 @@ export class Board<T extends IIdentible> {
                 const position = { x: j, y: i };
                 const cell = this._cellBuilder.build(this.positionStrategy, this._players, position);
 
-                if (cell.element && this.elementsMap[cell.element.associatedId]) {
-                    this.elementsMap[cell.element.associatedId].push(cell.element);
-                }
-
+                this.tryToAddElementToElementsMap(cell);
                 this._cells[i].push(cell);
             }
         }

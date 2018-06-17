@@ -8,4 +8,10 @@ export class Cell<T extends IIdentible> {
     constructor(public position: IPosition, public type: PositionType, public element: T) {
         this.state = CellState.Normal;
     }
+
+    public mutateObject(): Cell<T> {
+        const cell = new Cell<T>(this.position, this.type, this.element);
+        cell.state = this.state;
+        return cell;
+    }
 }
