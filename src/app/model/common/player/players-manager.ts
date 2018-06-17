@@ -17,7 +17,7 @@ export class PlayersManager<T extends IIdentible> extends Players<T> {
 
     public mutatePlayers(): Players<T> {
         const players = new Players<T>();
-        players.addPlayer(this.current);
+        players.addPlayer(this.current, true);
         players.addPlayer(this.opponent);
 
         return players;

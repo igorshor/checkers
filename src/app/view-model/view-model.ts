@@ -56,7 +56,7 @@ export class ViewModel implements ModelEvents {
         this._state.currentPlayer.subscribe(player => this._currentPlayer = player);
         this._state.gameStage.subscribe(game => this._game.next(new GameEvent(game.gameStage, game.winner, game.draw)));
         this._state.cells.subscribe((cells: Cell<Checker>[]) => this._change
-            .next(new ChangeEvent(new PlayerEvent(this._currentPlayer.publicId, this._currentPlayer.name),
+            .next(new ChangeEvent(new PlayerEvent(this._currentPlayer.id, this._currentPlayer.name),
                 cells
                     .map(cell => {
                         const isPrediction = cell.state === CellState.Prediction;

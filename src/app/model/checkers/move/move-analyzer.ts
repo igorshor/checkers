@@ -69,10 +69,12 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
 
     getPossibleMovesByPlayer(player: Player<Checker>, board: Board<Checker>): MoveDescriptor[] {
         const playerCells = board.select(cell => cell.element && cell.element.associatedId === player.id);
-        let possibleMoves: MoveDescriptor[];
+        let possibleMoves: MoveDescriptor[] = [];
+
         playerCells.forEach(cell => {
             const select = new SelectDescriptor(cell.position, player.id, cell.element.id);
-            possibleMoves = this.getPossibleMovesBySelect(select, board);
+
+            possibleMoves.push(...this.getPossibleMovesBySelect(select, board));
         });
 
         return possibleMoves;
@@ -88,7 +90,13 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         }
 
         const moves = unCheckedPosibleNextMoves
-            .map((pos: IPosition) => new MoveDescriptor(select.from, { x: pos.x, y: pos.y }, select.playerId, fromChecker.id))
+            .map((pos: IPosition) => {
+                const moveDescriptopr = new MoveDescriptor(select.from, { x: pos.x, y: pos.y }, select.playerId, fromChecker.id);
+                
+                moveDescriptopr.type = this.getGeneralMoveType(moveDescriptopr.from, moveDescriptopr.to);
+
+                return moveDescriptopr;
+            })
             .filter(move => this._moveValidator.validate(move, board, this._playersManager.get(select.playerId)));
 
         return moves;

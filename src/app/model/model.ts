@@ -79,11 +79,11 @@ export class Model {
 
     private setPlayers(configurations: Configurations) {
         const players = [];
-        players.push(new Player(configurations.players[0].name, 1, configurations.players[0].id, 1, DirectionsDefinition.Down, this._playerMoveStrategy));
+        players.push(new Player(configurations.players[0].name, configurations.players[0].id, 1, DirectionsDefinition.Down, this._playerMoveStrategy));
 
         players.push(configurations.players[1].computer ?
-            new AiPlayer(configurations.players[1].name || 'computer', 2, configurations.players[1].id, this.height, DirectionsDefinition.Up, this._computerMoveStrategy) :
-            new Player(configurations.players[1].name, 2, configurations.players[1].id, 0, DirectionsDefinition.Down, this._playerMoveStrategy));
+            new AiPlayer(configurations.players[1].name || 'computer', configurations.players[1].id, this.height, DirectionsDefinition.Up, this._computerMoveStrategy) :
+            new Player(configurations.players[1].name, configurations.players[1].id, 0, DirectionsDefinition.Down, this._playerMoveStrategy));
 
         this._playersManager.addPlayer(players[0]);
         this._playersManager.addPlayer(players[1]);

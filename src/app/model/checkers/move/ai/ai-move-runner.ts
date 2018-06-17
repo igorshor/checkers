@@ -18,7 +18,7 @@ export class AiMoveRunner {
         private _movePicker: IMovePicker,
         private _maxDepth = 1) {
         this._root = this.getAiRootElement();
-        this._root.boardState = board.immutableBoard;
+        this._root.boardImage = board.immutableBoard;
     }
 
     async calculate(): Promise<AiMoveDescriptor> {
@@ -30,21 +30,21 @@ export class AiMoveRunner {
         if (this._maxDepth < depth) {
             return;
         }
-        const board = parent.boardState;
+        const board = parent.boardImage;
         const possibleMoves = this._moveAnalizer.getPossibleMovesByPlayer(this._players.current, board)
             .map(move => new AiMoveDescriptor(move, parent));
 
         possibleMoves.forEach(move => {
             this._boardController.doMove(move);
-            move.boardState = board.immutableBoard;
+            move.boardImage = board.immutableBoard;
             const counterMove = this._moveAnalizer.getPossibleMovesByPlayer(this._players.opponent, board);
             const bestCouterMove = this._movePicker.calcBestMove(counterMove);
             move.counterMove = bestCouterMove;
             this._players.switch();
             this._boardController.doMove(bestCouterMove);
-            move.boardState = board.immutableBoard;
+            move.boardImage = board.immutableBoard;
             this._root.add(move);
-            const worker: Worker = new AiRunnerWorker();
+            //const worker: Worker = new AiRunnerWorker();
             this.aiMoveRunner(depth++, move);
         });
     }

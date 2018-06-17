@@ -4,7 +4,7 @@ import { Board } from "../../../common/board/board";
 
 export class AiMoveDescriptor extends MoveDescriptor {
     public counterMove: MoveDescriptor;
-    public boardState: Board<Checker>;
+    public boardImage: Board<Checker>;
     public afterCounterMoveBoardState: Board<Checker>;
     public next: MoveDescriptor[];
     public parent: MoveDescriptor;

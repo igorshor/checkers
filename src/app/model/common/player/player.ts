@@ -5,8 +5,7 @@ import { Cell } from "../board/cell";
 
 export class Player<T extends IIdentible> implements IIdentible {
     constructor(public name: string,
-        public id: any,
-        public publicId: string,
+        public id: string,
         public base: number,
         public direction: DirectionsDefinition,
         private _moveStrategy: IMoveStrategy<T>) {
@@ -20,7 +19,7 @@ export class Player<T extends IIdentible> implements IIdentible {
 }
 
 export class AiPlayer<T extends IIdentible> extends Player<T> {
-    constructor(name: string, id: any, publicId: string, base: number, direction: DirectionsDefinition, _moveManager: IMoveStrategy<T>) {
-        super(name, id, publicId, base, direction, _moveManager);
+    constructor(name: string, id: string, base: number, direction: DirectionsDefinition, _moveManager: IMoveStrategy<T>) {
+        super(name, id, base, direction, _moveManager);
     }
 }

@@ -1,5 +1,4 @@
 import { Player } from "./player";
-import { GameStateManager } from "../game/game-state-manager";
 import { IIdentible } from "../interfaces/i-Identible";
 
 export class Players<T extends IIdentible> {
@@ -7,7 +6,7 @@ export class Players<T extends IIdentible> {
     private _players: Player<T>[];
     private _playersMap: { [id: string]: Player<T> };
 
-    addPlayer(player: Player<T>) {
+    addPlayer(player: Player<T>, current: boolean = false) {
         this._players = this._players || [];
         this._playersMap = this._playersMap || {};
 
@@ -17,6 +16,10 @@ export class Players<T extends IIdentible> {
 
         this._playersMap[player.id] = player;
         this._players.push(player);
+
+        if (current) {
+            this._currentPlayer = player;
+        }
     }
 
     get players(): Player<T>[] {
@@ -44,8 +47,8 @@ export class Players<T extends IIdentible> {
     }
 
     switch(): Player<T> {
-        const otherPlayer = this.getOtherPlayer();
-        return otherPlayer;
+        this._currentPlayer = this.getOtherPlayer();
+        return this._currentPlayer;
     }
 
     private getOtherPlayer(): Player<T> {
