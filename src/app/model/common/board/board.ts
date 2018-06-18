@@ -160,4 +160,28 @@ export class Board<T extends IIdentible> {
                 return accumulator;
             });
     }
+
+    toString() {
+        let boardStr = '';
+        let playersStr = 'x = ' + this._players[0].name + ' | y = ' + this._players[1].name;
+        const rowsStr = this._cells.map(row => {
+            let rowStr = `|`
+            const rowCellsStr = row.map(cell => {
+                if (!cell.element) {
+                    return ' ';
+                } else {
+                    return cell.element.associatedId === this._players[0].id ? 'x' : 'y';
+                }
+            });
+
+            rowStr += rowCellsStr.join('|');
+            rowStr += '|';
+
+            return rowStr;
+        });
+
+        boardStr += rowsStr.join('\n');
+
+        return '\n' + playersStr + '\n\n' + boardStr + '\n';
+    }
 }

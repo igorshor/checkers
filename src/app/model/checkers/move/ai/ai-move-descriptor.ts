@@ -10,7 +10,7 @@ export class AiMoveDescriptor extends MoveDescriptor {
     public parent: MoveDescriptor;
     constructor(move: MoveDescriptor, parent: MoveDescriptor) {
         super(move.from, move.to, move.playerId, move.elementId);
-
+        this.type = move.type
         this.parent = parent;
     }
 

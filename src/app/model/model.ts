@@ -21,6 +21,12 @@ import { CheckersGameAnalyzer } from "./checkers/game/checkers-game-analyzer";
 import { CheckrsCellBuilder } from "./checkers/board/checkers-cell-builder";
 import { OverrideValidator } from "./checkers/move/move-validators/override-validator";
 
+declare global {
+    interface Window {
+        board: Board<Checker>;
+    }
+}
+
 export class Model {
     private _board: Board<Checker>;
     private _playerMoveStrategy: IMoveStrategy<Checker>;
@@ -47,6 +53,8 @@ export class Model {
         this._board.init(this._playersManager.players);
         this.setGameComponents();
         this._gameState.updateBoard(this._board.cells);
+
+        window.board = this._board;
     }
 
     public start() {
