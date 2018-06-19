@@ -44,13 +44,12 @@ export class AiMoveRunner {
             const bestCouterMove = this._movePicker.calcBestMove(counterMove);
             move.counterMove = bestCouterMove;
             boardController.doMove(bestCouterMove);
-            this._players.switch();
             move.boardImage = board.immutableBoard;
             parent.add(move);
             //const worker: Worker = new AiRunnerWorker();
             this.aiMoveRunner(depth + 1, move);
-
-            boardController.undoMove(bestCouterMove);
+            boardController.undoMove(bestCouterMove);            
+            this._players.switch();
             boardController.undoMove(move);
         });
     }
