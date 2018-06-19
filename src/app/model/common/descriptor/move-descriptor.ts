@@ -1,12 +1,12 @@
 import { SelectDescriptor } from "./select-descriptor";
 import { MoveDirectionsDefinition, DirectionsDefinition } from "../move/move-direction";
-import { IPosition } from "../board/position";
+import { IPosition, IGhostPosition } from "../board/position";
 
 
 export class MoveDescriptor extends SelectDescriptor {
     public direction: DirectionsDefinition;
     public moveDirection: MoveDirectionsDefinition;
-    public attacked?: IPosition;
+    public attacked?: IGhostPosition;
     public to: IPosition
     constructor(from: IPosition, to: IPosition, playerId: string, elementId: number) {
         super(from, playerId, elementId);

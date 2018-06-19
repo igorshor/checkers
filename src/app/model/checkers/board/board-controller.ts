@@ -31,8 +31,11 @@ export class BoardController implements IBoardController<Checker> {
                 break;
             case MoveType.Attack:
                 const attackedPosition = this._moveAnalizer.getNextPositionByDirection(moveDescriptor.from, moveDescriptor.moveDirection, this._board, true);
-                moveDescriptor.attacked = attackedPosition;
                 const cell = this._board.getCellByPosition(attackedPosition);
+                moveDescriptor.attacked = {
+                    ...attackedPosition,
+                    id: cell.element.id
+                };
                 const attackedCellContext = new SelectionContext(attackedPosition, this._players.opponent.id, cell.element.id);
 
                 cellsToUpdate.push(this._board.remove(from));
@@ -55,9 +58,8 @@ export class BoardController implements IBoardController<Checker> {
                 cellsToUpdate.push(this._board.remove(to));
                 break;
             case MoveType.Attack:
-                const attackedPosition = moveDescriptor.attacked;
-                const cell = this._board.getCellByPosition(attackedPosition);
-                const attackedCellContext = new SelectionContext(moveDescriptor.from, this._players.opponent.id, cell.element.id);
+                const attacked = moveDescriptor.attacked;
+                const attackedCellContext = new SelectionContext(attacked, this._players.opponent.id, attacked.id);
 
                 cellsToUpdate.push(this._board.add(from));
                 cellsToUpdate.push(this._board.add(attackedCellContext, true));
