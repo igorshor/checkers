@@ -1,5 +1,6 @@
 import { Player } from "./player";
 import { IIdentible } from "../interfaces/i-Identible";
+import { DirectionsDefinition } from "../move/move-direction";
 
 export class Players<T extends IIdentible> {
     protected _currentPlayer: Player<T>;
@@ -38,12 +39,20 @@ export class Players<T extends IIdentible> {
         return this._players.findIndex(player => player.id === id) >= 0;
     }
 
-    get(id: string) {
+    get(id: string): Player<T> {
         if (this._playersMap[id] === undefined) {
             throw new Error('player does not exist');
         }
 
         return this._playersMap[id];
+    }
+
+    getByDirection(direction: DirectionsDefinition): Player<T> {
+        return this._players.find((player) => player.direction === direction);
+    }
+
+    getOpponent(playerId: string) {
+        return this._players.find((player) => player.id !== playerId);
     }
 
     switch(): Player<T> {

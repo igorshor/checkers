@@ -14,13 +14,13 @@ import { CellState } from "../../../common/board/cell-state";
 import { IBoardController } from "../../../common/interfaces/i-board-controller";
 
 export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
-    private _selection: SelectDescriptor;
+    protected _selection: SelectDescriptor;
     private _selectionSubscription: Subscription;
     protected _playDeferredPromise: JQuery.Deferred<Cell<Checker>[]>;
     protected _board: Board<Checker>;
     constructor(protected _state: GameStateManager<Checker>,
         protected _moveValidator: IMoveValidator<Checker>,
-        protected _moveAnalizer: IMoveAnalyzer<Checker>,
+        private _moveAnalizer: IMoveAnalyzer<Checker>,
         protected _playersManager: PlayersManager<Checker>,
         private _boardController: IBoardController<Checker>) {
         this._board = this._boardController.board;

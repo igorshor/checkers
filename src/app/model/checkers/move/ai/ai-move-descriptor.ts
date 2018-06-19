@@ -6,16 +6,44 @@ export class AiMoveDescriptor extends MoveDescriptor {
     public counterMove: MoveDescriptor;
     public boardImage: Board<Checker>;
     public afterCounterMoveBoardState: Board<Checker>;
-    public next: MoveDescriptor[];
-    public parent: MoveDescriptor;
-    constructor(move: MoveDescriptor, parent: MoveDescriptor) {
+    public next: AiMoveDescriptor[];
+    public parent: AiMoveDescriptor;
+    public depth: number;
+    private _rank: number;
+
+    constructor(move: MoveDescriptor, parent: AiMoveDescriptor) {
         super(move.from, move.to, move.playerId, move.elementId);
         this.type = move.type
         this.parent = parent;
+        this._rank = 0;
+    }
+
+    set rank(value: number) {
+        this._rank = value;
+    }
+
+    get rank(): number {
+        if (!this._rank) {
+            return 0;
+        }
+
+        let calculatedRank = this._rank;
+        let parent = this.parent;
+
+        while (parent) {
+            calculatedRank += parent.rank;
+            parent = parent.parent;
+        }
+
+        return calculatedRank;
     }
 
     add(...move: AiMoveDescriptor[]) {
         this.next = this.next || [];
         this.next.push(...move);
+    }
+
+    valueOf() {
+        return this.rank;
     }
 }

@@ -8,6 +8,6 @@ export class DistanceValidator implements IMoveValidatorInterceptor<Checker> {
 
     validate(moveDescriptor: MoveDescriptor, board: Board<Checker>): boolean {
         const dist = Math.abs(moveDescriptor.from.y - moveDescriptor.to.y);
-        return dist > 0 && dist < 2;
+        return dist > 0 && dist <= 2;
     }
 }

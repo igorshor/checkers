@@ -36,17 +36,19 @@ export class AiMoveRunner {
             .map(move => new AiMoveDescriptor(move, parent));
 
         possibleMoves.forEach(move => {
+            move.depth = depth;
             boardController.doMove(move);
+            this._players.switch();
             move.boardImage = board.immutableBoard;
-            const counterMove = this._moveAnalizer.getPossibleMovesByPlayer(this._players.opponent, board);
+            const counterMove = this._moveAnalizer.getPossibleMovesByPlayer(this._players.current, board);
             const bestCouterMove = this._movePicker.calcBestMove(counterMove);
             move.counterMove = bestCouterMove;
-            this._players.switch();
             boardController.doMove(bestCouterMove);
+            this._players.switch();
             move.boardImage = board.immutableBoard;
-            this._root.add(move);
+            parent.add(move);
             //const worker: Worker = new AiRunnerWorker();
-            this.aiMoveRunner(++depth, move);
+            this.aiMoveRunner(depth + 1, move);
 
             boardController.undoMove(bestCouterMove);
             boardController.undoMove(move);
@@ -54,6 +56,9 @@ export class AiMoveRunner {
     }
 
     private getAiRootElement(): AiMoveDescriptor {
-        return new AiMoveDescriptor(new MoveDescriptor({ x: undefined, y: undefined }, { x: undefined, y: undefined }, undefined, undefined), undefined);
+        const moveDescriptor = new MoveDescriptor({ x: undefined, y: undefined }, { x: undefined, y: undefined }, undefined, undefined);
+        const aiMoveDescriptor = new AiMoveDescriptor(moveDescriptor, undefined);
+        aiMoveDescriptor.depth = 0;
+        return aiMoveDescriptor
     }
 }

@@ -7,13 +7,12 @@ import { SelectDescriptor } from "../../common/descriptor/select-descriptor";
 import { MoveDescriptor } from "../../common/descriptor/move-descriptor";
 import { CheckerState } from "../board/checker-state";
 import { DirectionsDefinition, MoveDirectionsDefinition } from "../../common/move/move-direction";
-import { PlayersManager } from "../../common/player/players-manager";
 import { IMoveValidator } from "../../common/interfaces/i-move-validator-interceptorr";
 import { Player } from "../../common/player/player";
+import { Players } from "../../common/player/players";
 
-interface IFromTo<T> {
-    from: T;
-    to: T;
+interface IPossiblePosition extends IPosition {
+    moveDirection: MoveDirectionsDefinition;
 }
 
 enum SimulationResult {
@@ -25,7 +24,7 @@ enum SimulationResult {
 export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
     private static readonly singleEatRecDistance = 2;
 
-    constructor(private _playersManager: PlayersManager<Checker>,
+    constructor(private _playersManager: Players<Checker>,
         private _moveValidator: IMoveValidator<Checker>) {
 
     }
@@ -90,10 +89,11 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         }
 
         const moves = unCheckedPosibleNextMoves
-            .map((pos: IPosition) => {
+            .map((pos: IPossiblePosition) => {
                 const moveDescriptopr = new MoveDescriptor(select.from, { x: pos.x, y: pos.y }, select.playerId, fromChecker.id);
-                
+
                 moveDescriptopr.type = this.getGeneralMoveType(moveDescriptopr.from, moveDescriptopr.to);
+                moveDescriptopr.moveDirection = pos.moveDirection
 
                 return moveDescriptopr;
             })
@@ -182,16 +182,26 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         return pos;
     }
 
-    getNextPositionByDirection(position: IPosition, moveDirection: MoveDirectionsDefinition, board: Board<Checker>): IPosition {
+    getNextPositionByDirection(position: IPosition, moveDirection: MoveDirectionsDefinition, board: Board<Checker>, forceNext?: boolean): IPossiblePosition {
         let pos = this.simulateNextCellByDirection(position, moveDirection);
+        if (forceNext) {
+            return {
+                ...pos,
+                moveDirection
+            };
+        }
+        
         const result = this.checkIfMoveOrAttack(pos, moveDirection, board);
 
         if (result === SimulationResult.TryNext) {
-            pos = this.simulateNextCellByDirection(position, moveDirection);
+            pos = this.simulateNextCellByDirection(pos, moveDirection);
         }
 
-        return pos;
-    }
+        return {
+            ...pos,
+            moveDirection
+        }
+    };
 
     private getDistance(from: IPosition, to: IPosition): number {
         return Math.abs(from.y - to.y);

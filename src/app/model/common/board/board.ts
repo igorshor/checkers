@@ -10,6 +10,7 @@ export class Board<T extends IIdentible> {
     private _cells: Cell<T>[][];
     private _players: Player<T>[];
     public elementsMap: { [id: string]: T[] };
+    public _removed: T[];
 
     constructor(public readonly width: number, public readonly height: number,
         private positionStrategy: IPositionStrategy<T>,
@@ -89,12 +90,10 @@ export class Board<T extends IIdentible> {
     }
 
     remove(cellContext: SelectionContext, removeFromBoard = false): Cell<T> {
-        const elements = this.getPlayerEementsByPlayerId(cellContext.playerId);
-        const index = this.getElementIndex(cellContext.playerId, cellContext.elementId);
         const cell = this.getCellByPosition(cellContext.position);
 
         if (removeFromBoard) {
-            elements.splice(index, 1);
+            this.removeElement(cellContext.playerId, cellContext.elementId);
         }
 
         cell.element = undefined;
@@ -102,7 +101,31 @@ export class Board<T extends IIdentible> {
         return cell;
     }
 
-    add(cellContext: SelectionContext): Cell<T> {
+    private removeElement(playerId: string, elementId: number) {
+        this._removed = this._removed || [];
+
+        const index = this.getElementIndex(playerId, elementId);
+        const elements = this.getPlayerEementsByPlayerId(playerId);
+        const removedElement = elements.splice(index, 1);
+
+        this._removed.push(removedElement[0]);
+    }
+
+    private restoreElement(playerId: string, elementId: number) {
+        this._removed = this._removed || [];
+
+        const elements = this.getPlayerEementsByPlayerId(playerId);
+        const index = this._removed.findIndex(element => element.id === elementId);
+        const removedElement = this._removed.splice(index, 1);
+
+        elements.push(removedElement[0]);
+    }
+
+    add(cellContext: SelectionContext, addToBoard = false): Cell<T> {
+        if (addToBoard) {
+            this.restoreElement(cellContext.playerId, cellContext.elementId);
+        }
+        
         const elements = this.getPlayerEementsByPlayerId(cellContext.playerId);
         const index = this.getElementIndex(cellContext.playerId, cellContext.elementId);
         const element = elements[index];

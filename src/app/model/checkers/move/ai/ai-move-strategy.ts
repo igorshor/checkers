@@ -7,10 +7,11 @@ import { Cell } from "../../../common/board/cell";
 import { PlayerMoveStrategy } from "../player/player-move-strategy";
 import { AiMoveRunner } from "./ai-move-runner";
 import { IBoardController } from "../../../common/interfaces/i-board-controller";
-import { BoardController } from "../../board/board-controller";
 import { AiMoveInsights } from "./ai-move-insights";
 import { GameStateManager } from "../../../common/game/game-state-manager";
 import { ComputerLevel } from "../../../models/computer-level";
+import { SelectDescriptor } from "../../../common/descriptor/select-descriptor";
+import { MoveAnalyzer } from "../move-analyzer";
 
 export class AiMoveStrategy extends PlayerMoveStrategy {
     private _depth: number;
@@ -30,13 +31,13 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
     async play(): Promise<Cell<Checker>[]> {
         const simulationBoard = this._board.immutableBoard;
         const simulationPlayers = this._playersManager.mutatePlayers();
-        const aiMoveIterable = new AiMoveRunner(this._moveAnalizer, simulationPlayers, simulationBoard, this._moveInsights, this._depth);
+        const moveAnalizer = new MoveAnalyzer(simulationPlayers, this._moveValidator)
+        const aiMoveIterable = new AiMoveRunner(moveAnalizer, simulationPlayers, simulationBoard, this._moveInsights, this._depth);
         const moveTree = await aiMoveIterable.calculate();
-        const bestMove = await this._moveInsights.evaluate(moveTree);
+        const bestMove = await this._moveInsights.evaluate(moveTree, this._depth);
 
-        await setTimeout(() => this.select(bestMove.from));
-        let changedCells;
-        await setTimeout(() => changedCells = this.move(bestMove.from, bestMove.to));
+        this.select(bestMove.from)
+        const changedCells = this.move(bestMove.from, bestMove.to);
 
         return changedCells;
     }
@@ -46,6 +47,9 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
     }
 
     select(from: IPosition): IPosition[] {
-        return super.select(from);
+        const cell = this._board.getCellByPosition(from);
+        const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, cell.element.id);
+        this._selection = selectDescriptor;
+        return [from];
     }
 }
