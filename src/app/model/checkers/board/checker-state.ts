@@ -1,4 +1,4 @@
 export enum CheckerState {
     Normal,
-    Super
+    King
 }

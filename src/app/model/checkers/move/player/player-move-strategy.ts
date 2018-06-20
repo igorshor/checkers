@@ -66,7 +66,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         const posibleDestinations = this.select(selection.from);
         const posibleMovesDestinations = posibleDestinations
             .map(posibleDestination => new MoveDescriptor(selection.from, posibleDestination, this._playersManager.current.id, cell.element.id))
-            .filter(move => this._moveValidator.validate(move, this._board, this._playersManager.current))
+            .filter(move => this._moveValidator.validate(move, this._board, this._playersManager.current, this._moveAnalizer))
             .map(move => move.to);
 
         this._selection = selection;
@@ -127,7 +127,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         }
 
         const moveDescriptor = new MoveDescriptor(from, to, this._playersManager.current.id, cell.element.id);
-        const validMove = this._moveValidator.validate(moveDescriptor, this._board, this._playersManager.current);
+        const validMove = this._moveValidator.validate(moveDescriptor, this._board, this._playersManager.current, this._moveAnalizer);
 
         if (!validMove) {
             throw new Error('invalide move');

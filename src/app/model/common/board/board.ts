@@ -57,7 +57,7 @@ export class Board<T extends IIdentible> {
     private calculateElementsMap() {
         this.initElementsMap();
 
-        this._cells.forEach(row => row.forEach(cell => this.tryToAddElementToElementsMap(cell)))
+        this._cells.forEach(row => row.forEach(cell => this.tryToAddElementToElementsMap(cell)));
     }
 
     private initElementsMap() {
@@ -125,7 +125,7 @@ export class Board<T extends IIdentible> {
         if (addToBoard) {
             this.restoreElement(cellContext.playerId, cellContext.elementId);
         }
-        
+
         const elements = this.getPlayerEementsByPlayerId(cellContext.playerId);
         const index = this.getElementIndex(cellContext.playerId, cellContext.elementId);
         const element = elements[index];
@@ -186,9 +186,9 @@ export class Board<T extends IIdentible> {
 
     toString() {
         let boardStr = '';
-        let playersStr = 'x = ' + this._players[0].name + ' | y = ' + this._players[1].name;
+        const playersStr = 'x = ' + this._players[0].name + ' | y = ' + this._players[1].name;
         const rowsStr = this._cells.map(row => {
-            let rowStr = `|`
+            let rowStr = `|`;
             const rowCellsStr = row.map(cell => {
                 if (!cell.element) {
                     return ' ';

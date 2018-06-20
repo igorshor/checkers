@@ -31,25 +31,14 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
     async play(): Promise<Cell<Checker>[]> {
         const simulationBoard = this._board.immutableBoard;
         const simulationPlayers = this._playersManager.mutatePlayers();
-        const moveAnalizer = new MoveAnalyzer(simulationPlayers, this._moveValidator)
+        const moveAnalizer = new MoveAnalyzer(simulationPlayers, this._moveValidator);
         const aiMoveIterable = new AiMoveRunner(moveAnalizer, simulationPlayers, simulationBoard, this._moveInsights, this._depth);
         const moveTree = await aiMoveIterable.calculate();
         const bestMove = await this._moveInsights.evaluate(moveTree, this._depth);
 
-        this.select(bestMove.from)
+        this.onSelect(bestMove);
         const changedCells = this.move(bestMove.from, bestMove.to);
 
         return changedCells;
-    }
-
-    move(from: IPosition, to: IPosition): Cell<Checker>[] {
-        return super.move(from, to);
-    }
-
-    select(from: IPosition): IPosition[] {
-        const cell = this._board.getCellByPosition(from);
-        const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, cell.element.id);
-        this._selection = selectDescriptor;
-        return [from];
     }
 }

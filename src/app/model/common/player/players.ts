@@ -7,7 +7,7 @@ export class Players<T extends IIdentible> {
     private _players: Player<T>[];
     private _playersMap: { [id: string]: Player<T> };
 
-    addPlayer(player: Player<T>, current: boolean = false) {
+    addPlayer(player: Player<T>, current?: boolean) {
         this._players = this._players || [];
         this._playersMap = this._playersMap || {};
 

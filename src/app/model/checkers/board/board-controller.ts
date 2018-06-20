@@ -22,7 +22,15 @@ export class BoardController implements IBoardController<Checker> {
     public doMove(moveDescriptor: MoveDescriptor): Cell<Checker>[] {
         const cellsToUpdate: Cell<Checker>[] = [];
         const from = new SelectionContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
+        const checker = this._board.getCellByPosition(moveDescriptor.from).element;
         const to = new SelectionContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
+
+        const isKing = this._moveAnalizer.isAKing(moveDescriptor);
+
+        if (isKing && !checker.isKing) {
+            checker.makeAKing();
+            moveDescriptor.kingMove = true;
+        }
 
         switch (moveDescriptor.type) {
             case MoveType.Move:
@@ -51,6 +59,11 @@ export class BoardController implements IBoardController<Checker> {
         const cellsToUpdate: Cell<Checker>[] = [];
         const from = new SelectionContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
         const to = new SelectionContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
+        const checker = this._board.getCellByPosition(moveDescriptor.to).element;
+
+        if (moveDescriptor.kingMove) {
+            checker.becomeAPeasant();
+        }
 
         switch (moveDescriptor.type) {
             case MoveType.Move:

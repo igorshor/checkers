@@ -11,6 +11,7 @@ export interface IMoveAnalyzer<T extends IIdentible> {
     getGeneralMoveType(from: IPosition, to: IPosition): MoveType;
     getSpecificMoveType(from: IPosition, to: IPosition, board: Board<T>): MoveType;
     getPossibleMovesBySelect(select: SelectDescriptor, board: Board<T>): MoveDescriptor[];
-    getPossibleMovesByPlayer(player: Player<T>, board: Board<T>): MoveDescriptor[]
-    getNextPositionByDirection(position: IPosition, moveDirection: MoveDirectionsDefinition, board: Board<T>, forceNext?:boolean): IPosition
+    getPossibleMovesByPlayer(player: Player<T>, board: Board<T>): MoveDescriptor[];
+    getNextPositionByDirection(position: IPosition, moveDirection: MoveDirectionsDefinition, board: Board<T>, forceNext?:boolean): IPosition;
+    isAKing(moveDescriptor:MoveDescriptor): boolean;
 }

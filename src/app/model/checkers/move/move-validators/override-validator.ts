@@ -10,4 +10,4 @@ export class OverrideValidator implements IMoveValidatorInterceptor<Checker> {
         const destinationCell = board.getCellByPosition(moveDescriptor.to);
         return !destinationCell.element;
     }
-} 
+}

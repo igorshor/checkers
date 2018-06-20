@@ -7,6 +7,7 @@ export class MoveDescriptor extends SelectDescriptor {
     public direction: DirectionsDefinition;
     public readonly moveDirection: MoveDirectionsDefinition;
     public attacked?: IGhostPosition;
+    public kingMove?: boolean;
     public to: IPosition;
     constructor(from: IPosition, to: IPosition, playerId: string, elementId: number) {
         super(from, playerId, elementId);
