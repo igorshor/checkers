@@ -11,10 +11,6 @@ import { IMoveValidator } from "../../common/interfaces/i-move-validator-interce
 import { Player } from "../../common/player/player";
 import { Players } from "../../common/player/players";
 
-interface IPossiblePosition extends IPosition {
-    moveDirection: MoveDirectionsDefinition;
-}
-
 enum SimulationResult {
     TryNext,
     Ok,
@@ -68,7 +64,7 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
 
     getPossibleMovesByPlayer(player: Player<Checker>, board: Board<Checker>): MoveDescriptor[] {
         const playerCells = board.select(cell => cell.element && cell.element.associatedId === player.id);
-        let possibleMoves: MoveDescriptor[] = [];
+        const possibleMoves: MoveDescriptor[] = [];
 
         playerCells.forEach(cell => {
             const select = new SelectDescriptor(cell.position, player.id, cell.element.id);
@@ -89,11 +85,10 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         }
 
         const moves = unCheckedPosibleNextMoves
-            .map((pos: IPossiblePosition) => {
+            .map((pos: IPosition) => {
                 const moveDescriptopr = new MoveDescriptor(select.from, { x: pos.x, y: pos.y }, select.playerId, fromChecker.id);
 
                 moveDescriptopr.type = this.getGeneralMoveType(moveDescriptopr.from, moveDescriptopr.to);
-                moveDescriptopr.moveDirection = pos.moveDirection
 
                 return moveDescriptopr;
             })
@@ -179,29 +174,27 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
             pos.x--;
         }
 
+        if (position.x === pos.x || position.y === pos.y) {
+            throw new Error('position simulation problem');
+        }
+
         return pos;
     }
 
-    getNextPositionByDirection(position: IPosition, moveDirection: MoveDirectionsDefinition, board: Board<Checker>, forceNext?: boolean): IPossiblePosition {
+    getNextPositionByDirection(position: IPosition, moveDirection: MoveDirectionsDefinition, board: Board<Checker>, forceNext?: boolean): IPosition {
         let pos = this.simulateNextCellByDirection(position, moveDirection);
         if (forceNext) {
-            return {
-                ...pos,
-                moveDirection
-            };
+            return pos;
         }
-        
+
         const result = this.checkIfMoveOrAttack(pos, moveDirection, board);
 
         if (result === SimulationResult.TryNext) {
             pos = this.simulateNextCellByDirection(pos, moveDirection);
         }
 
-        return {
-            ...pos,
-            moveDirection
-        }
-    };
+        return pos;
+    }
 
     private getDistance(from: IPosition, to: IPosition): number {
         return Math.abs(from.y - to.y);

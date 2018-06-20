@@ -13,7 +13,7 @@ export class AiMoveDescriptor extends MoveDescriptor {
 
     constructor(move: MoveDescriptor, parent: AiMoveDescriptor) {
         super(move.from, move.to, move.playerId, move.elementId);
-        this.type = move.type
+        this.type = move.type;
         this.parent = parent;
         this._rank = 0;
     }
