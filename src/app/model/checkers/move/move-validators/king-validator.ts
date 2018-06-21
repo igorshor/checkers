@@ -6,7 +6,7 @@ import { MoveAnalyzer } from "../move-analyzer";
 import { Player } from "../../../common/player/player";
 import { Cell } from "../../../common/board/cell";
 
-export class OverrideValidator implements IMoveValidatorInterceptor<Checker> {
+export class KingValidator implements IMoveValidatorInterceptor<Checker> {
     error = 'Invalid super move :o';
 
     validate(moveDescriptor: MoveDescriptor, board: Board<Checker>, _: Player<Checker>, moveAnalizer: MoveAnalyzer): boolean {

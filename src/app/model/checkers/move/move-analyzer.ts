@@ -23,20 +23,24 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
 
     }
 
-    getGeneralMoveType(from: IPosition, to: IPosition): MoveType {
-        const distance = this.getDistance(from, to);
+    getGeneralMoveType(from: IPosition, to: IPosition, board: Board<Checker>): MoveType {
+        const distance = MoveHelper.getDistance(from, to);
+        const fromCell = board.getCellByPosition(from);
 
         if (distance === 1) {
             return MoveType.Move;
         } else if (distance === 2) {
-            return MoveType.Attack;
+            const pos = MoveHelper.simulateNextCellByDirection(from, MoveHelper.getMoveDirection(from, to));
+            const cell = board.getCellByPosition(pos);
+
+            return cell && cell.element && fromCell.element.associatedId !== cell.element.associatedId ? MoveType.Attack : MoveType.Invalid;
         } else {
             throw new Error('invalid move');
         }
     }
 
     getSpecificMoveType(from: IPosition, to: IPosition, board: Board<Checker>): MoveType {
-        const moveType = this.getGeneralMoveType(from, to);
+        const moveType = this.getGeneralMoveType(from, to, board);
         const inDanger = this.isInDanger(to, board);
         if (inDanger) {
             switch (moveType) {
@@ -52,7 +56,7 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
 
     private isInDanger(pos: IPosition, board: Board<Checker>): boolean {
         const posiibleDanger = [MoveHelper.simulateNextCellByDirection(pos, this._playersManager.current.direction | DirectionsDefinition.Left),
-            MoveHelper.simulateNextCellByDirection(pos, this._playersManager.current.direction | DirectionsDefinition.Right)];
+        MoveHelper.simulateNextCellByDirection(pos, this._playersManager.current.direction | DirectionsDefinition.Right)];
 
         return posiibleDanger.some((pos: IPosition) => {
             const cell = board.getCellByPosition(pos);
@@ -75,35 +79,15 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
 
     getPossibleMovesBySelect(select: SelectDescriptor, board: Board<Checker>): MoveDescriptor[] {
         const fromChecker = board.getCellByPosition(select.from).element;
-        
+
         return fromChecker.possibleNextMovePositions
             .map((pos: IPosition) => {
                 const moveDescriptopr = new MoveDescriptor(select.from, { x: pos.x, y: pos.y }, select.playerId, fromChecker.id);
-
-                moveDescriptopr.type = this.getGeneralMoveType(moveDescriptopr.from, moveDescriptopr.to);
+                moveDescriptopr.type = this.getGeneralMoveType(moveDescriptopr.from, moveDescriptopr.to, board);
 
                 return moveDescriptopr;
             })
             .filter(move => this._moveValidator.validate(move, board, this._playersManager.get(select.playerId), this));
-    }
-
-    private getPossiblePositions(fromChecker: Checker, select: SelectDescriptor, board: Board<Checker>) {
-        if (fromChecker.isKing) {
-            return [
-                ...this.getPlayerPossibleMoveDirections(this._playersManager.get(select.playerId)),
-                ...this.getPlayerPossibleMoveDirections(this._playersManager.getOpponent(select.playerId))
-            ]
-                .map(moveDirection => this.getSuperPossibleMove(select.position, moveDirection, board))
-                .reduce((arr, cur) => arr.push(...cur) && arr, []);
-        }
-
-        return this.getPlayerPossibleMoveDirections(this._playersManager.get(select.playerId))
-            .map(moveDirection => this.getNextPositionByDirection(select.position, moveDirection, board));
-    }
-
-    private getPlayerPossibleMoveDirections(player: Player<Checker>) {
-        const selectDirection = player.direction;
-        return [selectDirection | DirectionsDefinition.Left, selectDirection | DirectionsDefinition.Right];
     }
 
     private checkIfMoveOrAttack(to: IPosition, board: Board<Checker>): SimulationResult {
@@ -160,9 +144,5 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         }
 
         return pos;
-    }
-
-    private getDistance(from: IPosition, to: IPosition): number {
-        return Math.abs(from.y - to.y);
     }
 }

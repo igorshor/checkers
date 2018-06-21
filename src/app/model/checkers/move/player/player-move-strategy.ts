@@ -58,19 +58,15 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
 
     protected onSelect(selection: SelectDescriptor, updatePrediction = true): Cell<Checker>[] {
         const cell = this._board.getCellByPosition(selection.from);
-
-        if (!cell.element || cell.element.associatedId !== this._playersManager.current.id) {
-            return;
-        }
-
         const posibleDestinations = this.select(selection.from);
         const posibleMovesDestinations = posibleDestinations
-            .map(posibleDestination => new MoveDescriptor(selection.from, posibleDestination, this._playersManager.current.id, cell.element.id))
+            .map(posibleDestination => this.createMoveDescriptor(selection.from, posibleDestination))
             .filter(move => this._moveValidator.validate(move, this._board, this._playersManager.current, this._moveAnalizer))
             .map(move => move.to);
 
         this._selection = selection;
         cell.element.selected = true;
+
         if (posibleMovesDestinations.length) {
             this._selection.posibleMoves = posibleMovesDestinations;
             const cells = posibleMovesDestinations.map(pos => this._board.getCellByPosition(pos));
@@ -85,11 +81,11 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
     }
 
     private onReSelect(selection: SelectDescriptor) {
-        this.onUnSelect(selection);
+        this.onUnSelect();
         this.onSelect(selection);
     }
 
-    private onUnSelect(selection: SelectDescriptor) {
+    private onUnSelect() {
         const previousSelectionCell = this._board.getCellByPosition(this._selection.from);
         const cells = this._selection.posibleMoves.map(pos => this._board.getCellByPosition(pos));
 
@@ -120,22 +116,27 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         });
     }
 
-    public move(from: IPosition, to: IPosition): Cell<Checker>[] {
+    private createMoveDescriptor(from: IPosition, to: IPosition) {
         const cell = this._board.getCellByPosition(from);
         if (!cell.element || !cell.element.id || !cell.element.associatedId) {
             throw new Error('no id');
         }
 
         const moveDescriptor = new MoveDescriptor(from, to, this._playersManager.current.id, cell.element.id);
+        moveDescriptor.type = this._moveAnalizer.getGeneralMoveType(from, to, this._board);
+
+        return moveDescriptor;
+    }
+
+    public move(from: IPosition, to: IPosition): Cell<Checker>[] {
+        const moveDescriptor = this.createMoveDescriptor(from, to);
         const validMove = this._moveValidator.validate(moveDescriptor, this._board, this._playersManager.current, this._moveAnalizer);
 
         if (!validMove) {
             throw new Error('invalide move');
         }
 
-        const moveType = this._moveAnalizer.getGeneralMoveType(from, to);
-        moveDescriptor.type = moveType;
-        this.onUnSelect(this._selection);
+        this.onUnSelect();
         const changes = this._boardController.doMove(moveDescriptor);
 
         return changes;

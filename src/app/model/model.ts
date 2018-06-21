@@ -20,6 +20,8 @@ import { BoardController } from "./checkers/board/board-controller";
 import { CheckersGameAnalyzer } from "./checkers/game/checkers-game-analyzer";
 import { CheckrsBuilder } from "./checkers/board/checkers-builder";
 import { OverrideValidator } from "./checkers/move/move-validators/override-validator";
+import { MoveTypeValidator } from "./common/move/move-validators/move-type-validator";
+import { KingValidator } from "./checkers/move/move-validators/king-validator";
 
 declare global {
     interface Window {
@@ -70,9 +72,11 @@ export class Model {
         const moveValidator = new MoveValidator<Checker>();
 
         moveValidator.append(new BoundariesValidator());
+        moveValidator.append(new MoveTypeValidator());
         moveValidator.append(new DirectionValidator());
         moveValidator.append(new DistanceValidator());
         moveValidator.append(new OverrideValidator());
+        moveValidator.append(new KingValidator());
 
         this._moveAnalizer = new MoveAnalyzer(this._playersManager, moveValidator);
         const boardController = new BoardController(this._board, this._moveAnalizer, this._playersManager);

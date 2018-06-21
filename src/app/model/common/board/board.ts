@@ -186,10 +186,7 @@ export class Board<T extends IIdentible> {
     public select(predicate: (element: Cell<T>) => boolean): Cell<T>[] {
         return this._cells
             .map((row: Cell<T>[]) => row.filter(predicate))
-            .reduce((accumulator: Cell<T>[], currentValue: Cell<T>[]) => {
-                accumulator.push(...currentValue);
-                return accumulator;
-            });
+            .reduce((accumulator: Cell<T>[], currentValue: Cell<T>[]) => accumulator.concat(...currentValue));
     }
 
     toString() {

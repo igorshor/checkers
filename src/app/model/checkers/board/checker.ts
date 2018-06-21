@@ -23,7 +23,25 @@ export class Checker implements IIdentible {
     }
 
     get possibleNextMovePositions(): IPosition[] {
-        return Checker.possibleDirections.map((moveDirection) => MoveHelper.simulateNextCellByDirection(this.associatedPosition, this.direction | moveDirection))
+        return this.getPossibleNextMovePositions(this.direction, 2)
+    }
+
+    protected getPossibleNextMovePositions(attackDirection: DirectionsDefinition, moves: number): IPosition[] {
+        return Checker.possibleDirections
+            .map((moveDirection) => this.nextPositions(attackDirection | moveDirection, moves))
+            .reduce((acc, val) => acc.concat(val), []);
+    }
+
+    protected nextPositions(moveDirection: MoveDirectionsDefinition, moves: number): IPosition[] {
+        const positions: IPosition[] = [];
+        let pos = this.associatedPosition
+
+        for (let i = 0; i < moves; i++) {
+            pos = MoveHelper.simulateNextCellByDirection(pos, moveDirection)
+            positions.push(pos);
+        }
+
+        return positions
     }
 
     get isKing(): boolean {
@@ -31,5 +49,9 @@ export class Checker implements IIdentible {
     }
     get isPeasant(): boolean {
         return true;
+    }
+
+    mutateObject(){
+        return new Checker(this.id, this.associatedId, this.direction, this.associatedPosition, this._kingMaker, this.selected);
     }
 }

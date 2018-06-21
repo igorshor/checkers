@@ -5,5 +5,6 @@ export enum MoveType {
     MoveDanger,
     Attack,
     AttackDanger,
-    Block
+    Block,
+    Invalid
 }

@@ -1,7 +1,7 @@
 import { DirectionsDefinition, MoveDirectionsDefinition } from "../../common/move/move-direction";
 import { IPosition } from "../../common/board/position";
 
-export class MoveHelper{
+export class MoveHelper {
     public static simulateNextCellByDirection(position: IPosition, moveDirection: MoveDirectionsDefinition): IPosition {
         const pos = { x: position.x, y: position.y };
 
@@ -26,5 +26,16 @@ export class MoveHelper{
         }
 
         return pos;
+    }
+
+    public static getMoveDirection(a: IPosition, b: IPosition) {
+        const direction = (a.y - b.y) > 0 ? DirectionsDefinition.Up : DirectionsDefinition.Down;
+        const horizontal = (a.x - b.x) > 0 ? DirectionsDefinition.Left : DirectionsDefinition.Right;
+
+        return direction | horizontal;
+    }
+
+    public static getDistance(a: IPosition, b: IPosition): number {
+        return Math.abs(a.y - b.y);
     }
 }

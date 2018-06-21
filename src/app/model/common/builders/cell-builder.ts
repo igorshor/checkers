@@ -10,7 +10,6 @@ export abstract class CellBuilder<T extends IIdentible> {
     public build(positionStrategy: IPositionStrategy<T>, players: Player<T>[], position: IPosition): Cell<T> {
         const type = positionStrategy.getCellTypeByPosition(position);
         const playerId = positionStrategy.getPlayerByPosition(type, players, position);
-        const include = positionStrategy.includeInGame(type);
         const element = this.createElement(++CellBuilder.elementsCounter, playerId, position);
         const cell = new Cell<T>(position, type, element);
 

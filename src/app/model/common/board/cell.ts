@@ -10,7 +10,7 @@ export class Cell<T extends IIdentible> {
     }
 
     public mutateObject(): Cell<T> {
-        const cell = new Cell<T>(this.position, this.type, this.element);
+        const cell = new Cell<T>(this.position, this.type, this.element && this.element.mutateObject());
         cell.state = this.state;
         return cell;
     }

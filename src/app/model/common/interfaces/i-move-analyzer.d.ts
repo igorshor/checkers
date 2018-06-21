@@ -8,7 +8,7 @@ import { MoveDirectionsDefinition } from "../move/move-direction";
 import { Player } from "../player/player";
 
 export interface IMoveAnalyzer<T extends IIdentible> {
-    getGeneralMoveType(from: IPosition, to: IPosition): MoveType;
+    getGeneralMoveType(from: IPosition, to: IPosition, board: Board<T>): MoveType;
     getSpecificMoveType(from: IPosition, to: IPosition, board: Board<T>): MoveType;
     getPossibleMovesBySelect(select: SelectDescriptor, board: Board<T>): MoveDescriptor[];
     getPossibleMovesByPlayer(player: Player<T>, board: Board<T>): MoveDescriptor[];
