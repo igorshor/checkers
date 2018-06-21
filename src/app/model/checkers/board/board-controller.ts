@@ -24,13 +24,7 @@ export class BoardController implements IBoardController<Checker> {
         const from = new SelectionContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
         const checker = this._board.getCellByPosition(moveDescriptor.from).element;
         const to = new SelectionContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
-
-        const isKing = this._moveAnalizer.isAKing(moveDescriptor);
-
-        if (isKing && !checker.isKing) {
-            checker.makeAKing();
-            moveDescriptor.kingMove = true;
-        }
+        const isKing = this._moveAnalizer.isAKing(moveDescriptor) && !checker.isKing;
 
         switch (moveDescriptor.type) {
             case MoveType.Move:
@@ -52,6 +46,11 @@ export class BoardController implements IBoardController<Checker> {
                 break;
         }
 
+        if (isKing) {
+            cellsToUpdate.push(this._board.replace(to, checker.upgradeToKing()));
+            moveDescriptor.kingMove = true;
+        }
+
         return cellsToUpdate;
     }
 
@@ -62,7 +61,7 @@ export class BoardController implements IBoardController<Checker> {
         const checker = this._board.getCellByPosition(moveDescriptor.to).element;
 
         if (moveDescriptor.kingMove) {
-            checker.becomeAPeasant();
+            cellsToUpdate.push(this._board.replace(to, checker.downgradeToPeasant()));
         }
 
         switch (moveDescriptor.type) {

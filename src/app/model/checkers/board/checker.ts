@@ -1,23 +1,35 @@
-import { CheckerState } from "./checker-state";
 import { IIdentible } from "../../common/interfaces/i-Identible";
+import { DirectionsDefinition, MoveDirectionsDefinition } from "../../common/move/move-direction";
+import { IKingMaker } from "./checkers-builder";
+import { IPosition } from "../../common/board/position";
+import { MoveHelper } from "../move/move-helper";
 
 export class Checker implements IIdentible {
-    constructor(public id: number, public associatedId: string, public selected = false, public state = CheckerState.Normal) {
-
+    public static possibleDirections = [DirectionsDefinition.Left, DirectionsDefinition.Right];
+    constructor(public id: number,
+        public associatedId: string,
+        public direction: DirectionsDefinition,
+        public associatedPosition: IPosition,
+        private _kingMaker: IKingMaker,
+        public selected = false) {
     }
 
-    public makeAKing(): void {
-        this.state = CheckerState.King;
+    public upgradeToKing(): Checker {
+        return this._kingMaker.createKingElement(this);
     }
 
-    public becomeAPeasant(): void {
-        this.state = CheckerState.Normal;
+    public downgradeToPeasant(): Checker {
+        throw new Error('already a peasant :o')
+    }
+
+    get possibleNextMovePositions(): IPosition[] {
+        return Checker.possibleDirections.map((moveDirection) => MoveHelper.simulateNextCellByDirection(this.associatedPosition, this.direction | moveDirection))
     }
 
     get isKing(): boolean {
-        return this.state === CheckerState.King;
+        return false;
     }
     get isPeasant(): boolean {
-        return this.state === CheckerState.Normal;
+        return true;
     }
 }

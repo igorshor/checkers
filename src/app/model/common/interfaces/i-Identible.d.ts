@@ -1,4 +1,5 @@
 export interface IIdentible {
     id: any;
-    associatedId?: any
+    associatedId?: any,
+    associatedPosition?: any;
 }

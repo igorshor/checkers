@@ -18,7 +18,7 @@ import { Player, AiPlayer } from "./common/player/player";
 import { CheckersPositionStrategy } from "./checkers/board/checkers-position-strategy";
 import { BoardController } from "./checkers/board/board-controller";
 import { CheckersGameAnalyzer } from "./checkers/game/checkers-game-analyzer";
-import { CheckrsCellBuilder } from "./checkers/board/checkers-cell-builder";
+import { CheckrsBuilder } from "./checkers/board/checkers-builder";
 import { OverrideValidator } from "./checkers/move/move-validators/override-validator";
 
 declare global {
@@ -100,6 +100,6 @@ export class Model {
     private setBoard(height: number, width: number) {
         this._board = new Board<Checker>(width, height,
             new CheckersPositionStrategy(width, height),
-            new CheckrsCellBuilder());
+            new CheckrsBuilder(this._playersManager));
     }
 }

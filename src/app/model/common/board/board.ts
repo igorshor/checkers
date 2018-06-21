@@ -89,6 +89,13 @@ export class Board<T extends IIdentible> {
         }
     }
 
+    replace(cellContext: SelectionContext, newElement:T): Cell<T> {
+        const cell = this.getCellByPosition(cellContext.position);
+        cell.element = newElement;
+
+        return cell;
+    }
+
     remove(cellContext: SelectionContext, removeFromBoard = false): Cell<T> {
         const cell = this.getCellByPosition(cellContext.position);
 
@@ -136,6 +143,7 @@ export class Board<T extends IIdentible> {
         }
 
         cell.element = element;
+        element.associatedPosition = cell.position;
 
         return cell;
     }
