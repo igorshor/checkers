@@ -15,12 +15,22 @@ export class AiMoveInsights implements IMovePicker {
     }
 
     public async evaluate(root: AiMoveDescriptor, maxDepth: number): Promise<MoveDescriptor> {
-        return await this.getHighestRank(root, maxDepth, root);
+        let  highestRankMove = await this.getHighestRank(root, maxDepth, root);
+
+        while (highestRankMove.parent){
+            if(highestRankMove.depth === 1){
+                return highestRankMove;
+            }
+
+            highestRankMove = highestRankMove.parent;
+        }
+
+        return undefined;
     }
 
-    private moveComperatorFunc = (a: MoveDescriptor, b: MoveDescriptor) => a > b ? a : b;
+    private moveComperatorFunc = (a: AiMoveDescriptor, b: AiMoveDescriptor) => a > b ? a : b;
 
-    private getHighestRank(node: AiMoveDescriptor, maxDepth: number, highestRank: AiMoveDescriptor): MoveDescriptor {
+    private getHighestRank(node: AiMoveDescriptor, maxDepth: number, highestRank: AiMoveDescriptor): AiMoveDescriptor {
         node.rank = this._rankMap[node.type];
         const bestMove = this.moveComperatorFunc(node, highestRank) as AiMoveDescriptor;
 

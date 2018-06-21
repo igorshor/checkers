@@ -50,9 +50,9 @@ export class AiMoveRunner {
             this.aiMoveRunner(depth + 1, move);
             boardController.undoMove(bestCouterMove);            
             this._players.switch();
-            boardController.undoMove(move);
+            boardController.undoMove(move); 
         });
-    }
+    } 
 
     private getAiRootElement(): AiMoveDescriptor {
         const moveDescriptor = new MoveDescriptor({ x: undefined, y: undefined }, { x: undefined, y: undefined }, undefined, undefined);
