@@ -84,33 +84,31 @@ interface InitializationState {
     render() {
         return (
             <div>
-                <form>
-                    <label>Multiplayer
+                <label>Multiplayer
                         <input
-                            type="checkbox"
-                            checked={this.state.multiplayer}
-                            onChange={this.handleCheckboxChange}
-                        /></label>
-                    <label>First Player
+                        type="checkbox"
+                        checked={this.state.multiplayer}
+                        onChange={this.handleCheckboxChange}
+                    /></label>
+                <label>First Player
                         <input
-                            name="firstPlayer"
-                            type="text"
-                            placeholder="name"
-                            value={this.state.firstPlayer}
-                            required={true}
-                            onChange={this.handleInputChange}
-                        /></label>
-                    <label>Second Player
+                        name="firstPlayer"
+                        type="text"
+                        placeholder="name"
+                        value={this.state.firstPlayer}
+                        required={true}
+                        onChange={this.handleInputChange}
+                    /></label>
+                <label>Second Player
                         <input
-                            name="secondPlayer"
-                            type="text"
-                            placeholder="name"
-                            value={this.state.secondPlayer}
-                            required={true}
-                            onChange={this.handleInputChange}
-                        /></label>
-                    <label>Start<button type="button" onClick={this.handleStartGame} /></label>
-                </form>
+                        name="secondPlayer"
+                        type="text"
+                        placeholder="name"
+                        value={this.state.secondPlayer}
+                        required={true}
+                        onChange={this.handleInputChange}
+                    /></label>
+                <label>Start<button type="button" onClick={this.handleStartGame} /></label>
             </div>
         );
     }
