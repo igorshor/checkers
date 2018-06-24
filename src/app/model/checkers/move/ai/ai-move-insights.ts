@@ -15,10 +15,10 @@ export class AiMoveInsights implements IMovePicker {
     }
 
     public async evaluate(root: AiMoveDescriptor, maxDepth: number): Promise<MoveDescriptor> {
-        let  highestRankMove = await this.getHighestRank(root, maxDepth, root);
+        let highestRankMove = await this.getHighestRank(root, maxDepth, root);
 
-        while (highestRankMove.parent){
-            if(highestRankMove.depth === 1){
+        while (highestRankMove.parent) {
+            if (highestRankMove.depth === 1) {
                 return highestRankMove;
             }
 

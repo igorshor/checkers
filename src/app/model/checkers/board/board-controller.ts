@@ -23,7 +23,7 @@ export class BoardController implements IBoardController<Checker> {
         const from = new SelectionContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
         const checker = this._board.getCellByPosition(moveDescriptor.from).element;
         const to = new SelectionContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
-        const isKing = this._moveAnalizer.isAKing(moveDescriptor) && !checker.isKing;
+        const isKing = this._moveAnalizer.isKingMove(moveDescriptor) && !checker.isKing;
 
         switch (moveDescriptor.type) {
             case MoveType.Move:

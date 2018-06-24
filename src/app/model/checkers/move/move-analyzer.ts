@@ -113,7 +113,7 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
 
 
 
-    isAKing(moveDescriptor: MoveDescriptor): boolean {
+    isKingMove(moveDescriptor: MoveDescriptor): boolean {
         return this._playersManager.opponent.base === moveDescriptor.to.y;
     }
 

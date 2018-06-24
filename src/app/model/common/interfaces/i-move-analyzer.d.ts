@@ -13,5 +13,5 @@ export interface IMoveAnalyzer<T extends IIdentible> {
     getPossibleMovesBySelect(select: SelectDescriptor, board: Board<T>): MoveDescriptor[];
     getPossibleMovesByPlayer(player: Player<T>, board: Board<T>): MoveDescriptor[];
     getNextPositionByDirection(position: IPosition, moveDirection: MoveDirectionsDefinition, board: Board<T>, forceNext?:boolean): IPosition;
-    isAKing(moveDescriptor:MoveDescriptor): boolean;
+    isKingMove(moveDescriptor:MoveDescriptor): boolean;
 }
