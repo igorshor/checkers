@@ -33,7 +33,8 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
             const pos = MoveHelper.simulateNextCellByDirection(from, MoveHelper.getMoveDirection(from, to));
             const cell = board.getCellByPosition(pos);
 
-            return cell && cell.element && fromCell.element.associatedId !== cell.element.associatedId ? MoveType.Attack : MoveType.Invalid;
+            return cell && cell.element && fromCell.element.associatedId !== cell.element.associatedId ?
+                MoveType.Attack : MoveType.Invalid;
         } else {
             throw new Error('invalid move');
         }

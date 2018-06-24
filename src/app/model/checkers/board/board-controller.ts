@@ -12,7 +12,6 @@ export class BoardController implements IBoardController<Checker> {
     constructor(private _board: Board<Checker>,
         private _moveAnalizer: IMoveAnalyzer<Checker>,
         private _players: Players<Checker>) {
-
     }
 
     public get board(): Board<Checker> {

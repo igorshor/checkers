@@ -4,6 +4,7 @@ export enum MoveType {
     Virtual,
     MoveDanger,
     Attack,
+    KingAttack,
     AttackDanger,
     Block,
     Invalid

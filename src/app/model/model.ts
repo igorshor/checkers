@@ -104,6 +104,6 @@ export class Model {
     private setBoard(height: number, width: number) {
         this._board = new Board<Checker>(width, height,
             new CheckersPositionStrategy(width, height),
-            new CheckrsBuilder(this._playersManager));
+            new CheckrsBuilder(this._playersManager, this.height));
     }
 }

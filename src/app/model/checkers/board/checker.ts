@@ -10,6 +10,7 @@ export class Checker implements IIdentible {
         public associatedId: string,
         public direction: DirectionsDefinition,
         public associatedPosition: IPosition,
+        public boardSize: number,
         private _kingMaker: IKingMaker,
         public selected = false) {
     }
@@ -19,11 +20,11 @@ export class Checker implements IIdentible {
     }
 
     public downgradeToPeasant(): Checker {
-        throw new Error('already a peasant :o')
+        throw new Error('already a peasant :o');
     }
 
     get possibleNextMovePositions(): IPosition[] {
-        return this.getPossibleNextMovePositions(this.direction, 2)
+        return this.getPossibleNextMovePositions(this.direction, 2);
     }
 
     protected getPossibleNextMovePositions(attackDirection: DirectionsDefinition, moves: number): IPosition[] {
@@ -34,14 +35,16 @@ export class Checker implements IIdentible {
 
     protected nextPositions(moveDirection: MoveDirectionsDefinition, moves: number): IPosition[] {
         const positions: IPosition[] = [];
-        let pos = this.associatedPosition
+        let pos = this.associatedPosition;
+        const maxMoves = MoveHelper
+            .getMaxPossibleNextMovePositionsCount(moveDirection, this.associatedPosition, this.boardSize, moves);
 
-        for (let i = 0; i < moves; i++) {
-            pos = MoveHelper.simulateNextCellByDirection(pos, moveDirection)
+        for (let i = 0; i < maxMoves; i++) {
+            pos = MoveHelper.simulateNextCellByDirection(pos, moveDirection);
             positions.push(pos);
         }
 
-        return positions
+        return positions;
     }
 
     get isKing(): boolean {
@@ -51,7 +54,7 @@ export class Checker implements IIdentible {
         return true;
     }
 
-    mutateObject(){
-        return new Checker(this.id, this.associatedId, this.direction, this.associatedPosition, this._kingMaker, this.selected);
+    mutateObject() {
+        return new Checker(this.id, this.associatedId, this.direction, this.associatedPosition, this.boardSize, this._kingMaker, this.selected);
     }
 }
