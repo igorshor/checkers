@@ -10,7 +10,7 @@
         "allowSyntheticDefaultImports": true,
         "experimentalDecorators": true,
         "allowJs": true,
-        "jsx": "react",
+        "jsx": "react"
     },
     "include": [
         "src/**/*"
