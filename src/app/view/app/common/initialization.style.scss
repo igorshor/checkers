@@ -1,0 +1,13 @@
+.initialization{
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-end;
+
+    &__item {
+        margin-right: 12px;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}

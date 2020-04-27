@@ -1,14 +1,18 @@
 import * as React from "react";
+import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
+import { TextField } from 'office-ui-fabric-react/lib/TextField';
+import { Button } from 'office-ui-fabric-react/lib/Button';
 import { inject, observer } from "mobx-react";
 import { GameStore } from "../stores/game.store";
 import { AppStores } from "../..";
-import '../styles/initialization.style.scss';
+import './initialization.style.scss';
 import { action } from "mobx";
 import { Configurations } from "../../../model/models/game-configurations";
 import { PlayerDefinition } from "../../../model/models/player-definition";
 import { ComputerLevel } from "../../../model/models/computer-level";
 import { PlayersStore } from "../stores/players.store";
-import { Player } from "../../models/player.model";
+
+const DEFAULT_PLAYER_NAME = 'name'
 
 interface InitializationStores {
     gameStore?: GameStore;
@@ -34,28 +38,24 @@ interface InitializationState {
         super(props);
         this.state = {
             multiplayer: false,
-            firstPlayer: 'aaaa',
-            secondPlayer: 'ccccccc'
+            firstPlayer: DEFAULT_PLAYER_NAME,
+            secondPlayer: DEFAULT_PLAYER_NAME
         };
-
-        this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleStartGame = this.handleStartGame.bind(this);
     }
 
-    private handleCheckboxChange(event: React.ChangeEvent<HTMLInputElement>) {
+    private handleCheckboxChange = (event: any, checked: boolean) => {
         this.setState({
-            multiplayer: event.target.checked
+            multiplayer: checked
         });
     }
 
-    private handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    private handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, newValue?: string) => {
         this.setState({
-            [event.target.name]: event.target.value
+            [event.target.name]: newValue
         } as any);
     }
 
-    private handleStartGame(event: React.MouseEvent<HTMLButtonElement>) {
+    private handleStartGame = (event: React.MouseEvent<HTMLButtonElement>) => {
         this.startGame();
     }
 
@@ -82,33 +82,33 @@ interface InitializationState {
     }
 
     render() {
+        const { multiplayer } = this.state;
+
         return (
-            <div>
-                <label>Multiplayer
-                        <input
-                        type="checkbox"
-                        checked={this.state.multiplayer}
-                        onChange={this.handleCheckboxChange}
-                    /></label>
-                <label>First Player
-                        <input
-                        name="firstPlayer"
-                        type="text"
-                        placeholder="name"
-                        value={this.state.firstPlayer}
-                        required={true}
-                        onChange={this.handleInputChange}
-                    /></label>
-                <label>Second Player
-                        <input
-                        name="secondPlayer"
-                        type="text"
-                        placeholder="name"
-                        value={this.state.secondPlayer}
-                        required={true}
-                        onChange={this.handleInputChange}
-                    /></label>
-                <label>Start<button type="button" onClick={this.handleStartGame} /></label>
+            <div className='initialization'>
+                <Toggle
+                    className={'initialization__item'}
+                    label={'Multiplayer'}
+                    checked={multiplayer}
+                    onChange={this.handleCheckboxChange}/>
+                <TextField 
+                    className={'initialization__item'}
+                    name="firstPlayer"
+                    label={multiplayer ? 'First Player' : 'Player'}
+                    required
+                    value={this.state.firstPlayer}
+                    onChange={this.handleInputChange}/>
+                { multiplayer && <TextField 
+                    className={'initialization__item'}
+                    name="secondPlayer"
+                    required
+                    value={this.state.secondPlayer}
+                    label={'Second Player'}
+                    onChange={this.handleInputChange}/>}
+                <Button 
+                    className={'initialization__item'}
+                    onClick={this.handleStartGame} 
+                    text={'Start'}/>
             </div>
         );
     }

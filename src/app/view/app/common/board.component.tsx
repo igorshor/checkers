@@ -2,15 +2,17 @@ import * as React from "react";
 import { BoardStore } from "../stores/board.store";
 import { CellComponent } from "./cell.component";
 import { Cell } from "../../models/cell.model";
-import '../styles/board.style.scss';
+import './board.style.scss';
 import { inject, observer } from "mobx-react";
 import { AppStores } from "../..";
 import { GameStore } from "../stores/game.store";
+import { PlayersStore } from "../stores/players.store";
 import { IPosition } from "../../../model/common/board/position";
 
 interface BoardStores {
     boardStore?: BoardStore;
     gameStore?: GameStore;
+    playersStore? : PlayersStore
 }
 
 interface BoardProps extends BoardStores { }
@@ -18,22 +20,22 @@ interface BoardProps extends BoardStores { }
 @inject((stores: AppStores) => {
     return {
         boardStore: stores.boardStore,
+        playersStore: stores.playersStore,
         gameStore: stores.gameStore
     };
 })
 @observer export class BoardComponent extends React.Component<BoardProps, {}> {
-    constructor(props: BoardProps) {
-        super(props);
+    handelCellSelection = (position: IPosition) => {
+        const cell = this.props.boardStore.getCell(position);
+        const curentPlayer = this.props.playersStore.currentPlayer
+        
+        if (cell.playerId === curentPlayer.id) {
+            this.props.gameStore.select(cell);
+        }
 
-        this.handelCellSelection = this.handelCellSelection.bind(this);
-        this.getCellComponent = this.getCellComponent.bind(this);
     }
 
-    private handelCellSelection(position: IPosition) {
-        this.props.gameStore.select(this.props.boardStore.getCell(position));
-    }
-
-    private getCellComponent(cell: Cell): React.ReactNode {
+    getCellComponent = (cell: Cell): React.ReactNode => {
         return (
             <CellComponent
                 key={cell.id}

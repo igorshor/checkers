@@ -11,14 +11,6 @@
         "experimentalDecorators": true,
         "allowJs": true,
         "jsx": "react",
-        "typeRoots": [
-            "./node_modules/@types"
-        ],
-        "lib": [
-            "webworker",
-            "es2015",
-            "dom"
-        ]
     },
     "include": [
         "src/**/*"

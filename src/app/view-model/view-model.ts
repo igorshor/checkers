@@ -26,6 +26,7 @@ export class ViewModel implements ModelEvents {
     private _change = new Subject<ChangeEvent>();
     private _game = new Subject<GameEvent>();
     private _board = new Subject<BoardEvent>();
+    private _playerChange = new Subject<PlayerEvent>();
     private _currentPlayer: Player<Checker>;
     private _state: GameStateManager<Checker>;
 
@@ -52,23 +53,26 @@ export class ViewModel implements ModelEvents {
         });
     }
 
+    private _onPlayerChange = (playerToSelect: Player<Checker>) => {
+        this._playerChange.next(new PlayerEvent(playerToSelect.id, playerToSelect.name))
+        this._currentPlayer = playerToSelect;
+    }
+
     private init() {
-        this._state.currentPlayer.subscribe(player => this._currentPlayer = player);
+        this._state.currentPlayer.subscribe(this._onPlayerChange);
         this._state.gameStage.subscribe(game => this._game.next(new GameEvent(game.gameStage, game.winner, game.draw)));
-        this._state.cells.subscribe((cells: Cell<Checker>[]) => this._change
-            .next(new ChangeEvent(new PlayerEvent(this._currentPlayer.id, this._currentPlayer.name),
-                cells
-                    .map(cell => {
-                        const isPrediction = cell.state === CellState.Prediction;
-                        return new CheckerEvent(
-                            cell.position,
-                            cell.element ? cell.element.associatedId : isPrediction ? this._currentPlayer.id : undefined,
-                            cell.type,
-                            isPrediction,
-                            false,
-                            cell.element && cell.element.selected
-                        );
-                    })
+        this._state.cells.subscribe((cells: Cell<Checker>[]) => this._change.next(new ChangeEvent(cells.map(cell => {
+                    const isPrediction = cell.state === CellState.Prediction;
+
+                    return new CheckerEvent(
+                        cell.position,
+                        cell.element ? cell.element.associatedId : isPrediction ? this._currentPlayer.id : undefined,
+                        cell.type,
+                        isPrediction,
+                        false,
+                        cell.element && cell.element.selected
+                    );
+                })
             )));
 
         this._state.board.subscribe((cells: Cell<Checker>[][]) => this._board
@@ -82,6 +86,10 @@ export class ViewModel implements ModelEvents {
 
     get change(): Observable<ChangeEvent> {
         return this._change.asObservable();
+    }
+
+    get playerChage(): Observable<PlayerEvent> {
+        return this._playerChange.asObservable();
     }
 
     get game(): Observable<GameEvent> {
