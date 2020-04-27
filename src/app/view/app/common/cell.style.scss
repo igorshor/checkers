@@ -1,4 +1,5 @@
-@import "./variables.style.scss";
+@import "../styles/variables.style.scss";
+
 .cell {
     position: relative;
     display: flex;
@@ -41,6 +42,11 @@
 
         &--prediction{
             opacity: 0.3;
+        }
+
+        
+        &--unTuckable{
+            cursor: not-allowed;
         }
     }
 }

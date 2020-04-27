@@ -1,5 +1,5 @@
 import * as React from "react";
-import '../styles/cell.style.scss';
+import './cell.style.scss';
 import { inject, observer } from "mobx-react";
 import { PlayersStore } from "../stores/players.store";
 import { AppStores } from "../..";
@@ -39,11 +39,17 @@ export interface CellProps extends CellStores {
             checkerUiClasses += ' cell__checker--super';
         }
 
+        if (this.props.playerId !== this.props.playersStore.currentPlayer.id) {
+            checkerUiClasses += ' cell__checker--unTuckable';
+        }
+
         return checkerUiClasses;
     }
 
     private handleClick = () => {
-        this.props.onCellSelection(this.props.position);
+        const { onCellSelection, position } = this.props;
+
+        onCellSelection && onCellSelection(position);
     }
 
     private getCellUiIdentifier(): string {

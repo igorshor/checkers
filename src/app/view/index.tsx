@@ -22,11 +22,11 @@ export interface ViewHooks {
 }
 
 export class View {
-	private _appProps: AppStores;
+	private _appStores: AppStores;
 	private _viewHooks: ViewHooks;
 
 	private createStores(vm: ViewModel) {
-		this._appProps = {
+		this._appStores = {
 			boardStore: new BoardStore(vm),
 			gameStore: new GameStore(vm),
 			playersStore: new PlayersStore(vm),
@@ -34,17 +34,13 @@ export class View {
 	}
 
 	get viewHooks(): ViewHooks {
-		return this._appProps.gameStore;
+		return this._appStores.gameStore;
 	}
 
 	public bootstrap(vm: ViewModel) {
 		this.createStores(vm);
 		ReactDOM.render(
-			<Provider
-				gameStore={this._appProps.gameStore}
-				playersStore={this._appProps.playersStore}
-				boardStore={this._appProps.boardStore}
-			>
+			<Provider {...this._appStores}>
 				<AppComponent />
 			</Provider>,
 			document.getElementById('game')

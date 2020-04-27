@@ -1,5 +1,4 @@
 const path = require('path');
-const { CheckerPlugin } = require('awesome-typescript-loader');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
@@ -21,7 +20,7 @@ module.exports = {
             },
             {
                 test: /\.(ts|tsx)$/,
-                loader: 'awesome-typescript-loader',
+                loader: 'ts-loader',
             },
             {
                 test: /\.scss$/,
@@ -36,10 +35,6 @@ module.exports = {
                         sourceMap: true
                     }
                 }]
-            },
-            {
-                test: /\.html$/,
-                loader: "html-loader"
             }
         ]
     },
@@ -73,7 +68,6 @@ module.exports = {
             inject: true,
             template: "./src/index.html"
         }),
-        new CheckerPlugin(),
         new ExtractTextPlugin({
             filename: "[name].[contenthash].css",
             disable: process.env.NODE_ENV === "development"

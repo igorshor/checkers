@@ -5,6 +5,7 @@ import { BoardStore } from "../stores/board.store";
 import { AppStores } from "../..";
 import { InitializationComponent } from "../common/initialization.component";
 import { GameStore } from "../stores/game.store";
+import './game.style.scss';
 
 interface CheckersStores {
     boardStore?: BoardStore;
@@ -26,10 +27,11 @@ export class CheckersGameComponent extends React.Component<CheckersProps, {}> {
         const initialization = !this.props.gameStore.initialized ? <InitializationComponent /> : null;
 
         return (
-            <form>
+            <div className={'game'}>
                 {initialization}
                 <BoardComponent boardStore={this.props.boardStore} />
-            </form>
+            </div>
+
         );
     }
 }
