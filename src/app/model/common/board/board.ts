@@ -143,7 +143,7 @@ export class Board<T extends IIdentible> {
         }
 
         cell.element = element;
-        element.associatedPosition = cell.position;
+        element.position = cell.position;
 
         return cell;
     }

@@ -9,7 +9,7 @@ export class Checker implements IIdentible {
     constructor(public id: number,
         public playerId: string,
         public direction: DirectionsDefinition,
-        public associatedPosition: IPosition,
+        public position: IPosition,
         private _kingMaker: IKingMaker,
         public selected = false) {
     }
@@ -34,7 +34,7 @@ export class Checker implements IIdentible {
 
     protected nextPositions(moveDirection: MoveDirectionsDefinition, moves: number): IPosition[] {
         const positions: IPosition[] = [];
-        let pos = this.associatedPosition
+        let pos = this.position
 
         for (let i = 0; i < moves; i++) {
             pos = MoveHelper.simulateNextCellByDirection(pos, moveDirection)
@@ -52,6 +52,6 @@ export class Checker implements IIdentible {
     }
 
     mutateObject(){
-        return new Checker(this.id, this.playerId, this.direction, this.associatedPosition, this._kingMaker, this.selected);
+        return new Checker(this.id, this.playerId, this.direction, this.position, this._kingMaker, this.selected);
     }
 }
