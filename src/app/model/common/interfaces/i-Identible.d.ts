@@ -1,6 +1,6 @@
 export interface IIdentible {
     id: any;
-    associatedId?: any,
+    playerId?: any,
     associatedPosition?: any;
     mutateObject?(): any;
 }

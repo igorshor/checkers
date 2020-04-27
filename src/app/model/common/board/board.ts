@@ -66,8 +66,8 @@ export class Board<T extends IIdentible> {
     }
 
     private tryToAddElementToElementsMap(cell: Cell<T>) {
-        if (cell.element && this.elementsMap[cell.element.associatedId]) {
-            this.elementsMap[cell.element.associatedId].push(cell.element);
+        if (cell.element && this.elementsMap[cell.element.playerId]) {
+            this.elementsMap[cell.element.playerId].push(cell.element);
         }
     }
 
@@ -198,7 +198,7 @@ export class Board<T extends IIdentible> {
                 if (!cell.element) {
                     return ' ';
                 } else {
-                    return cell.element.associatedId === this._players[0].id ? 'x' : 'y';
+                    return cell.element.playerId === this._players[0].id ? 'x' : 'y';
                 }
             });
 

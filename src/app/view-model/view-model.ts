@@ -66,7 +66,7 @@ export class ViewModel implements ModelEvents {
 
                     return new CheckerEvent(
                         cell.position,
-                        cell.element ? cell.element.associatedId : isPrediction ? this._currentPlayer.id : undefined,
+                        cell.element ? cell.element.playerId : isPrediction ? this._currentPlayer.id : undefined,
                         cell.type,
                         isPrediction,
                         false,
@@ -80,7 +80,7 @@ export class ViewModel implements ModelEvents {
                 cells
                     .map(i => i
                         .filter(k => k.element)
-                        .map(j => new CheckerEvent({ x: j.position.x, y: j.position.y }, j.element.associatedId, j.type)
+                        .map(j => new CheckerEvent({ x: j.position.x, y: j.position.y }, j.element.playerId, j.type)
                         )), this._state.width, this._state.height)));
     }
 

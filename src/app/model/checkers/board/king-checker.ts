@@ -7,7 +7,7 @@ import { MoveHelper } from "../move/move-helper";
 export class KingChecker extends Checker {
     public static attackDirections = [DirectionsDefinition.Down, DirectionsDefinition.Up];
     constructor(private _checker: Checker, kingMaker: IKingMaker) {
-        super(_checker.id, _checker.associatedId, _checker.direction, _checker.associatedPosition, kingMaker, _checker.selected);
+        super(_checker.id, _checker.playerId, _checker.direction, _checker.associatedPosition, kingMaker, _checker.selected);
 
     }
 

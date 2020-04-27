@@ -17,6 +17,6 @@ export class CheckrsBuilder extends CellBuilder<Checker> implements IKingMaker {
     }
 
     createKingElement(Checker: Checker): Checker {
-        return Checker.associatedId ? new KingChecker(Checker, this) : undefined;
+        return Checker.playerId ? new KingChecker(Checker, this) : undefined;
     }
 }
