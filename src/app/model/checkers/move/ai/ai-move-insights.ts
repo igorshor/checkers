@@ -1,17 +1,11 @@
 import { MoveDescriptor } from "../../../common/descriptor/move-descriptor";
 import { IMovePicker } from "../../interfaces/i-move-picker";
-import { moveRankMap, RankMap } from "./move-rank-map";
+import { MOVE_RANK_MAP, RankMap } from "./move-rank-map";
 import { AiMoveDescriptor } from "./ai-move-descriptor";
 
 export class AiMoveInsights implements IMovePicker {
-    private _rankMap: RankMap;
-
-    constructor() {
-        this._rankMap = moveRankMap;
-    }
-
     public calcBestMove(moves: MoveDescriptor[]): MoveDescriptor {
-        return moves.reduce((prev, current) => this._rankMap[prev.type] > this._rankMap[current.type] ? prev : current);
+        return moves.reduce((prev, current) => MOVE_RANK_MAP[prev.type] > MOVE_RANK_MAP[current.type] ? prev : current);
     }
 
     public async evaluate(root: AiMoveDescriptor, maxDepth: number): Promise<MoveDescriptor> {
@@ -31,7 +25,7 @@ export class AiMoveInsights implements IMovePicker {
     private moveComperatorFunc = (a: AiMoveDescriptor, b: AiMoveDescriptor) => a > b ? a : b;
 
     private getHighestRank(node: AiMoveDescriptor, maxDepth: number, highestRank: AiMoveDescriptor): AiMoveDescriptor {
-        node.rank = this._rankMap[node.type];
+        node.rank = MOVE_RANK_MAP[node.type];
         const bestMove = this.moveComperatorFunc(node, highestRank) as AiMoveDescriptor;
 
         if (!node.next || !node.next.length) {

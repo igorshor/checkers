@@ -42,8 +42,8 @@ export class ViewModel implements ModelEvents {
 
     private registerEvents() {
         const { selected, configurationSetted } = this._view.viewHooks;
-        selected.subscribe((selectionEvent: SelectionEvent) => {
-            const selectDescriptor = new SelectionContext(selectionEvent.position, selectionEvent.playerId);
+        selected.subscribe((selectionEvent?: SelectionEvent) => {
+            const selectDescriptor = selectionEvent ? new SelectionContext(selectionEvent.position, selectionEvent.playerId) : null;
             this._state.updateSelection(selectDescriptor);
         });
 

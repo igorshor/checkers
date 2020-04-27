@@ -7,7 +7,7 @@ import { SelectionEvent } from '../../../view-model/models/selection-event';
 import { Cell } from '../../models/cell.model';
 
 export class GameStore {
-    @observable _state: GameStage;
+    @observable _state: GameStage = GameStage.Init;
 
     private _configurationSetted = new Subject<Configurations>();
     private _selected = new Subject<SelectionEvent>();
@@ -33,15 +33,15 @@ export class GameStore {
         this._state = value;
     }
 
-    public select(cell: Cell) {
-        this._selected.next(new SelectionEvent(cell.position, cell.playerId));
+    public select(cell?: Cell) {
+        this._selected.next(cell ? new SelectionEvent(cell.position, cell.playerId) : null);
     }
 
     public get configurationSetted(): Observable<Configurations> {
         return this._configurationSetted.asObservable();
     }
 
-    public get selected(): Observable<SelectionEvent> {
+    public get selected(): Observable<SelectionEvent | null> {
         return this._selected.asObservable();
     }
 

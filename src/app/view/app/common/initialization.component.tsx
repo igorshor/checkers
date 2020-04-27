@@ -11,6 +11,7 @@ import { Configurations } from "../../../model/models/game-configurations";
 import { PlayerDefinition } from "../../../model/models/player-definition";
 import { ComputerLevel } from "../../../model/models/computer-level";
 import { PlayersStore } from "../stores/players.store";
+import { GameStage } from "../../../model/common/game/game-stage";
 
 const DEFAULT_PLAYER_NAME = 'name'
 
@@ -83,6 +84,7 @@ interface InitializationState {
 
     render() {
         const { multiplayer } = this.state;
+        const { gameStore } = this.props;
 
         return (
             <div className='initialization'>
@@ -108,7 +110,7 @@ interface InitializationState {
                 <Button 
                     className={'initialization__item'}
                     onClick={this.handleStartGame} 
-                    text={'Start'}/>
+                    text={gameStore.state === GameStage.Init ? 'Start' : 'Reset'}/>
             </div>
         );
     }

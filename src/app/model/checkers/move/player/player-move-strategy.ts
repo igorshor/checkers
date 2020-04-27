@@ -39,9 +39,12 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
     }
 
     private handleSelect(selection: SelectDescriptor): void {
-        if (!this._selection) {
+        if (!this._selection && selection) {
             this.onSelect(selection);
-        } else {
+
+        } else if(!selection) {
+            this.onUnSelect()
+         }else {
             const prevSelectionCell = this._board.getCellByPosition(this._selection.from);
             const currentSelectionCell = this._board.getCellByPosition(selection.from);
 
@@ -86,6 +89,10 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
     }
 
     private onUnSelect() {
+        if (!this._selection) {
+            return;
+        }
+        
         const previousSelectionCell = this._board.getCellByPosition(this._selection.from);
         const cells = this._selection.posibleMoves.map(pos => this._board.getCellByPosition(pos));
 

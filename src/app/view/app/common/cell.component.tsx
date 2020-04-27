@@ -1,10 +1,10 @@
-import * as React from "react";
-import './cell.style.scss';
 import { inject, observer } from "mobx-react";
-import { PlayersStore } from "../stores/players.store";
+import * as React from "react";
 import { AppStores } from "../..";
-import { PositionType } from "../../../model/common/board/position-type";
 import { IPosition } from "../../../model/common/board/position";
+import { PositionType } from "../../../model/common/board/position-type";
+import { PlayersStore } from "../stores/players.store";
+import './cell.style.scss';
 interface CellStores {
     playersStore?: PlayersStore;
 }
@@ -46,10 +46,15 @@ export interface CellProps extends CellStores {
         return checkerUiClasses;
     }
 
-    private handleClick = () => {
-        const { onCellSelection, position } = this.props;
+    private handleClick = (event: React.MouseEvent) => {
+        const { onCellSelection, position, playerId } = this.props;
 
         onCellSelection && onCellSelection(position);
+        
+        if (playerId) {
+            event.stopPropagation();
+        }
+
     }
 
     private getCellUiIdentifier(): string {

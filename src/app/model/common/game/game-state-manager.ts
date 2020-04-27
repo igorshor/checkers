@@ -20,8 +20,8 @@ export class GameStateManager<T extends IIdentible> {
 
     }
 
-    public updateSelection(value: SelectionContext) {
-        this._selectionChanged.next(new SelectDescriptor(value.position, value.playerId, value.elementId));
+    public updateSelection(value?: SelectionContext) {
+        this._selectionChanged.next(value ? new SelectDescriptor(value.position, value.playerId, value.elementId) : null);
     }
 
     get selection(): Observable<SelectDescriptor> {

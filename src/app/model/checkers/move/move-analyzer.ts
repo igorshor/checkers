@@ -82,7 +82,7 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
 
         return fromChecker.possibleNextMovePositions
             .map((pos: IPosition) => {
-                const moveDescriptopr = new MoveDescriptor(select.from, { x: pos.x, y: pos.y }, select.playerId, fromChecker.id);
+                const moveDescriptopr = new MoveDescriptor(select.from, pos, select.playerId, fromChecker.id);
                 moveDescriptopr.type = this.getGeneralMoveType(moveDescriptopr.from, moveDescriptopr.to, board);
 
                 return moveDescriptopr;

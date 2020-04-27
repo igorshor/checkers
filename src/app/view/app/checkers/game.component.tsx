@@ -27,7 +27,7 @@ export class CheckersGameComponent extends React.Component<CheckersProps, {}> {
         const initialization = !this.props.gameStore.initialized ? <InitializationComponent /> : null;
 
         return (
-            <div className={'game'}>
+            <div className={'game'} onClick={() => this.props.gameStore.select(null)}>
                 {initialization}
                 <BoardComponent boardStore={this.props.boardStore} />
             </div>
