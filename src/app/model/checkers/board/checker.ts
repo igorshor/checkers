@@ -51,7 +51,7 @@ export class Checker implements IIdentible {
         return true;
     }
 
-    mutateObject(): Checker {
+    mutate(): Checker {
         return new Checker(this.id, this.correlationId, this.direction, this.position, this._kingMaker, this.selected) as this;
     }
 }

@@ -38,7 +38,7 @@ export class Board<T extends IIdentible> {
     }
 
     get immutablePlayers(): Player<T>[] {
-        return this._players.map(player => player.mutateObject());
+        return this._players.map(player => player.mutate());
     }
 
     get immutableBoard(): Board<T> {

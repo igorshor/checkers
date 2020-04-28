@@ -1,5 +1,6 @@
 import { inject, observer } from "mobx-react";
 import * as React from "react";
+import cls from 'classnames';
 import { AppStores } from "../..";
 import { IPosition } from "../../../model/common/board/position";
 import { PositionType } from "../../../model/common/board/position-type";
@@ -15,7 +16,7 @@ export interface CellProps extends CellStores {
     type: PositionType;
     playerId?: string;
     prediction: boolean;
-    superMode: boolean;
+    isKing: boolean;
     selected: boolean;
 }
 
@@ -23,27 +24,32 @@ export interface CellProps extends CellStores {
     return { playersStore: stores.playersStore };
 })
 @observer export class CellComponent extends React.Component<CellProps, {}> {
+    private getPlayerBaseUiIdentifier(): string {
+        let checkerUiClass = 'cell__checker cell__checker--';
+        checkerUiClass += this.props.playerId === this.props.playersStore.first.id ? 'one' : 'two';
+
+        return checkerUiClass;
+    }
+
     private getPlayerUiIdentifier(): string {
-        let checkerUiClasses = 'cell__checker cell__checker--';
-        checkerUiClasses += this.props.playerId === this.props.playersStore.first.id ? 'one' : 'two';
+        const checkerUiClasses = [this.getPlayerBaseUiIdentifier()];
 
         if (this.props.selected) {
-            checkerUiClasses += ' cell__checker--selected';
+            checkerUiClasses.push(' cell__checker--selected');
+        }
+        if (this.props.isKing) {
+            checkerUiClasses.push(' cell__checker--super');
         }
 
         if (this.props.prediction) {
-            checkerUiClasses += ' cell__checker--prediction';
-        }
-
-        if (this.props.superMode) {
-            checkerUiClasses += ' cell__checker--super';
+            checkerUiClasses.push(' cell__checker--prediction');
         }
 
         if (this.props.playerId !== this.props.playersStore.currentPlayer.id) {
-            checkerUiClasses += ' cell__checker--unTuckable';
+            checkerUiClasses.push(' cell__checker--unTuckable');
         }
 
-        return checkerUiClasses;
+        return cls(...checkerUiClasses);
     }
 
     private handleClick = (event: React.MouseEvent) => {
@@ -61,10 +67,16 @@ export interface CellProps extends CellStores {
         return 'cell cell--' +
             (this.props.type === PositionType.Black ? 'black' : 'white' as string);
     }
+
     render(): React.ReactNode {
-        let checker = null;
-        if (this.props.playerId) {
-            checker = <div className={this.getPlayerUiIdentifier()} />;
+        const { playerId, isKing } = this.props;
+        let checker: React.ReactNode[] = [];
+        if (playerId) {
+            if (isKing) {
+                checker.push(<div key='king' className={this.getPlayerUiIdentifier()} />)
+            }
+            
+            checker.push(<div key='regular' className={this.getPlayerUiIdentifier()} />);
         }
 
         return (

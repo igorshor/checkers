@@ -115,7 +115,10 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         if (!cell.element || !cell.element.id || !cell.element.correlationId) {
             throw new Error('no id');
         }
-        const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, cell.element.id);
+        const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, cell.element.id, cell.element.isKing);
+
+        // todo: king added to move deskriptior... now do some king logic :)
+
         const moves = this._moveAnalizer.getPossibleMovesBySelect(selectDescriptor, this._board);
 
         return moves.map(move => {
@@ -129,7 +132,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
             throw new Error('no id');
         }
 
-        const moveDescriptor = new MoveDescriptor(from, to, this._playersManager.current.id, cell.element.id);
+        const moveDescriptor = new MoveDescriptor(from, to, this._playersManager.current.id, cell.element.id, cell.element.isKing);
         moveDescriptor.type = this._moveAnalizer.getGeneralMoveType(from, to, this._board);
 
         return moveDescriptor;

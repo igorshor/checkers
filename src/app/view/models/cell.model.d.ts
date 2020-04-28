@@ -8,6 +8,6 @@ export interface Cell {
     playerId?: string;
     position: IPosition
     prediction?: boolean;
-    superMode?: boolean;
+    isKink?: boolean;
     selected?: boolean;
 }

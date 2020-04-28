@@ -43,7 +43,7 @@ interface BoardProps extends BoardStores { }
                 type={cell.type}
                 playerId={cell.playerId}
                 prediction={cell.prediction}
-                superMode={cell.superMode}
+                isKing={cell.isKink}
                 selected={cell.selected}
                 onCellSelection={this.handelCellSelection}
             />

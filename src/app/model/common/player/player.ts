@@ -17,7 +17,7 @@ export class Player<T extends IIdentible> implements IIdentible {
         return await this._moveStrategy.play();
     }
 
-    public mutateObject(): Player<T> {
+    public mutate(): Player<T> {
         return new Player<T>(this.name, this.id, this.base, this.direction, this._moveStrategy);
     }
 }

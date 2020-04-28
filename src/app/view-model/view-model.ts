@@ -69,7 +69,7 @@ export class ViewModel implements ModelEvents {
                         cell.element ? cell.element.correlationId : isPrediction ? this._currentPlayer.id : undefined,
                         cell.type,
                         isPrediction,
-                        false,
+                        cell.element?.isKing,
                         cell.element && cell.element.selected
                     );
                 })

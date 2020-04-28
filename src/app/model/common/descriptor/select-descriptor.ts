@@ -11,7 +11,7 @@ export class SelectDescriptor extends SelectionContext {
         return this.position;
     }
 
-constructor(from: IPosition, playerId: string, elementId: number) {
+constructor(from: IPosition, playerId: string, elementId: number, isKing?: boolean) {
         super(from, playerId, elementId);
         this.posibleMoves = [];
     }

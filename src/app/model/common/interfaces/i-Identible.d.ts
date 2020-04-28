@@ -4,5 +4,5 @@ export interface IIdentible {
     id: any;
     correlationId?: any,
     position?: IPosition;
-    mutateObject?(): IIdentible;
+    mutate?(): IIdentible;
 }

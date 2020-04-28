@@ -7,12 +7,15 @@
     align-items: center;
     width: $cell-width;
     height: $cell-heigth;
+
     &--black {
         background-color: #BA7A3A;
     }
+
     &--white {
         background-color: #F0D2B4;
     }
+
     &__checker {
         width: 66%;
         height: 66%;
@@ -28,12 +31,19 @@
         &--one {
             background: #00001F;
         }
+
         &--two {
             background: #CC0000;
         }
 
         &--super{
-            background: green;
+            &:first-child {
+                margin: -5px 0 0 -5px;
+            }
+            
+            &:last-child {
+                margin: 5px 0 0 5px;
+            }
         }
 
         &--selected{

@@ -40,7 +40,7 @@ export class AiMoveStrategy extends PlayerMoveStrategy {
         setTimeout(() => {
             const changedCells = this.move(bestMove.from, bestMove.to);
             playDeferredPromise.resolve(changedCells)
-        }, 1500);
+        }, 500);
 
         return playDeferredPromise.promise();
     }
