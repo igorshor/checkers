@@ -2,7 +2,7 @@ import { IPosition } from "../board/position";
 
 export interface IIdentible {
     id: any;
-    playerId?: any,
+    correlationId?: any,
     position?: IPosition;
     mutateObject?(): IIdentible;
 }

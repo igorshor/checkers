@@ -7,7 +7,7 @@ import { MoveHelper } from "../move/move-helper";
 export class Checker implements IIdentible {
     public static possibleDirections = [DirectionsDefinition.Left, DirectionsDefinition.Right];
     constructor(public id: number,
-        public playerId: string,
+        public correlationId: string,
         public direction: DirectionsDefinition,
         public position: IPosition,
         private _kingMaker: IKingMaker,
@@ -52,6 +52,6 @@ export class Checker implements IIdentible {
     }
 
     mutateObject(): Checker {
-        return new Checker(this.id, this.playerId, this.direction, this.position, this._kingMaker, this.selected) as this;
+        return new Checker(this.id, this.correlationId, this.direction, this.position, this._kingMaker, this.selected) as this;
     }
 }

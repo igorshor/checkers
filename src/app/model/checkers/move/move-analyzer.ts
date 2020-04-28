@@ -33,7 +33,7 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
             const pos = MoveHelper.simulateNextCellByDirection(from, MoveHelper.getMoveDirection(from, to));
             const cell = board.getCellByPosition(pos);
 
-            return cell && cell.element && fromCell.element.playerId !== cell.element.playerId ? MoveType.Attack : MoveType.Invalid;
+            return cell && cell.element && fromCell.element.correlationId !== cell.element.correlationId ? MoveType.Attack : MoveType.Invalid;
         } else {
             throw new Error('invalid move');
         }
@@ -60,12 +60,12 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
 
         return posiibleDanger.some((pos: IPosition) => {
             const cell = board.getCellByPosition(pos);
-            return cell && cell.element && cell.element.playerId === this._playersManager.opponent.id;
+            return cell && cell.element && cell.element.correlationId === this._playersManager.opponent.id;
         });
     }
 
     getPossibleMovesByPlayer(player: Player<Checker>, board: Board<Checker>): MoveDescriptor[] {
-        const playerCells = board.select(cell => cell.element && cell.element.playerId === player.id);
+        const playerCells = board.select(cell => cell.element && cell.element.correlationId === player.id);
         const possibleMoves: MoveDescriptor[] = [];
 
         playerCells.forEach(cell => {
@@ -98,9 +98,9 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         }
 
         if (cell.element) {
-            if (cell.element.playerId === this._playersManager.opponent.id) {
+            if (cell.element.correlationId === this._playersManager.opponent.id) {
                 return SimulationResult.TryNext;
-            } else if (cell.element.playerId === this._playersManager.current.id) {
+            } else if (cell.element.correlationId === this._playersManager.current.id) {
                 return SimulationResult.NotPossible;
             } else {
                 throw new Error('id not found');

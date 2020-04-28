@@ -48,7 +48,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
             const prevSelectionCell = this._board.getCellByPosition(this._selection.from);
             const currentSelectionCell = this._board.getCellByPosition(selection.from);
 
-            if (prevSelectionCell.element.playerId === (currentSelectionCell.element && currentSelectionCell.element.playerId)) {
+            if (prevSelectionCell.element.correlationId === (currentSelectionCell.element && currentSelectionCell.element.correlationId)) {
                 this.onReSelect(selection);
             } else {
                 if (this._selection.posibleMoves.some(pos => pos.x === selection.position.x && pos.y === selection.position.y)) {
@@ -112,7 +112,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
 
     protected select(from: IPosition): IPosition[] {
         const cell = this._board.getCellByPosition(from);
-        if (!cell.element || !cell.element.id || !cell.element.playerId) {
+        if (!cell.element || !cell.element.id || !cell.element.correlationId) {
             throw new Error('no id');
         }
         const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, cell.element.id);
@@ -125,7 +125,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
 
     private createMoveDescriptor(from: IPosition, to: IPosition) {
         const cell = this._board.getCellByPosition(from);
-        if (!cell.element || !cell.element.id || !cell.element.playerId) {
+        if (!cell.element || !cell.element.id || !cell.element.correlationId) {
             throw new Error('no id');
         }
 
