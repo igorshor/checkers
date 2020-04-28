@@ -58,7 +58,7 @@ export class CheckersPositionStrategy implements IPositionStrategy<Checker> {
         const pos = this._validRows[position.y];
         if (pos.valid && pos.player) {
             const player = players.find(player => player.direction === pos.direction);
-            return player && player.id;
+            return player?.id;
         }
 
         return undefined;

@@ -48,7 +48,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
             const prevSelectionCell = this._board.getCellByPosition(this._selection.from);
             const currentSelectionCell = this._board.getCellByPosition(selection.from);
 
-            if (prevSelectionCell.element.correlationId === (currentSelectionCell.element && currentSelectionCell.element.correlationId)) {
+            if (prevSelectionCell.element.correlationId === currentSelectionCell.element?.correlationId) {
                 this.onReSelect(selection);
             } else {
                 if (this._selection.posibleMoves.some(pos => pos.x === selection.position.x && pos.y === selection.position.y)) {
