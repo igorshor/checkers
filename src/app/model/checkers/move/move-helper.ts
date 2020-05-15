@@ -1,5 +1,6 @@
 import { DirectionsDefinition, MoveDirectionsDefinition } from "../../common/move/move-direction";
 import { IPosition } from "../../common/board/position";
+import { Constants } from "../../constants";
 
 export class MoveHelper {
     public static simulateNextCellByDirection(position: IPosition, moveDirection: MoveDirectionsDefinition): IPosition {
@@ -28,7 +29,7 @@ export class MoveHelper {
         return pos;
     }
 
-    public static getMoveDirection(a: IPosition, b: IPosition) {
+    public static getMoveDirection(a: IPosition, b: IPosition): MoveDirectionsDefinition {
         const direction = (a.y - b.y) > 0 ? DirectionsDefinition.Up : DirectionsDefinition.Down;
         const horizontal = (a.x - b.x) > 0 ? DirectionsDefinition.Left : DirectionsDefinition.Right;
 
@@ -37,5 +38,13 @@ export class MoveHelper {
 
     public static getDistance(a: IPosition, b: IPosition): number {
         return Math.abs(a.y - b.y);
+    }
+
+    public static getDistanceToBoundaries(pos: IPosition, oponnentBase: number): number {
+        return Math.abs(oponnentBase - pos.y);
+    }
+    
+    public static isSamePosition(a: IPosition, b: IPosition): boolean {
+        return a.x === b.x && a.y === b.y;
     }
 }

@@ -5,6 +5,7 @@ import { IIdentible } from "./i-Identible";
 
 export interface IPositionStrategy<T extends IIdentible> {
     getCellTypeByPosition(position: IPosition): PositionType;
+    getCellTypeByPlayer(player?: Player<T>): PositionType;
     getPlayerByPosition(positionType: PositionType, players: Player<T>[], position: IPosition): string;
     includeInGame(positionType: PositionType): boolean;
 }

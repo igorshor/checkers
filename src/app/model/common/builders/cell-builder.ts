@@ -15,4 +15,11 @@ export abstract class CellBuilder<T extends IIdentible> {
 
         return cell;
     }
+
+    public buildFromImage(cellImage: IIdentible, positionStrategy: IPositionStrategy<T>): Cell<T> {
+        const element = this.createElement(++CellBuilder.elementsCounter, cellImage.correlationId, cellImage.position);
+        const cell = new Cell<T>(cellImage.position, positionStrategy.getCellTypeByPlayer(), element);
+
+        return cell;
+    }
 }

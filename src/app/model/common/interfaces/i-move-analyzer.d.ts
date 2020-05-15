@@ -4,14 +4,16 @@ import { MoveDescriptor } from "../descriptor/move-descriptor";
 import { SelectDescriptor } from "../descriptor/select-descriptor";
 import { Board } from "../board/board";
 import { IIdentible } from "./i-Identible";
-import { MoveDirectionsDefinition } from "../move/move-direction";
+import { MoveDirectionsDefinition, DirectionsDefinition } from "../move/move-direction";
 import { Player } from "../player/player";
+import { IMoveTypeStrategy } from "./i-move-type-strategy";
 
-export interface IMoveAnalyzer<T extends IIdentible> {
-    getGeneralMoveType(from: IPosition, to: IPosition, board: Board<T>): MoveType;
-    getSpecificMoveType(from: IPosition, to: IPosition, board: Board<T>): MoveType;
+export interface IMoveAnalyzer<T extends IIdentible>  {
+    getGeneralMoveType: IMoveTypeStrategy<T>['getGeneralMoveType'];
+    getSpecificMoveType(moveDescriptor: MoveDescriptor, board: Board<T>): MoveType;
     getPossibleMovesBySelect(select: SelectDescriptor, board: Board<T>): MoveDescriptor[];
     getPossibleMovesByPlayer(player: Player<T>, board: Board<T>): MoveDescriptor[];
     getNextPositionByDirection(position: IPosition, moveDirection: MoveDirectionsDefinition, board: Board<T>, forceNext?:boolean): IPosition;
-    isAKing(moveDescriptor:MoveDescriptor): boolean;
+    getPossibleNextMovePositions(position: IPosition, attackDirections: DirectionsDefinition[], moves: number): IPosition[]
+    isAKing(moveDescriptor: MoveDescriptor): boolean;
 }

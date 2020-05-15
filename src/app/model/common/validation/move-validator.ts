@@ -1,5 +1,5 @@
 import { IMoveValidatorInterceptor, IMoveValidator } from "../interfaces/i-move-validator-interceptorr";
-import { MoveDescriptor } from "./move-descriptor";
+import { MoveDescriptor } from "../descriptor/move-descriptor";
 import { Board } from "../board/board";
 import { IIdentible } from "../interfaces/i-Identible";
 import { Player } from "../player/player";
@@ -28,6 +28,7 @@ export class MoveValidator<T extends IIdentible> implements IMoveValidator<T> {
                 return false;
             }
         }
+        
         return true;
     }
 }

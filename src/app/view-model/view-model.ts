@@ -11,10 +11,12 @@ import { ChangeEvent } from "./models/change-event";
 import { CellState } from "../model/common/board/cell-state";
 import { Model } from "../model";
 import { View } from "../view";
-import { SelectDescriptor } from "../model/common/descriptor/select-descriptor";
 import { SelectionEvent } from "./models/selection-event";
 import { Configurations } from "../model/models/game-configurations";
 import { SelectionContext } from "../model/common/board/selection-context";
+
+const PRE_SET = require('./presets/king-dev-board');
+const INCLUDE_PRE_SET = true;
 
 interface ModelEvents {
     readonly change: Observable<ChangeEvent>;
@@ -48,7 +50,7 @@ export class ViewModel implements ModelEvents {
         });
 
         configurationSetted.subscribe((configuration: Configurations) => {
-            this._model.init(configuration);
+            this._model.init(configuration, INCLUDE_PRE_SET && PRE_SET);
             this._model.start();
         });
     }

@@ -5,6 +5,10 @@ export class PlayerDefinition {
         return !!this.computerLevel;
     }
 
+    get isComputer(): boolean {
+        return !!this.computerLevel
+    }
+
     constructor(public name: string, public id: string, public computerLevel?: ComputerLevel) {
 
     }

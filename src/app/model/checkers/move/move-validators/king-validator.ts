@@ -43,6 +43,7 @@ export class KingValidator implements IMoveValidatorInterceptor<Checker> {
     private initMidCells(startCell: Cell<Checker>, endCell: Cell<Checker>, moveAnalizer: MoveAnalyzer, moveDescriptor: MoveDescriptor, board: Board<Checker>): Cell<Checker>[] {
         const midCells: Cell<Checker>[] = [];
         let cellIterator = startCell;
+        
         while (cellIterator && (cellIterator !== endCell)) {
             const pos = moveAnalizer.getNextPositionByDirection(cellIterator.position, moveDescriptor.moveDirection, board);
             cellIterator = board.getCellByPosition(pos);

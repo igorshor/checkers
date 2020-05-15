@@ -68,7 +68,7 @@ interface InitializationState {
 
         if (!this.state.multiplayer) {
             computerLevel = ComputerLevel.Medium;
-            secondPlayerName = this.state.secondPlayer;
+            secondPlayerName = 'computer';
         }
 
         const players = [

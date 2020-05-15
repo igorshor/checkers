@@ -4,24 +4,25 @@ import { IPosition, IGhostPosition } from "../board/position";
 import { MoveType } from "../move/move-type";
 import { MoveHelper } from "../../checkers/move/move-helper";
 
-
 export class MoveDescriptor extends SelectDescriptor {
     public direction: DirectionsDefinition;
     public readonly moveDirection: MoveDirectionsDefinition;
     public attacked?: IGhostPosition;
 
-    constructor(from: IPosition, public to: IPosition, playerId: string, elementId: number, public kingMove?: boolean) {
-        super(from, playerId, elementId);
+    constructor(from: IPosition, public to: IPosition, playerId: string, elementId: number, kingMove?: boolean) {
+        super(from, playerId, elementId, true); // TODO: remove the true const 
         this.direction = (from.y - to.y) > 0 ? DirectionsDefinition.Up : DirectionsDefinition.Down;
         const horizontal = (from.x - to.x) > 0 ? DirectionsDefinition.Left : DirectionsDefinition.Right;
-        this.moveDirection = this.direction | horizontal;
+        this.moveDirection = 
+        
+        this.direction | horizontal;
     }
 
-    get distance():number{
+    get distance():number {
         return MoveHelper.getDistance(this.from, this.to);
     }
 
-    get isAttack():boolean{
+    get isAttack():boolean {
         return this.type === MoveType.Attack || this.type === MoveType.AttackDanger;
     }
 }

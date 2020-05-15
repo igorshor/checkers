@@ -6,6 +6,7 @@ import { AppStores } from "../..";
 import { InitializationComponent } from "../common/initialization.component";
 import { GameStore } from "../stores/game.store";
 import './game.style.scss';
+import { GameStage } from "../../../model/common/game/game-stage";
 
 interface CheckersStores {
     boardStore?: BoardStore;
@@ -27,7 +28,7 @@ export class CheckersGameComponent extends React.Component<CheckersProps, {}> {
         const initialization = !this.props.gameStore.initialized ? <InitializationComponent /> : null;
 
         return (
-            <div className={'game'} onClick={() => this.props.gameStore.select(null)}>
+            <div className={'game'} onClick={() => this.props.gameStore.state === GameStage.Game && this.props.gameStore.select(null)}>
                 {initialization}
                 <BoardComponent boardStore={this.props.boardStore} />
             </div>

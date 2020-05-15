@@ -23,6 +23,11 @@ module.exports = {
                 loader: 'ts-loader',
             },
             {
+                test: /\.json$/,
+                loader: 'json-loader',
+                type: "javascript/auto",
+            },
+            {
                 test: /\.scss$/,
                 use: [{
                     loader: "style-loader"

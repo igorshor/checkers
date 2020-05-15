@@ -6,7 +6,7 @@ import { PlayersManager } from "./common/player/players-manager";
 import { GameManager } from "./common/game/game-manager";
 import { MoveManager } from "./common/move/move-manager";
 import { Configurations } from "./models/game-configurations";
-import { MoveValidator } from "./common/descriptor/move-validator";
+import { MoveValidator } from "./common/validation/move-validator";
 import { BoundariesValidator } from "./common/move/move-validators/boundaries-validator";
 import { DirectionValidator } from "./checkers/move/move-validators/direction-validator";
 import { DistanceValidator } from "./checkers/move/move-validators/distance-validator";
@@ -22,6 +22,7 @@ import { CheckrsBuilder } from "./checkers/board/checkers-builder";
 import { OverrideValidator } from "./checkers/move/move-validators/override-validator";
 import { MoveTypeValidator } from "./common/move/move-validators/move-type-validator";
 import { KingValidator } from "./checkers/move/move-validators/king-validator";
+import { IIdentible } from "./common/interfaces/i-Identible";
 
 declare global {
     interface Window {
@@ -48,11 +49,16 @@ export class Model {
         return this._gameState;
     }
 
-    public init(configurations: Configurations): void {
+    public init(configurations: Configurations, cellImage?: IIdentible[][]): void {
         this.setBoard(this.height, this.width);
         this.setMoveComponents(configurations);
         this.setPlayers(configurations);
         this._board.init(this._playersManager.players);
+
+        if (cellImage) {
+            this._board.restoreFromImage(cellImage, this._playersManager.players)
+        }
+
         this.setGameComponents();
         this._gameState.updateBoard(this._board.cells);
 

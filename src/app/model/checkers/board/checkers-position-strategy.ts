@@ -37,6 +37,10 @@ export class CheckersPositionStrategy implements IPositionStrategy<Checker> {
         }
     }
 
+    getCellTypeByPlayer(player?: Player<Checker>): PositionType {
+        return PositionType.Black;
+    }
+
     public getCellTypeByPosition(position: IPosition): PositionType {
         if (position.x % 2 === 0 && position.y % 2 === 0 ||
             position.x % 2 === 1 && position.y % 2 === 1) {

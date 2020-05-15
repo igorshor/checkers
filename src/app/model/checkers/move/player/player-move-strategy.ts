@@ -117,7 +117,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         }
         const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, cell.element.id, cell.element.isKing);
 
-        // todo: king added to move deskriptior... now do some king logic :)
+        // todo: king added to move descriptior... now do some king logic :)
 
         const moves = this._moveAnalizer.getPossibleMovesBySelect(selectDescriptor, this._board);
 
@@ -133,7 +133,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         }
 
         const moveDescriptor = new MoveDescriptor(from, to, this._playersManager.current.id, cell.element.id, cell.element.isKing);
-        moveDescriptor.type = this._moveAnalizer.getGeneralMoveType(from, to, this._board);
+        moveDescriptor.type = this._moveAnalizer.getGeneralMoveType(moveDescriptor, this._board);
 
         return moveDescriptor;
     }

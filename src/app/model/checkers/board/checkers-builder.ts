@@ -13,7 +13,17 @@ export class CheckrsBuilder extends CellBuilder<Checker> implements IKingMaker {
         super()
     }
     createElement(id: number, associatedId: string, position: IPosition): Checker {
-        return associatedId ? new Checker(id, associatedId, this._playerManager.get(associatedId).direction, position, this) : undefined;
+        if (!associatedId) {
+            return;
+        }
+
+        const player = this._playerManager.get(associatedId);
+
+        if (!player) {
+            return;
+        }
+
+        return new Checker(id, associatedId, [player.direction], position, this);
     }
 
     createKingElement(Checker: Checker): Checker {

@@ -6,6 +6,8 @@ import { SelectionContext } from "./selection-context";
 import { CellBuilder } from "../builders/cell-builder";
 import { Player } from "../player/player";
 
+const NOOP = (...args:any[]) => {};
+
 export class Board<T extends IIdentible> {
     private _cells: Cell<T>[][];
     private _players: Player<T>[];
@@ -48,6 +50,18 @@ export class Board<T extends IIdentible> {
         return board;
     }
 
+    restoreFromImage(cells: IIdentible[][], players: Player<T>[]) {
+        this.cellIterator(NOOP, (pos: IPosition) => {
+            const cellImage = cells[pos.y][pos.x]
+            const cell = this._cellBuilder.buildFromImage(cellImage, this.positionStrategy);
+            this.tryToAddElementToElementsMap(cell);
+            this._cells[pos.y][pos.x] = cell;
+        }, true)
+
+
+        this.restore(this._cells, this._players);
+    }
+
     restore(cells: Cell<T>[][], players: Player<T>[]) {
         this._cells = cells;
         this._players = players;
@@ -71,22 +85,34 @@ export class Board<T extends IIdentible> {
         }
     }
 
+    private cellIterator(rowFunc: (x: number) => void, cellFunc: (pos: IPosition) => void, init?: boolean) {
+        if (init) {
+            this._cells = [];
+        }
+
+        for (let i = 0; i < this.height; i++) {
+            if (init) {
+                this._cells[i] = []
+            }
+
+            rowFunc(i);
+            for (let j = 0; j < this.width; j++) {
+                const position = { x: j, y: i };
+                cellFunc(position);
+            }
+        }
+    }
+
     public init(players: Player<T>[]) {
         this._players = players;
         this.initElementsMap();
-        this._cells = [];
 
-        for (let i = 0; i < this.height; i++) {
-            this._cells[i] = [];
+        this.cellIterator(NOOP, (pos: IPosition) => {
+            const cell = this._cellBuilder.build(this.positionStrategy, this._players, pos);
 
-            for (let j = 0; j < this.width; j++) {
-                const position = { x: j, y: i };
-                const cell = this._cellBuilder.build(this.positionStrategy, this._players, position);
-
-                this.tryToAddElementToElementsMap(cell);
-                this._cells[i].push(cell);
-            }
-        }
+            this.tryToAddElementToElementsMap(cell);
+            this._cells[pos.y].push(cell);
+        }, true)
     }
 
     replace(cellContext: SelectionContext, newElement:T): Cell<T> {
@@ -192,8 +218,9 @@ export class Board<T extends IIdentible> {
     toString() {
         let boardStr = '';
         const playersStr = 'x = ' + this._players[0].name + ' | y = ' + this._players[1].name;
-        const rowsStr = this._cells.map(row => {
-            let rowStr = `|`;
+        const headerRow = '  ' + this._cells[0].map((_, index) => index).join(' ') + '\n'
+        const rowsStr = this._cells.map((row, index) => {
+            let rowStr = index + `|`;
             const rowCellsStr = row.map(cell => {
                 if (!cell.element) {
                     return ' ';
@@ -208,7 +235,7 @@ export class Board<T extends IIdentible> {
             return rowStr;
         });
 
-        boardStr += rowsStr.join('\n');
+        boardStr += headerRow + rowsStr.join('\n');
 
         return '\n' + playersStr + '\n\n' + boardStr + '\n';
     }

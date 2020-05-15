@@ -7,8 +7,7 @@ import { MoveHelper } from "../move/move-helper";
 export class KingChecker extends Checker {
     public static attackDirections = [DirectionsDefinition.Down, DirectionsDefinition.Up];
     constructor(private _checker: Checker, kingMaker: IKingMaker) {
-        super(_checker.id, _checker.correlationId, _checker.direction, _checker.position, kingMaker, _checker.selected);
-
+        super(_checker.id, _checker.correlationId, KingChecker.attackDirections, _checker.position, kingMaker, _checker.selected);
     }
 
     public upgradeToKing(): Checker {
@@ -22,16 +21,8 @@ export class KingChecker extends Checker {
     get isKing(): boolean {
         return true;
     }
+
     get isPeasant(): boolean {
         return false;
-    }
-
-    get possibleNextMovePositions(): IPosition[] {
-        return KingChecker
-            .attackDirections
-            .map(direction => Checker
-                .possibleDirections
-                .map(moveDirection => MoveHelper.simulateNextCellByDirection(this.position, direction | moveDirection)))
-            .reduce((acc, val) => acc.concat(val), []);
     }
 }
