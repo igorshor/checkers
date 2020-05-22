@@ -72,7 +72,8 @@ export class ViewModel implements ModelEvents {
                         cell.type,
                         isPrediction,
                         cell.element?.isKing,
-                        cell.element?.selected
+                        cell.element?.selected,
+                        cell.element?.movable
                     );
                 })
             )));

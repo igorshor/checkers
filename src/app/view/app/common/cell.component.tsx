@@ -21,6 +21,7 @@ export interface CellProps extends CellStores {
     type: PositionType;
     playerId?: string;
     prediction: boolean;
+    movable: boolean;
     isKing: boolean;
     selected: boolean;
 }
@@ -33,28 +34,34 @@ export interface CellProps extends CellStores {
 })
 @observer export class CellComponent extends React.Component<CellProps, {}> {
     private getPlayerBaseUiIdentifier(): string {
+        const { playersStore, playerId } = this.props;
         let checkerUiClass = 'cell__checker cell__checker--';
-        checkerUiClass += this.props.playerId === this.props.playersStore.first.id ? 'one' : 'two';
+        checkerUiClass += playerId === playersStore.first.id ? 'one' : 'two';
 
         return checkerUiClass;
     }
 
     private getPlayerUiIdentifier(): string {
+        const { prediction, isKing, selected, playersStore, movable, playerId } = this.props;
         const checkerUiClasses = [this.getPlayerBaseUiIdentifier()];
-        const currentPlayer = this.props.playersStore.currentPlayer;
+        const currentPlayer = playersStore.currentPlayer;
 
-        if (this.props.selected) {
+        if (selected) {
             checkerUiClasses.push(' cell__checker--selected');
         }
-        if (this.props.isKing) {
+        if (isKing) {
             checkerUiClasses.push(' cell__checker--super');
         }
 
-        if (this.props.prediction) {
+        if (prediction) {
             checkerUiClasses.push(' cell__checker--prediction');
         }
+        
+        if (movable) {
+            checkerUiClasses.push(' cell__checker--movable');
+        }
 
-        if (currentPlayer.isComputer || this.props.playerId !== currentPlayer.id) {
+        if (currentPlayer.isComputer || playerId !== currentPlayer.id || (!movable && !prediction)) {
             checkerUiClasses.push(' cell__checker--unTuckable');
         }
 
@@ -62,9 +69,9 @@ export interface CellProps extends CellStores {
     }
 
     private handleClick = (event: React.MouseEvent) => {
-        const { onCellSelection, position, playerId } = this.props;
+        const { onCellSelection, position, playerId, gameStore } = this.props;
 
-        if (this.props.gameStore.state !== GameStage.Game) {
+        if (gameStore.state !== GameStage.Game) {
             return;
         }
 
@@ -77,8 +84,9 @@ export interface CellProps extends CellStores {
     }
 
     private getCellUiIdentifier(): string {
-        return 'cell cell--' +
-            (this.props.type === PositionType.Black ? 'black' : 'white' as string);
+        const { type } = this.props;
+
+        return 'cell cell--' + (type === PositionType.Black ? 'black' : 'white');
     }
 
     render(): React.ReactNode {

@@ -1,4 +1,7 @@
 .board{
+    display: flex;
+    flex-direction: column-reverse;
+    
     align-self: center;
     &__row{
         display: flex;

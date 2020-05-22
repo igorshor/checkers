@@ -23,7 +23,9 @@ export class CheckrsBuilder extends CellBuilder<Checker> implements IKingMaker {
             return;
         }
 
-        return new Checker(id, associatedId, [player.direction], position, this);
+        const todo = new Checker(id, associatedId, [player.direction], position, this);
+        return todo;
+        return new KingChecker(todo, this)
     }
 
     createKingElement(Checker: Checker): Checker {

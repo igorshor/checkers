@@ -1,8 +1,6 @@
 import { Checker } from "./checker";
 import { IKingMaker } from "./checkers-builder";
 import { DirectionsDefinition } from "../../common/move/move-direction";
-import { IPosition } from "../../common/board/position";
-import { MoveHelper } from "../move/move-helper";
 
 export class KingChecker extends Checker {
     public static attackDirections = [DirectionsDefinition.Down, DirectionsDefinition.Up];

@@ -3,7 +3,7 @@ import { IMoveTypeStrategy } from "../../../common/interfaces/i-move-type-strate
 import { MoveType } from "../../../common/move/move-type";
 import { Board } from "../../../common/board/board";
 import { MoveDescriptor } from "../../../common/descriptor/move-descriptor";
-import { MoveHelper } from "../move-helper";
+import { MoveHelper } from "../../../common/move/move-helper";
 import { Cell } from "../../../common/board/cell";
 import { IMoveAnalyzer } from "../../../common/interfaces/i-move-analyzer";
 import { IPosition } from "../../../common/board/position";
@@ -87,6 +87,6 @@ export class KingMoveTypeStrategy implements IMoveTypeStrategy<Checker> {
     }
 
     getPossibleNextPositions(fromCell: Cell<Checker>, moveAnalizer: IMoveAnalyzer<Checker>, playersManager: Players<Checker>): IPosition[] {
-        return moveAnalizer.getPossibleNextMovePositions(fromCell.position, fromCell.element.directions, MoveHelper.getDistanceToBoundaries(fromCell.position, playersManager.opponent.base));
+        return moveAnalizer.getPossibleNextMovePositions(fromCell.position, fromCell.element.directions,moveAnalizer.getMaxDistanceToBoundaries(fromCell.position));
     }
 }

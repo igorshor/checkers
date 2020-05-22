@@ -39,6 +39,7 @@ export class Model {
     private _gameManager: GameManager<Checker>;
     private _moveManager: MoveManager<Checker>;
     private _moveAnalizer: MoveAnalyzer;
+    private _currentPlayer: Player<Checker>;
 
     constructor(public height: number, public width: number) {
         this._gameState = new GameStateManager(height, width);
@@ -61,6 +62,7 @@ export class Model {
 
         this.setGameComponents();
         this._gameState.updateBoard(this._board.cells);
+        this._gameState.updateCurrentPlayer(this._currentPlayer);
 
         window.board = this._board;
     }
@@ -97,15 +99,15 @@ export class Model {
 
     private setPlayers(configurations: Configurations) {
         const players = [];
-        players.push(new Player(configurations.players[0].name, configurations.players[0].id, 0, DirectionsDefinition.Down, this._playerMoveStrategy));
+        players.push(new Player(configurations.players[0].name, configurations.players[0].id, 0, DirectionsDefinition.Up, this._playerMoveStrategy));
 
         players.push(configurations.players[1].computer ?
-            new AiPlayer(configurations.players[1].name || 'computer', configurations.players[1].id, this.height - 1, DirectionsDefinition.Up, this._computerMoveStrategy) :
+            new AiPlayer(configurations.players[1].name || 'computer', configurations.players[1].id, this.height - 1, DirectionsDefinition.Down, this._computerMoveStrategy) :
             new Player(configurations.players[1].name, configurations.players[1].id, this.height - 1, DirectionsDefinition.Down, this._playerMoveStrategy));
 
         this._playersManager.addPlayer(players[0]);
         this._playersManager.addPlayer(players[1]);
-        this._gameState.updateCurrentPlayer(players[0]);
+        this._currentPlayer = players[0]
     }
     private setBoard(height: number, width: number) {
         this._board = new Board<Checker>(width, height,

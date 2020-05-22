@@ -28,11 +28,11 @@ export class AiMoveInsights implements IMovePicker {
         node.rank = MOVE_RANK_MAP[node.type];
         const bestMove = this.moveComperatorFunc(node, highestRank) as AiMoveDescriptor;
 
-        if (!node.next || !node.next.length) {
+        if (!node.nextMoves || !node.nextMoves.length) {
             return bestMove;
         }
 
-        const children = node.next.map(node => this.getHighestRank(node, maxDepth, bestMove));
+        const children = node.nextMoves.map(node => this.getHighestRank(node, maxDepth, bestMove));
         return children.reduce((a, b) => this.moveComperatorFunc(a, b));
     }
 }

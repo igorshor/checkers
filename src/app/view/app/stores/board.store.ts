@@ -29,12 +29,13 @@ export class BoardStore {
 
     @action.bound
     private updateCell(checkerEvent: CheckerEvent) {
-        const cell = {
+        const cell: Cell = {
             ...this.board.cells[checkerEvent.position.y][checkerEvent.position.x],
-            playerId: checkerEvent.playerId ? checkerEvent.playerId.toString() : undefined,
+            playerId: checkerEvent.playerId?.toString(),
             type: checkerEvent.type,
             prediction: checkerEvent.prediction,
-            superMode: checkerEvent.superMode,
+            movable: checkerEvent.movable,
+            isKink: checkerEvent.isKing,
             selected: checkerEvent.selected
         };
 
@@ -63,7 +64,6 @@ export class BoardStore {
     }
 
     private initBoard(): Board {
-        const flatCells = [];
         const cells: Cell[][] = new Array(this.vm.height).fill([]);
 
         for (let i = 0; i < this.vm.height; i++) {
@@ -76,7 +76,6 @@ export class BoardStore {
                 };
 
                 cells[i][j] = cell;
-                flatCells.push(cell);
             }
         }
 

@@ -15,6 +15,7 @@ export class MoveManager<T extends IIdentible> {
         while (this._gameStage === GameStage.Game) {
              const changes = await this._playersManager.current.play();
              this._state.updateCells(changes);
+             this._state.notifyBeforePlayerChanged();
              this._playersManager.switch();
         }
     }

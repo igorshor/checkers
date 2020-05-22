@@ -10,7 +10,8 @@ export class Checker implements IIdentible {
         public directions: DirectionsDefinition[],
         public position: IPosition,
         private _kingMaker: IKingMaker,
-        public selected = false) {
+        public selected = false,
+        public movable = false) {
     }
 
     public upgradeToKing(): Checker {
@@ -22,8 +23,7 @@ export class Checker implements IIdentible {
     }
 
     get isKing(): boolean {
-        // todo remove after king development to FALE !!! :O
-        return true;
+        return false;
     }
 
     get isPeasant(): boolean {
@@ -31,6 +31,6 @@ export class Checker implements IIdentible {
     }
 
     mutate(): Checker {
-        return new Checker(this.id, this.correlationId, this.directions, this.position, this._kingMaker, this.selected) as this;
+        return new Checker(this.id, this.correlationId, this.directions, this.position, this._kingMaker, this.selected, this.movable) as this;
     }
 }

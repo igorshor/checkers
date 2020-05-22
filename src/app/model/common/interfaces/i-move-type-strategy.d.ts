@@ -8,6 +8,8 @@ import { IMoveAnalyzer } from "./i-move-analyzer";
 import { Players } from "../player/players";
 
 export interface IMoveTypeStrategy<T extends IIdentible> {
+    isGeneralMove(moveDescriptor: MoveDescriptor, board: Board<T>): boolean;
+    isGeneralAttack(moveDescriptor: MoveDescriptor, board: Board<T>): boolean
     getGeneralMoveType(moveDescriptor: MoveDescriptor, board: Board<T>): MoveType;
     getPossibleNextPositions(fromCell: Cell<T>, moveAnalizer: IMoveAnalyzer<T>, playersManager: Players<T>): IPosition[]
 }

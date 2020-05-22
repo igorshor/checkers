@@ -6,7 +6,7 @@ export class AiMoveDescriptor extends MoveDescriptor {
     public counterMove: MoveDescriptor;
     public boardImage: Board<Checker>;
     public afterCounterMoveBoardState: Board<Checker>;
-    public next: AiMoveDescriptor[];
+    public nextMoves: AiMoveDescriptor[];
     public parent: AiMoveDescriptor;
     public depth: number;
     private _rank: number;
@@ -39,8 +39,8 @@ export class AiMoveDescriptor extends MoveDescriptor {
     }
 
     add(...move: AiMoveDescriptor[]) {
-        this.next = this.next || [];
-        this.next.push(...move);
+        this.nextMoves = this.nextMoves || [];
+        this.nextMoves.push(...move);
     }
 
     valueOf() {

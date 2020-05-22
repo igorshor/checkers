@@ -42,6 +42,7 @@ interface BoardProps extends BoardStores { }
                 position={cell.position}
                 type={cell.type}
                 playerId={cell.playerId}
+                movable={cell.movable}
                 prediction={cell.prediction}
                 isKing={cell.isKink}
                 selected={cell.selected}
@@ -51,11 +52,11 @@ interface BoardProps extends BoardStores { }
     }
     render(): React.ReactNode {
         const cellsComponents = this.props.boardStore.board.cells
-            .map((cells: Cell[]) => (
-                <div className={'board__row'} key={cells[0].position.y}>
-                    {cells.map(this.getCellComponent)}
-                </div>
-            ));
+        .map((cells: Cell[]) => (
+            <div className={'board__row'} key={cells[0].position.y}>
+                {cells.map(this.getCellComponent)}
+            </div>
+        ));
 
         return (
             <div className={'board'}>

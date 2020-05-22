@@ -9,6 +9,7 @@ import { Player } from "../player/player";
 import { IMoveTypeStrategy } from "./i-move-type-strategy";
 
 export interface IMoveAnalyzer<T extends IIdentible>  {
+    getMaxDistanceToBoundaries(pos: IPosition): number;
     getGeneralMoveType: IMoveTypeStrategy<T>['getGeneralMoveType'];
     getSpecificMoveType(moveDescriptor: MoveDescriptor, board: Board<T>): MoveType;
     getPossibleMovesBySelect(select: SelectDescriptor, board: Board<T>): MoveDescriptor[];

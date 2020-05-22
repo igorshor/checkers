@@ -9,10 +9,12 @@ import { DirectionsDefinition, MoveDirectionsDefinition } from "../../common/mov
 import { IMoveValidator } from "../../common/interfaces/i-move-validator-interceptorr";
 import { Player } from "../../common/player/player";
 import { Players } from "../../common/player/players";
-import { MoveHelper } from "./move-helper";
+import { MoveHelper } from "../../common/move/move-helper";
 import { IMoveTypeStrategy } from "../../common/interfaces/i-move-type-strategy";
 import { KingMoveTypeStrategy } from "./move-type/king-move-type-strategy";
 import { MoveTypeStrategy } from "./move-type/move-type-strategy";
+import { Cell } from "../../common/board/cell";
+import { AiMoveAnalyzer } from "./ai/ai-move-analyzer";
 
 enum SimulationResult {
     TryNext,
@@ -23,12 +25,21 @@ enum SimulationResult {
 export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
     private _kingMoveTypeStrategy: IMoveTypeStrategy<Checker>
     private _moveTypeStrategy: IMoveTypeStrategy<Checker>
+    private _aiMoveAnalyzer: AiMoveAnalyzer;
 
     constructor(protected _playersManager: Players<Checker>,
         protected _moveValidator: IMoveValidator<Checker>) {
 
         this._kingMoveTypeStrategy = new KingMoveTypeStrategy();
         this._moveTypeStrategy = new MoveTypeStrategy();
+        this._aiMoveAnalyzer = new AiMoveAnalyzer();
+    }
+
+    getMaxDistanceToBoundaries(pos: IPosition): number {
+        const distanceToBoundaries = this._playersManager.players.map((player) => Math.abs(player.base - pos.y)) 
+        const maxDistanceToBoundary = Math.max(...distanceToBoundaries)
+
+        return maxDistanceToBoundary;
     }
 
     getMoveTypeStrategy(isKing: boolean): IMoveTypeStrategy<Checker> {
@@ -99,19 +110,29 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         return positions
     }
 
-    getPossibleMovesBySelect(select: SelectDescriptor, board: Board<Checker>): MoveDescriptor[] {
-        const fromCell = board.getCellByPosition(select.from);
+    getPossibleMovesByCell(fromCell: Cell<Checker>, board: Board<Checker>): MoveDescriptor[] {
         const fromChecker = fromCell.element;
+        const playerId = fromCell.element.correlationId;
 
         const possibleNextMovePositions = this.getMoveTypeStrategy(fromChecker.isKing).getPossibleNextPositions(fromCell, this, this._playersManager)
-
-        return possibleNextMovePositions.map((pos: IPosition) => {
-            const moveDescriptor = new MoveDescriptor(select.from, pos, select.playerId, fromChecker.id, fromChecker.isKing);
+        const possibleNextMoves = possibleNextMovePositions.map((pos: IPosition) => {
+            const moveDescriptor = new MoveDescriptor(fromCell.position, pos, playerId, fromChecker.id, fromChecker.isKing);
             moveDescriptor.type = this.getGeneralMoveType(moveDescriptor, board);
 
             return moveDescriptor;
         })
-            .filter(move => this._moveValidator.validate(move, board, this._playersManager.get(select.playerId), this));
+        .filter(move => this._moveValidator.validate(move, board, this._playersManager.get(playerId), this));
+
+        return possibleNextMoves;
+    }
+
+    getPossibleMovesBySelect(select: SelectDescriptor, board: Board<Checker>): MoveDescriptor[] {
+        const fromCell = board.getCellByPosition(select.from);
+        const possibleNextMoves = this.getPossibleMovesByCell(fromCell, board);
+        const possibleNextAttackMoves = possibleNextMoves.filter((moveDescriptor: MoveDescriptor) => MoveHelper.isAtack(moveDescriptor.type));
+        this._aiMoveAnalyzer.enrichWithAdditionalJumps(possibleNextAttackMoves, board);
+
+        return possibleNextMoves;
     }
 
     // TODO check what this doing need add somthing for king ??

@@ -56,8 +56,29 @@ interface InitializationState {
         } as any);
     }
 
-    private handleStartGame = (event: React.MouseEvent<HTMLButtonElement>) => {
-        this.startGame();
+    private handleGameClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const { gameStore } = this.props;
+
+        switch(gameStore.state){
+            case GameStage.Init:
+            case GameStage.Finish:
+                this.startGame();
+                break;
+            case GameStage.Game:
+                this.startGame(); // add restart
+        }
+    }
+
+    private getGameActionButtonText(): string {
+        const { gameStore } = this.props;
+
+        switch(gameStore.state){
+            case GameStage.Init:
+            case GameStage.Finish:
+                return 'Start'
+            case GameStage.Game:
+                return 'Restart'
+        }
     }
 
     @action
@@ -109,8 +130,8 @@ interface InitializationState {
                     onChange={this.handleInputChange}/>}
                 <Button 
                     className={'initialization__item'}
-                    onClick={this.handleStartGame} 
-                    text={gameStore.state === GameStage.Init ? 'Start' : 'Reset'}/>
+                    onClick={this.handleGameClick} 
+                    text={this.getGameActionButtonText()}/>
             </div>
         );
     }

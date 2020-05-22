@@ -12,6 +12,7 @@ import { Cell } from "../../../common/board/cell";
 import { IPosition } from "../../../common/board/position";
 import { CellState } from "../../../common/board/cell-state";
 import { IBoardController } from "../../../common/interfaces/i-board-controller";
+import { MoveHelper } from "../../../common/move/move-helper";
 
 export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
     protected _selection: SelectDescriptor;
@@ -51,7 +52,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
             if (prevSelectionCell.element.correlationId === currentSelectionCell.element?.correlationId) {
                 this.onReSelect(selection);
             } else {
-                if (this._selection.posibleMoves.some(pos => pos.x === selection.position.x && pos.y === selection.position.y)) {
+                if (this._selection.posibleMoves.some(pos => MoveHelper.isSamePosition(pos, selection.position))) {
                     const moveChanges = this.move(prevSelectionCell.position, currentSelectionCell.position);
                     this.resolveMove(moveChanges);
                 }
