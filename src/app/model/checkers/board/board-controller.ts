@@ -7,6 +7,7 @@ import { MoveType } from "../../common/move/move-type";
 import { IMoveAnalyzer } from "../../common/interfaces/i-move-analyzer";
 import { Board } from "../../common/board/board";
 import { Players } from "../../common/player/players";
+import { IterationDirection } from "../../common/general/iteration-direction";
 
 export class BoardController implements IBoardController<Checker> {
     constructor(private _board: Board<Checker>,
@@ -19,12 +20,20 @@ export class BoardController implements IBoardController<Checker> {
         return this._board;
     }
 
-    public doMove(moveDescriptor: MoveDescriptor): Cell<Checker>[] {
+    public doMove(moveDescriptor: MoveDescriptor): Cell<Checker>[][] {
+        const changes: Cell<Checker>[][] = [];
+
+        moveDescriptor.iterateMove(((moveDescriptor: MoveDescriptor) => changes.push(this.doSingleMove(moveDescriptor))));
+
+        return changes;
+    }
+
+    private doSingleMove(moveDescriptor: MoveDescriptor): Cell<Checker>[] {
         const cellsToUpdate: Cell<Checker>[] = [];
         const from = new SelectionContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
         const checker = this._board.getCellByPosition(moveDescriptor.from).element;
         const to = new SelectionContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);
-        const isKing = this._moveAnalizer.isAKing(moveDescriptor) && !checker.isKing;
+        const isKing = this._moveAnalizer.isAKing(moveDescriptor) && !checker?.isKing;
 
         switch (moveDescriptor.type) {
             case MoveType.Move:
@@ -54,7 +63,15 @@ export class BoardController implements IBoardController<Checker> {
         return cellsToUpdate;
     }
 
-    public undoMove(moveDescriptor: MoveDescriptor): Cell<Checker>[] {
+    public undoMove(moveDescriptor: MoveDescriptor): Cell<Checker>[][] {
+        const changes: Cell<Checker>[][] = [];
+
+        moveDescriptor.iterateMove(((moveDescriptor: MoveDescriptor) => changes.push(this.undoSingleMove(moveDescriptor))), IterationDirection.Reverse);
+
+        return changes;
+    }
+
+    public undoSingleMove(moveDescriptor: MoveDescriptor): Cell<Checker>[] {
         const cellsToUpdate: Cell<Checker>[] = [];
         const from = new SelectionContext(moveDescriptor.from, moveDescriptor.playerId, moveDescriptor.elementId);
         const to = new SelectionContext(moveDescriptor.to, moveDescriptor.playerId, moveDescriptor.elementId);

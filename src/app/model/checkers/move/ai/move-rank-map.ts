@@ -4,6 +4,6 @@ export const MOVE_RANK_MAP: RankMap = {
     [MoveType.Move]: 3,
     [MoveType.MoveDanger]: -1,
     [MoveType.Attack]: 4,
-    [MoveType.AttackDanger]: -2,
+    [MoveType.AttackDanger]: 1,
     [MoveType.Block]: 2
 };

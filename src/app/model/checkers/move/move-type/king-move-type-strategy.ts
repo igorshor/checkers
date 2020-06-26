@@ -8,6 +8,7 @@ import { Cell } from "../../../common/board/cell";
 import { IMoveAnalyzer } from "../../../common/interfaces/i-move-analyzer";
 import { IPosition } from "../../../common/board/position";
 import { Players } from "../../../common/player/players";
+import { PositionHelper } from "../../../common/board/position-helper";
 
 
 type MoveRunnerCallbackType = (currCell: Cell<Checker>, index: number, fromCell?: Cell<Checker>, toCell?: Cell<Checker>) => boolean;
@@ -24,7 +25,7 @@ export class KingMoveTypeStrategy implements IMoveTypeStrategy<Checker> {
             return false;
         }
 
-        while (!MoveHelper.isSamePosition(moveDescriptor.to, pos = MoveHelper.simulateNextCellByDirection(pos, direction))) {
+        while (!PositionHelper.isSamePosition(moveDescriptor.to, pos = MoveHelper.simulateNextCellByDirection(pos, direction))) {
             const cell = board.getCellByPosition(pos);
 
             const conclusion = iterabale(cell, ++index, fromCell, toCell);

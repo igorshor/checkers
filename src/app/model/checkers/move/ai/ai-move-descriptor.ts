@@ -38,9 +38,9 @@ export class AiMoveDescriptor extends MoveDescriptor {
         return calculatedRank;
     }
 
-    add(...move: AiMoveDescriptor[]) {
+    add(...moves: AiMoveDescriptor[]) {
         this.nextMoves = this.nextMoves || [];
-        this.nextMoves.push(...move);
+        this.nextMoves.push(...moves);
     }
 
     valueOf() {

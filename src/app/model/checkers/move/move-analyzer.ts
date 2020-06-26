@@ -15,6 +15,7 @@ import { KingMoveTypeStrategy } from "./move-type/king-move-type-strategy";
 import { MoveTypeStrategy } from "./move-type/move-type-strategy";
 import { Cell } from "../../common/board/cell";
 import { AiMoveAnalyzer } from "./ai/ai-move-analyzer";
+import { PositionHelper } from "../../common/board/position-helper";
 
 enum SimulationResult {
     TryNext,
@@ -27,16 +28,16 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
     private _moveTypeStrategy: IMoveTypeStrategy<Checker>
     private _aiMoveAnalyzer: AiMoveAnalyzer;
 
-    constructor(protected _playersManager: Players<Checker>,
+    constructor(protected _players: Players<Checker>,
         protected _moveValidator: IMoveValidator<Checker>) {
 
         this._kingMoveTypeStrategy = new KingMoveTypeStrategy();
         this._moveTypeStrategy = new MoveTypeStrategy();
-        this._aiMoveAnalyzer = new AiMoveAnalyzer();
+        this._aiMoveAnalyzer = new AiMoveAnalyzer(this, this._players);
     }
 
     getMaxDistanceToBoundaries(pos: IPosition): number {
-        const distanceToBoundaries = this._playersManager.players.map((player) => Math.abs(player.base - pos.y)) 
+        const distanceToBoundaries = this._players.players.map((player) => Math.abs(player.base - pos.y)) 
         const maxDistanceToBoundary = Math.max(...distanceToBoundaries)
 
         return maxDistanceToBoundary;
@@ -66,12 +67,12 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
     }
 
     protected isInDanger(pos: IPosition, board: Board<Checker>): boolean {
-        const posiibleDanger = [MoveHelper.simulateNextCellByDirection(pos, this._playersManager.current.direction | DirectionsDefinition.Left),
-        MoveHelper.simulateNextCellByDirection(pos, this._playersManager.current.direction | DirectionsDefinition.Right)];
+        const posiibleDanger = [MoveHelper.simulateNextCellByDirection(pos, this._players.current.direction | DirectionsDefinition.Left),
+        MoveHelper.simulateNextCellByDirection(pos, this._players.current.direction | DirectionsDefinition.Right)];
 
         return posiibleDanger.some((pos: IPosition) => {
             const cell = board.getCellByPosition(pos);
-            return cell && cell.element && cell.element.correlationId === this._playersManager.opponent.id;
+            return cell && cell.element && cell.element.correlationId === this._players.opponent.id;
         });
     }
 
@@ -110,27 +111,39 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         return positions
     }
 
-    getPossibleMovesByCell(fromCell: Cell<Checker>, board: Board<Checker>): MoveDescriptor[] {
+    getPossibleMovesByCell(fromCell: Cell<Checker>, board: Board<Checker>, searchTypes?: MoveType[]): MoveDescriptor[] {
         const fromChecker = fromCell.element;
         const playerId = fromCell.element.correlationId;
 
-        const possibleNextMovePositions = this.getMoveTypeStrategy(fromChecker.isKing).getPossibleNextPositions(fromCell, this, this._playersManager)
+        const possibleNextMovePositions = this.getMoveTypeStrategy(fromChecker.isKing).getPossibleNextPositions(fromCell, this, this._players)
         const possibleNextMoves = possibleNextMovePositions.map((pos: IPosition) => {
             const moveDescriptor = new MoveDescriptor(fromCell.position, pos, playerId, fromChecker.id, fromChecker.isKing);
             moveDescriptor.type = this.getGeneralMoveType(moveDescriptor, board);
 
             return moveDescriptor;
         })
-        .filter(move => this._moveValidator.validate(move, board, this._playersManager.get(playerId), this));
+        .filter(move => this._moveValidator.validate(move, board, this._players.get(playerId), this));
 
-        return possibleNextMoves;
+        const possibleNextAttackMoves = possibleNextMoves.filter((moveDescriptor: MoveDescriptor) => MoveHelper.isAtack(moveDescriptor.type));
+        const multiJumpMoves = this._aiMoveAnalyzer.enrichWithAdditionalJumps(possibleNextAttackMoves, board).map((move: MoveDescriptor) => move.finalMove);
+        const moves = possibleNextMoves.filter((move: MoveDescriptor) => {
+            let isPartOfMultiMove = multiJumpMoves.find((multiJumpMove: MoveDescriptor) => PositionHelper.isSamePosition(move.to, multiJumpMove.initialMove?.next?.position));
+
+            return !isPartOfMultiMove;
+        });
+
+        let allPossibleMoves = [...multiJumpMoves, ...moves];
+
+        if (searchTypes) {
+            allPossibleMoves = allPossibleMoves.filter(move => searchTypes.indexOf(move.type) > -1)
+        }
+
+        return allPossibleMoves;
     }
 
     getPossibleMovesBySelect(select: SelectDescriptor, board: Board<Checker>): MoveDescriptor[] {
         const fromCell = board.getCellByPosition(select.from);
         const possibleNextMoves = this.getPossibleMovesByCell(fromCell, board);
-        const possibleNextAttackMoves = possibleNextMoves.filter((moveDescriptor: MoveDescriptor) => MoveHelper.isAtack(moveDescriptor.type));
-        this._aiMoveAnalyzer.enrichWithAdditionalJumps(possibleNextAttackMoves, board);
 
         return possibleNextMoves;
     }
@@ -144,9 +157,9 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
         }
 
         if (cell.element) {
-            if (cell.element.correlationId === this._playersManager.opponent.id) {
+            if (cell.element.correlationId === this._players.opponent.id) {
                 return SimulationResult.TryNext;
-            } else if (cell.element.correlationId === this._playersManager.current.id) {
+            } else if (cell.element.correlationId === this._players.current.id) {
                 return SimulationResult.NotPossible;
             } else {
                 throw new Error('id not found');
@@ -159,7 +172,7 @@ export class MoveAnalyzer implements IMoveAnalyzer<Checker> {
 
 
     isAKing(moveDescriptor: MoveDescriptor): boolean {
-        return this._playersManager.opponent.base === moveDescriptor.to.y;
+        return this._players.opponent.base === moveDescriptor.to.y;
     }
 
     getNextPositionByDirection(position: IPosition, moveDirection: MoveDirectionsDefinition, board: Board<Checker>, forceNext?: boolean): IPosition {

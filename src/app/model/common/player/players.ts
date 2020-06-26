@@ -63,4 +63,12 @@ export class Players<T extends IIdentible> {
     private getOtherPlayer(): Player<T> {
         return this._players[0] === this._currentPlayer ? this._players[1] : this._players[0];
     }
+
+    public mutatePlayers(): Players<T> {
+        const players = new Players<T>();
+        players.addPlayer(this.current, true);
+        players.addPlayer(this.opponent);
+
+        return players;
+    }
 }

@@ -25,7 +25,7 @@ export class CheckersGameAnalyzer implements IGameAnalyzer<Checker> {
         const cellToReturnTodefaultState = this._board.select((cell) => cell.element?.movable)
         cellToReturnTodefaultState.forEach(cell => cell.element.movable = false);
         
-        const possiblePlayerMovesCheckers = this._moveAnalyzer.getPossibleMovesByPlayer(player, this._board).map(move => this._board.getCellByPosition(move.from));
+        const possiblePlayerMovesCheckers = this._moveAnalyzer.getPossibleMovesByPlayer(player, this._board).map(move => this._board.getCellByPosition(move.initialMove.from));
         possiblePlayerMovesCheckers.forEach(checker => checker.element.movable = true);
 
         return Array.from(new Set([...cellToReturnTodefaultState, ...possiblePlayerMovesCheckers]));

@@ -13,12 +13,15 @@ import { IPosition } from "../../../common/board/position";
 import { CellState } from "../../../common/board/cell-state";
 import { IBoardController } from "../../../common/interfaces/i-board-controller";
 import { MoveHelper } from "../../../common/move/move-helper";
+import { PositionHelper } from "../../../common/board/position-helper";
 
 export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
     protected _selection: SelectDescriptor;
+    protected _posibleMoveDescriptorsMap: { [key: string]: MoveDescriptor };
     private _selectionSubscription: Subscription;
     protected _playDeferredPromise: JQuery.Deferred<Cell<Checker>[]>;
     protected _board: Board<Checker>;
+
     constructor(protected _state: GameStateManager<Checker>,
         protected _moveValidator: IMoveValidator<Checker>,
         private _moveAnalizer: IMoveAnalyzer<Checker>,
@@ -52,7 +55,7 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
             if (prevSelectionCell.element.correlationId === currentSelectionCell.element?.correlationId) {
                 this.onReSelect(selection);
             } else {
-                if (this._selection.posibleMoves.some(pos => MoveHelper.isSamePosition(pos, selection.position))) {
+                if (this._selection.posibleMoves.some(pos => PositionHelper.isSamePosition(pos, selection.position))) {
                     const moveChanges = this.move(prevSelectionCell.position, currentSelectionCell.position);
                     this.resolveMove(moveChanges);
                 }
@@ -60,22 +63,32 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         }
     }
 
+    protected setPosibleDestinationMoveDescriptors(moveDescriptors: MoveDescriptor[]): void {
+        this._posibleMoveDescriptorsMap = {};
+        moveDescriptors.forEach((moveDescriptor: MoveDescriptor) => this._posibleMoveDescriptorsMap[moveDescriptor.strongId] = moveDescriptor);
+    }
+
+    private setAndUpdatePosibleMoves(posibleMovesDestinations: IPosition[]): Cell<Checker>[] {
+        this._selection.posibleMoves = posibleMovesDestinations;
+
+        const cells = posibleMovesDestinations.map(pos => this._board.getCellByPosition(pos));
+
+        cells.forEach(cell => cell.state = CellState.Prediction);
+
+        return cells;
+    }
+
     protected onSelect(selection: SelectDescriptor, updatePrediction = true): Cell<Checker>[] {
         const cell = this._board.getCellByPosition(selection.from);
-        const posibleDestinations = this.select(selection.from);
-        const posibleMovesDestinations = posibleDestinations
-            .map(posibleDestination => this.createMoveDescriptor(selection.from, posibleDestination))
-            .filter(move => this._moveValidator.validate(move, this._board, this._playersManager.current, this._moveAnalizer))
-            .map(move => move.to);
+        const posibleDestinationMoveDescriptors = this.select(cell);
+        const posibleMovesDestinations = posibleDestinationMoveDescriptors.map(move => move.to);
 
         this._selection = selection;
-        cell.element.selected = true;
 
         if (posibleMovesDestinations.length) {
-            this._selection.posibleMoves = posibleMovesDestinations;
-            const cells = posibleMovesDestinations.map(pos => this._board.getCellByPosition(pos));
+            this.setPosibleDestinationMoveDescriptors(posibleDestinationMoveDescriptors);
+            const cells = this.setAndUpdatePosibleMoves(posibleMovesDestinations);
 
-            cells.forEach(cell => cell.state = CellState.Prediction);
             this._state.updateCells([cell, ...cells]);
 
             return cells;
@@ -111,45 +124,45 @@ export class PlayerMoveStrategy implements IMoveStrategy<Checker> {
         this._state.updateCells([previousSelectionCell, ...cells]);
     }
 
-    protected select(from: IPosition): IPosition[] {
-        const cell = this._board.getCellByPosition(from);
+    protected select(cell: Cell<Checker>): MoveDescriptor[] {
         if (!cell.element || !cell.element.id || !cell.element.correlationId) {
             throw new Error('no id');
         }
-        const selectDescriptor = new SelectDescriptor(from, this._playersManager.current.id, cell.element.id, cell.element.isKing);
 
-        // todo: king added to move descriptior... now do some king logic :)
+        cell.element.selected = true;
 
-        const moves = this._moveAnalizer.getPossibleMovesBySelect(selectDescriptor, this._board);
+        const moveDescriptors = this._moveAnalizer.getPossibleMovesByCell(cell, this._board);
 
-        return moves.map(move => {
-            return { x: move.to.x, y: move.to.y };
-        });
+        return moveDescriptors;
     }
 
-    private createMoveDescriptor(from: IPosition, to: IPosition) {
+    private getMoveDescriptor(from: IPosition, to: IPosition) {
         const cell = this._board.getCellByPosition(from);
         if (!cell.element || !cell.element.id || !cell.element.correlationId) {
             throw new Error('no id');
         }
 
-        const moveDescriptor = new MoveDescriptor(from, to, this._playersManager.current.id, cell.element.id, cell.element.isKing);
-        moveDescriptor.type = this._moveAnalizer.getGeneralMoveType(moveDescriptor, this._board);
+        const moveId = MoveHelper.getId(from, to);
+        const moveDescriptor = this._posibleMoveDescriptorsMap[moveId]
+
+        if (!moveDescriptor) {
+            throw new Error('mo possible move found'); 
+        }
 
         return moveDescriptor;
     }
 
     public move(from: IPosition, to: IPosition): Cell<Checker>[] {
-        const moveDescriptor = this.createMoveDescriptor(from, to);
-        const validMove = this._moveValidator.validate(moveDescriptor, this._board, this._playersManager.current, this._moveAnalizer);
+        const moveDescriptor = this.getMoveDescriptor(from, to);
+        // const validMove = this._moveValidator.validate(moveDescriptor, this._board, this._playersManager.current, this._moveAnalizer); // need to remove this allredy ivaluated
 
-        if (!validMove) {
-            throw new Error('invalide move');
-        }
+        // if (!validMove) {
+        //     throw new Error('invalide move');
+        // }
 
         this.onUnSelect();
-        const changes = this._boardController.doMove(moveDescriptor);
+        const movesChanges: Cell<Checker>[][] = this._boardController.doMove(moveDescriptor);
 
-        return changes;
+        return movesChanges.reduce((acc, val) => acc.concat(val), []);
     }
 }

@@ -1,8 +1,9 @@
-import { SelectDescriptor } from "./select-descriptor";
-import { MoveDirectionsDefinition, DirectionsDefinition } from "../move/move-direction";
-import { IPosition, IGhostPosition } from "../board/position";
-import { MoveType } from "../move/move-type";
+import { IGhostPosition, IPosition } from "../board/position";
+import { IterationDirection } from "../general/iteration-direction";
+import { DirectionsDefinition, MoveDirectionsDefinition } from "../move/move-direction";
 import { MoveHelper } from "../move/move-helper";
+import { MoveType } from "../move/move-type";
+import { SelectDescriptor } from "./select-descriptor";
 
 export class MoveDescriptor extends SelectDescriptor {
     public direction: DirectionsDefinition;
@@ -48,6 +49,19 @@ export class MoveDescriptor extends SelectDescriptor {
         return move;
     }
 
+    iterateMove(func: (move: MoveDescriptor) => void, iterationDirection: IterationDirection = IterationDirection.Normal): void {
+        let move: MoveDescriptor = iterationDirection === IterationDirection.Normal ? this.initialMove : this.finalMove
+
+        while(move) {
+            func(move)
+            move = move[iterationDirection === IterationDirection.Normal ? 'next' : 'prev'];
+        }
+    }
+
+    get isPartialMove(): boolean {
+        return null;
+    }
+
     get distance():number {
         return MoveHelper.getDistance(this.from, this.to);
     }
@@ -56,13 +70,53 @@ export class MoveDescriptor extends SelectDescriptor {
         return this.type === MoveType.Attack || this.type === MoveType.AttackDanger;
     }
 
+    get strongId(): string {
+        return MoveHelper.getId(this.initialMove.from, this.finalMove.to);
+    }
+
+    
+    get id(): string {
+        return MoveHelper.getId(this.from, this.to);
+    }
+
+    get pathId(): string {
+        const moveIds: string[] = [];
+
+        this.iterateMove((move: MoveDescriptor) => moveIds.push(move.id));
+
+        const path = moveIds.join('+')
+
+        return path;
+    }
+
     addNext(to: IPosition, makeKing?: boolean): MoveDescriptor {
         const nextMove = new MoveDescriptor(this.to, to, this.playerId, this.elementId, this.kingMove || makeKing)
+
+        if (this.next) {
+            if (this.next.to === nextMove.to) {
+                throw new Error('trying to add same move twice')
+            }
+
+            
+            throw new Error('next allrady exists, need to separate moves!')
+        }
 
         this.next = nextMove;
         nextMove.level = this.level + 1;
         nextMove.prev = this;
+        nextMove.type = this.type;
 
         return nextMove;
+    }
+
+    mutatePath(): MoveDescriptor {
+        const copyMoveDescriptor = new MoveDescriptor(this.from, this.to, this.playerId, this.elementId, this.kingMove);
+
+        copyMoveDescriptor.attacked = this.attacked;
+        copyMoveDescriptor.prev = this.prev?.mutatePath();
+        copyMoveDescriptor.level = this.level;
+        copyMoveDescriptor.type = this.type;
+        
+        return copyMoveDescriptor;
     }
 }

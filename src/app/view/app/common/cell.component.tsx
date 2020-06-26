@@ -107,9 +107,8 @@ export interface CellProps extends CellStores {
             <TooltipHost content={posDebugStr}>
                 <div onClick={this.handleClick} className={this.getCellUiIdentifier()}>
                     {checkers}
-                    <div style={{display: 'none'}}>{posDebugStr}</div>
+                    <div className={'cell__debugStr'}>{posDebugStr}</div>
                 </div>
-                <div style={{display: 'none'}}>{posDebugStr}</div>
             </TooltipHost>
         );
     }

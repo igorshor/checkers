@@ -14,12 +14,4 @@ export class PlayersManager<T extends IIdentible> extends Players<T> {
         this._gameState.updateCurrentPlayer(otherPlayer);
         return otherPlayer;
     }
-
-    public mutatePlayers(): Players<T> {
-        const players = new Players<T>();
-        players.addPlayer(this.current, true);
-        players.addPlayer(this.opponent);
-
-        return players;
-    }
 }

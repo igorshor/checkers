@@ -1,6 +1,7 @@
 import { DirectionsDefinition, MoveDirectionsDefinition } from "./move-direction";
 import { IPosition } from "../board/position";
 import { MoveType } from "./move-type";
+import { PositionHelper } from "../board/position-helper";
 
 export class MoveHelper {
     public static simulateNextCellByDirection(position: IPosition, moveDirection: MoveDirectionsDefinition): IPosition {
@@ -53,12 +54,14 @@ export class MoveHelper {
         return Math.abs(a.y - b.y);
     }
     
-    public static isSamePosition(a: IPosition, b: IPosition): boolean {
-        return a.x === b.x && a.y === b.y;
-    }
-
-        
     public static isAtack(type: MoveType) {
         return type === MoveType.Attack || type === MoveType.AttackDanger;
+    }
+
+    private static ID_MOVE_SEPERATOR = '->';
+
+
+    public static getId(a: IPosition, b: IPosition) {
+        return PositionHelper.getPositionId(a) + this.ID_MOVE_SEPERATOR + PositionHelper.getPositionId(b)
     }
 }

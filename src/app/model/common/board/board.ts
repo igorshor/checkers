@@ -219,7 +219,7 @@ export class Board<T extends IIdentible> {
         let boardStr = '';
         const playersStr = 'x = ' + this._players[0].name + ' | y = ' + this._players[1].name;
         const headerRow = '  ' + this._cells[0].map((_, index) => index).join(' ') + '\n'
-        const rowsStr = this._cells.reverse().map((row, index) => {
+        const rowsStr = this._cells.map((row, index) => {
             let rowStr = index + `|`;
             const rowCellsStr = row.map(cell => {
                 if (!cell.element) {
@@ -233,9 +233,9 @@ export class Board<T extends IIdentible> {
             rowStr += '|';
 
             return rowStr;
-        });
+        }).reverse();
 
-        boardStr += headerRow + rowsStr.join('\n');
+        boardStr += rowsStr.join('\n') + '\n' + headerRow;
 
         return '\n' + playersStr + '\n\n' + boardStr + '\n';
     }
