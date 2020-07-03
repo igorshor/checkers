@@ -5,6 +5,8 @@ import { MoveHelper } from "../move/move-helper";
 import { MoveType } from "../move/move-type";
 import { SelectDescriptor } from "./select-descriptor";
 
+export type IterationWhere =(move: MoveDescriptor, index: number) => boolean;
+
 export class MoveDescriptor extends SelectDescriptor {
     public direction: DirectionsDefinition;
     public readonly moveDirection: MoveDirectionsDefinition;
@@ -49,12 +51,17 @@ export class MoveDescriptor extends SelectDescriptor {
         return move;
     }
 
-    iterateMove(func: (move: MoveDescriptor) => void, iterationDirection: IterationDirection = IterationDirection.Normal): void {
+    iterateMove(func: (move: MoveDescriptor) => void, iterationDirection: IterationDirection = IterationDirection.Normal, where: IterationWhere = () => true): void {
         let move: MoveDescriptor = iterationDirection === IterationDirection.Normal ? this.initialMove : this.finalMove
+        let index = 0;
 
         while(move) {
-            func(move)
+            if (where(move, index)) {
+                func(move)
+            }
+            
             move = move[iterationDirection === IterationDirection.Normal ? 'next' : 'prev'];
+            index++;
         }
     }
 

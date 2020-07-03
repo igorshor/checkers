@@ -125,6 +125,10 @@ export class Board<T extends IIdentible> {
     remove(cellContext: SelectionContext, removeFromBoard = false): Cell<T> {
         const cell = this.getCellByPosition(cellContext.position);
 
+        if (!cell.element) {
+            throw new Error('no cell to remove :<');
+        }
+
         if (removeFromBoard) {
             this.removeElement(cellContext.playerId, cellContext.elementId);
         }
